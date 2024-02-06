@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'OSU_CSE_GMS',
     'bootstrap4',
+    'accounts',
 ]
 
 MIDDLEWARE = [
