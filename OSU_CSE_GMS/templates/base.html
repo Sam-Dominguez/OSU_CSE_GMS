@@ -3,10 +3,14 @@
 
 <head>
   <meta charset="utf-8">
-  <title>{% block title %}Django Auth Tutorial{% endblock %}</title>
+  <title>{% block title %}OSU CSE GMS{% endblock %}</title>
+  {% load bootstrap4 %}
+  {% bootstrap_css %}
+  {% bootstrap_javascript jquery='full' %}
 </head>
 
 <body>
+    {% include 'navbar.html' %}
   <main>
     {% block content %}
     {% endblock %}

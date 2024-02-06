@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'OSU_CSE_GMS',
+    'bootstrap4',
 ]
 
 MIDDLEWARE = [
