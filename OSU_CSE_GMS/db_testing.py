@@ -22,13 +22,13 @@ else:
     except Error:
         print(Error)
 
-# Create a cursor to use to access the data
-try:
-    cur = conn.cursor()
-    print('Cursor created.')
-except Error:
-    print(Error)
+    # Create a cursor to use to access the data
+    try:
+        cur = conn.cursor()
+        print('Cursor created.')
+    except Error:
+        print(Error)
 
-# Get all table names
-result = run_query(cur,'SELECT name from sqlite_master where type= "table"')
-print(cur.fetchall())
+    # Get all table names
+    result = run_query(cur,'SELECT name from sqlite_master where type= "table"')
+    print(cur.fetchall())
