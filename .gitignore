@@ -163,3 +163,4 @@ cython_debug/
 
 bin/
 OSU_CSE_GMS/pyvenv.cfg
+.DS_Store
