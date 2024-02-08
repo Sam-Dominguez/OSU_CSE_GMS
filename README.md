@@ -26,7 +26,7 @@ Mac
 `python -m pip install Django`
 
 ## Run the Migrations
-`python manage.py migrate OSU_CSE_GMS`
+`python manage.py migrate && python manage.py migrate OSU_CSE_GMS`
 
 # Post Set Up
 Each time you revist the project:
