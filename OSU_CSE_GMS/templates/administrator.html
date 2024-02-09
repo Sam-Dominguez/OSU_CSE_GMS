@@ -1,38 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    {% load bootstrap5 %}
-    {% bootstrap_css %}
-    {% bootstrap_javascript %}
+    <head>
+        {% load bootstrap5 %}
+        {% bootstrap_css %}
+        {% bootstrap_javascript %}
 
-    <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <style>
-            /* Center the image horizontally */
-            .bottom-container {
-                position: absolute;
-                bottom: 10px;
-                left: 50%;
-                transform: translateX(-50%);
-            }
-        </style>
-</head>
+        <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <style>
+                /* Center the image horizontally */
+                .bottom-container {
+                    position: absolute;
+                    bottom: 10px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                }
+            </style>
+    </head>
 
-<body>
-    {% include 'navbar.html' %}
-    <header class="bg-light p-3">
-        <div class="container">
-            <div class="d-flex justify-content-between align-items-center">
-                <h1 class="m-0">Courses</h1>
-                <button class="btn btn-primary" style="background-color: #BB0000 !important;">Add Course</button>
+    <body>
+        {% include 'navbar.html' %}
+        <header class="bg-light p-3">
+            <div class="container">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h1 class="m-0">Courses</h1>
+                    <button id="add-course-btn" class="btn btn-primary" style="background-color: #BB0000 !important;">Add Course</button>
+                </div>
             </div>
-        </div>
-    </header>
+        </header>
 
-    {% load static %}
-    <div class="bottom-container">
-        <img src="{% static 'osu_coe.png' %}" alt="" width="226.8" height="32.5" class="bottom-image">
-    </div>
-</body>
+        <div class="container mt-4">
+            {% for course in courses %}
+                <li>{{ course }}</li>
+            {% endfor %}
+        </div>
+
+        <form id="course-form" action="" method="post" style="display: none;">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary" style="background-color: #BB0000 !important;">Add</button>
+            <button id="cancel-btn" type="button" class="btn btn-secondary">Cancel</button>
+        </form>
+
+        <script>
+            document.getElementById('add-course-btn').addEventListener('click', function() {
+                document.getElementById('course-form').style.display = 'block';
+            });
+
+            document.getElementById('cancel-btn').addEventListener('click', function() {
+            document.getElementById('course-form').style.display = 'none';
+        });
+        </script>
+
+        {% load static %}
+        <div class="bottom-container">
+            <img src="{% static 'osu_coe.png' %}" alt="" width="226.8" height="32.5" class="bottom-image">
+        </div>
+
+    </body>
 
 </html>

@@ -30,7 +30,10 @@ class Instructor(models.Model):
 
 class Course(models.Model):
     course_number = models.CharField(primary_key=True, max_length=15)
-    name = models.CharField(max_length=30)
+    name = models.CharField(max_length=200)
+
+    def __str__(self):
+        return 'CSE ' + self.course_number + ': ' + self.name
 
 class Section(models.Model):
     course_number = models.ForeignKey("Course", on_delete=models.CASCADE)
