@@ -30,9 +30,16 @@
         </header>
 
         <div class="container mt-4">
-            {% for course in courses %}
-                <li>{{ course }}</li>
-            {% endfor %}
+            <a href="?sort={{ sort_direction }}" class="btn btn-outline-secondary">{{ sort_text }}</a>
+            <table class="table">
+                <tbody>
+                    {% for course in courses %}
+                        <tr>
+                            <td>{{ course }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
 
         <form id="course-form" action="" method="post" style="display: none;">
