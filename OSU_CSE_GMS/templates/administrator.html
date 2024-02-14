@@ -4,7 +4,7 @@
         {% load bootstrap5 %}
         {% bootstrap_css %}
         {% bootstrap_javascript %}
-
+        
         <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <style>
@@ -42,21 +42,41 @@
             </table>
         </div>
 
-        <form id="course-form" action="" method="post" style="display: none;">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="btn btn-primary" style="background-color: #BB0000 !important;">Add</button>
-            <button id="cancel-btn" type="button" class="btn btn-secondary">Cancel</button>
-        </form>
+        <!-- Modal for the course form -->
+        <div class="modal" id="courseModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add Course</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="course-form" action="" method="post">
+                            {% csrf_token %}
+                            {{ form.as_p }}
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-primary" style="background-color: #BB0000 !important;">Add</button>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <script>
-            document.getElementById('add-course-btn').addEventListener('click', function() {
-                document.getElementById('course-form').style.display = 'block';
+            // Ensure DOM is fully loaded before executing the script
+            document.addEventListener('DOMContentLoaded', function() {
+                document.getElementById('add-course-btn').addEventListener('click', function() {
+                    var myModal = new bootstrap.Modal(document.getElementById('courseModal'));
+                    myModal.show();
+                });
+    
+                document.getElementById('cancel-btn').addEventListener('click', function() {
+                    var myModal = new bootstrap.Modal(document.getElementById('courseModal'));
+                    myModal.hide();
+                });
             });
-
-            document.getElementById('cancel-btn').addEventListener('click', function() {
-            document.getElementById('course-form').style.display = 'none';
-        });
         </script>
 
         {% load static %}

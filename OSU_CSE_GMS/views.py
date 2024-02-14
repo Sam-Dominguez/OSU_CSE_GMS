@@ -15,7 +15,7 @@ def administrator(request):
     courses = Course.objects.all()
     sort_direction = 'asc'
 
-    # If the 'sort' parameter is in the request, toggle the sort direction
+    # Toggle the sort direction
     if 'sort' in request.GET:
         sort_direction = request.GET['sort']
         sort_direction = 'asc' if sort_direction == 'desc' else 'desc'
