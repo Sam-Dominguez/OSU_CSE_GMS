@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        {% load bootstrap5 %}
+        {% bootstrap_css %}
+        {% bootstrap_javascript %}
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Course Detail</title>
+    </head>
+    <body>
+        {% include 'navbar.html' %}
+        <h1>{{ course }}</h1>
+    </body>
+</html>

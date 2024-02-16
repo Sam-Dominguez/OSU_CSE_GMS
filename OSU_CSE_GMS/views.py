@@ -37,3 +37,10 @@ def administrator(request):
     }
     
     return render(request, 'administrator.html', context)
+
+def course_detail(request, course_number):
+    course = Course.objects.get(course_number=course_number)
+    context = {
+        'course': course
+    }
+    return render(request, 'course_detail.html', context)
