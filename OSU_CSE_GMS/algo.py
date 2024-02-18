@@ -13,6 +13,7 @@ def algoTest(request):
     s = Student.objects.all()
     us = UnassignedStudent.objects.all() 
 
+    # random testing
     context = {
         "students" : s,
         "unassign" : us,
@@ -21,7 +22,7 @@ def algoTest(request):
     }
     
     getStudentsForCourses(context['query'])
-    
+    addAllUnassign()
     return render(request, 'algo.html', context)
     
 
@@ -40,23 +41,45 @@ def getStudentsForCourses(unassign):
     for c in courses:
         matches = CourseInPrevClass(unassign,c.course_number)
         if matches:
-            print("valid students for CSE " + c.course_number + " : ")
-
+            print("valid students for CSE " + c.course_number + ":")
             # get graded before and new grader priority
             gradedBefore = matches.filter(student_id__previous_grader = 1).order_by(Random())
             newGrader = matches.filter(~Q(student_id__previous_grader = 1)).order_by(Random())
 
-            print("graded before:")
-            for m in gradedBefore:
-                print(m.student_id.__dict__)
+            picks = []
+            printStr = "Graded before:"
+            pickMatches(gradedBefore,picks,printStr)
+            printStr ="Not graded before:"
+            pickMatches(newGrader,picks,printStr)
 
-            print("\nNot graded before:")
-            for m in newGrader:
-                print(m.student_id.__dict__)
+            processMatches(picks,c)
         else:
             print("No valid students for CSE " + c.course_number)
         print(" ")
-    
+
+# prints matches and total count. Picks a match if Unassign_Student-course match found
+def pickMatches(matches,picks,printStr):
+    counter = 0
+    print(printStr)
+    if(matches and len(picks)==0):
+        picks.append(matches.first())
+    for m in matches:
+        print(m.student_id.__dict__)
+        counter += 1
+    print(printStr+"Matches: " + str(counter) +"\n")
+
+# deletes unassigned student matches from database
+def processMatches(picks,c):
+    if picks:
+        print("Selecting students for course "+ c.course_number)
+        for p in picks:
+            print(p.student_id.__dict__)
+            p.delete()
+    else:
+        print("No matches available")
+
+
+
 # given unassigned students query set and a course number (string), find all unassigned Students that match with course
 def CourseInPrevClass(unassign, course):
     
@@ -77,6 +100,13 @@ def makeCourses():
         c = Course(course_number= prevclasses[i],name ="CSE: " + str(i) )
         c.save()
 
+# adds all Students back to Unassigned
+def addAllUnassign():
+    UnassignedStudent.objects.all().delete()
+    students = Student.objects.all()
+    for s in students:
+        u = UnassignedStudent(student_id =s)
+        u.save()
 # deletes all students and unassigned. Then adds students and also adds them to be unassigned
 def addTestStudent():
     User.objects.exclude(is_superuser=True).delete()
