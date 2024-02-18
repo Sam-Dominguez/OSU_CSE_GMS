@@ -4,23 +4,33 @@ from .models import Course
 
 def administrator(request):
     context = {}
+    form = CourseForm()
     if request.method == 'POST':
-        form = CourseForm(request.POST)
-        if form.is_valid():
-            form.save()
-    else:
-        form = CourseForm()
+        print(request.POST)
+        if 'add_course' in request.POST:
+            form = CourseForm(request.POST)
+            if form.is_valid():
+                form.save()
+        elif 'update_course' in request.POST:
+            course_number = request.POST['course_number']
+            course = Course.objects.get(course_number=course_number)
+            form = CourseForm(request.POST, instance=course)
+            if form.is_valid():
+                form.save()
+        elif 'delete_course' in request.POST:
+            course_number = request.POST['course_number']
+            course = Course.objects.get(course_number=course_number)
+            course.delete()
 
     # Fetch all existing courses from the database
     courses = Course.objects.all()
-    sort_direction = 'asc'
 
-    # Toggle the sort direction
+    # Sort the courses by course_number
+    sort_direction = 'asc'
     if 'sort' in request.GET:
         sort_direction = request.GET['sort']
         sort_direction = 'asc' if sort_direction == 'desc' else 'desc'
 
-    # Sort courses based on the sort direction
     if sort_direction == 'asc':
         courses = courses.order_by('course_number')
         sort_text = 'Sorting (asc)'
@@ -28,7 +38,6 @@ def administrator(request):
         courses = courses.order_by('-course_number')
         sort_text = 'Sorting (desc)'
 
-    # Pass the form and courses to the template context
     context = {
         'form': form,
         'courses': courses,

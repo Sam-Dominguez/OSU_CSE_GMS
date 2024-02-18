@@ -72,6 +72,7 @@
                     <div class="modal-body">
                         <form id="course-form" action="" method="post">
                             {% csrf_token %}
+                            <input type="hidden" name="add_course" value="add_course">
                             <div class="form-group">
                                 <label for="id_course_number">Course Number</label>
                                 <input type="text" class="form-control" id="id_course_number" name="course_number">
@@ -101,22 +102,48 @@
                     <div class="modal-body">
                         <form id="manage-course-form" action="" method="post">
                             {% csrf_token %}
+                            <input type="hidden" name="update_course" value="update_course">
                             <div class="form-group">
                                 <label for="id_course_number">Course Number</label>
-                                <input type="text" class="form-control" id="id_edit_course_number" name="course_number">
+                                <input type="text" class="form-control" id="id_edit_course_number" name="course_number" readonly>
                             </div>
                             <div class="form-group">
                                 <label for="id_name">Name</label>
                                 <input type="text" class="form-control" id="id_edit_name" name="name">
                             </div>
                             <div class="modal-footer justify-content-between">
-                                <button type="button" class="btn btn-primary" style="background-color: #BB0000 !important;" id="deleteButton">Delete</button>
+                                <button type="button" class="btn btn-primary delete-button" data-course-number="{{ course.course_number }}" data-bs-toggle="modal" data-bs-target="#deleteCourseModal" style="background-color: #BB0000 !important;">Delete</button>
                                 <div>
                                     <button type="submit" class="btn btn-primary" style="background-color: #BB0000 !important;">Update</button>
                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                                 </div>
                             </div>
                         </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal to delete course -->
+        <div class="modal" id="deleteCourseModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Delete Course</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure you want to delete this course?</p>
+                        <p><b>All sections of this course will also be deleted.</b></p>
+                        <div class="modal-footer">
+                            <form id="delete-course-form" action="" method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="delete_course" value="delete_course">
+                                <input type="hidden" name="course_number" id="delete-course-number" value="{{ course.course_number }}">
+                                <button type="submit" class="btn btn-primary" style="background-color: #BB0000 !important;" id="delete-btn">Delete</button>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -143,6 +170,7 @@
 
                         document.getElementById('id_edit_course_number').value = courseNumber;
                         document.getElementById('id_edit_name').value = courseName;
+                        document.getElementById('delete-course-number').value = courseNumber;
 
                         var manageCourseModal = new bootstrap.Modal(document.getElementById('manageCourseModal'));
                         manageCourseModal.show();
