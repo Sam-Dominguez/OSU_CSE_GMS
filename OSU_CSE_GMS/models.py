@@ -56,3 +56,7 @@ class Section(models.Model):
     class Meta:
         unique_together = [['course_number', 'section_number']]
 
+class UnassignedStudent(models.Model):
+    student_id = models.OneToOneField("Student", primary_key=True, on_delete=models.CASCADE)
+    submission_time = models.DateTimeField(auto_now_add=True)
+
