@@ -7,14 +7,14 @@
   {% load bootstrap5 %}
   {% bootstrap_css %}
   {% bootstrap_javascript %}
+  {% block style %}
+  {% endblock %}
 </head>
 
 <body>
     {% include 'navbar.html' %}
-  <main>
     {% block content %}
     {% endblock %}
-  </main>
 </body>
 
 </html>
