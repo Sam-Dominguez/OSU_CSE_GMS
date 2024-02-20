@@ -9,7 +9,7 @@
   {% csrf_token %}
   {{ form }}
   <div></div>
-  <button type="submit" class="btn btn-outline-primary">Sign Up</button>
+  <button type="submit" class="btn btn-dark" style="background-color: #BB0000 !important;">Sign Up</button>
 </form>
 <p>Already have an account? <a href="{% url 'login' %}">Log In</a></p>
 {% endblock %}
