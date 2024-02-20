@@ -14,7 +14,7 @@
 <div class="main">
     <div class="container text-start">
         <div class="row justify-content-between">
-            <div class="col-6">
+            <div class="col-6 my-auto">
                 <h1 class="display-1">Help Students.</h1>
                 <br>
                 <h1 class="display-1">Gain Experience.</h1>
@@ -46,6 +46,9 @@
         </div>
         <div class="col-3 text-center my-auto">
             <h3 class="display-5">Create an account</h3>
+            <form action="{% url 'signup' %}">
+                <button type="submit" class="btn btn-outline-light btn-sm">Sign Up</button>
+            </form>
         </div>
     </div>
     <div class="row justify-content-center py-5">
