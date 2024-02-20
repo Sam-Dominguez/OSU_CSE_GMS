@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
 from .forms import CourseForm
 from .models import Course
 
@@ -53,3 +54,7 @@ def course_detail(request, course_number):
         'course': course
     }
     return render(request, 'course_detail.html', context)
+
+@login_required
+def student(request):
+    return render(request, 'student.html')

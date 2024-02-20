@@ -3,9 +3,26 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-{% if user.is_authenticated %}
-Hi {{ user.username }}!
-{% else %}
-<p>You are not logged in</p>
-{% endif %}
+<div class="container text-start">
+    <div class="row justify-content-between">
+        <div class="col-6">
+            <h1 class="display-1">Help Students.</h1>
+            <h1 class="display-1">Gain Experience.</h1>
+            <h1 class="display-1">Get Paid.</h1>
+        </div>
+        {% load static %}
+        <div class="col-6">
+            <img src="{% static 'grader_helping_student.jpg' %}" alt="" width="800" height="533" class="img-fluid">
+        </div>
+        <div class="d-flex align-items-center justify-content-center mt-5 mb-3">
+            <h2 class="display-5">Apply to be a CSE grader at Ohio State in just a few steps!</h2>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex align-items-center justify-content-center">
+    <form action="{% url 'student' %}">
+        <button type="submit" class="btn btn-primary btn-lg" style="background-color: #BB0000 !important;">Get Started</button>
+    </form>
+</div>
 {% endblock %}

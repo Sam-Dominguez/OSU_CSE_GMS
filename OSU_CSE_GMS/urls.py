@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.views.generic.base import TemplateView
-from .views import administrator, course_detail
+from .views import administrator, course_detail, student
 from django.views.generic import RedirectView
 
 urlpatterns = [
@@ -28,4 +28,5 @@ urlpatterns = [
     path('administrator/', RedirectView.as_view(url='/administrator/courses/')),
     path('administrator/courses/', administrator, name='administrator'),
     path('administrator/courses/<str:course_number>/', course_detail, name='course_detail'),
+    path('student/', student, name="student")
 ]
