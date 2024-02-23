@@ -34,16 +34,13 @@ def administrator(request):
 
     if sort_direction == 'asc':
         courses = courses.order_by('course_number')
-        sort_text = 'Sorting (asc)'
     else:
         courses = courses.order_by('-course_number')
-        sort_text = 'Sorting (desc)'
 
     context = {
         'form': form,
         'courses': courses,
         'sort_direction': sort_direction,
-        'sort_text': sort_text
     }
     
     return render(request, 'administrator.html', context)
