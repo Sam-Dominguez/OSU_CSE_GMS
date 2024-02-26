@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% block style %}
+    <style>
+        /* Center the image horizontally */
+        .bottom-container {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+    </style>
+{% endblock %}
+
+{%block content %}
+        <h2>Grader Application Form</h2>
+        <hr/>
+
+        <form action="{% url 'application' %}" method="POST" enctype="mutipart/form-data">
+            {% csrf_token %}
+            {% for message in messages %}
+            <em style="color: #BB0000"> {{ message }} </em>
+            {% endfor%}
+            <div class="container mt-4">
+                
+                <div>
+                    <label for="id">Student ID #: </label>
+                    <input id="id" type="text" name="id">
+                </div> <br/>
+
+                <div class="first-name">
+                    <label for="first_name">First name: </label>
+                    <input id="first_name" type="text" name="first_name">
+                </div> <br/>
+
+                <div class="last-name">
+                    <label for="last_name">Last name: </label>
+                    <input id="last_name" type="text" name="last_name">
+                </div> <br/>
+
+                <div class="name-num">
+                    <label for="name_num">Specify your lastname.# only. Do not put the @ portion (ex. reeves.92).: </label>
+                    <input id="name_num" type="text" name="name_num">
+                </div> <br/>
+
+                <div class="location">
+                    <div>
+                        <div>
+                            <h6> What is your location for this term?</h6>
+                        </div>
+                        <input class="location-input" type="radio" name="in_columbus" id="locationColumbus" value=1>
+                        <label class="location-label" for="locationColumbus">
+                            Columbus, OH
+                        </label>
+                    </div>
+                    <div>
+                        <input class="location-input" type="radio" name="in_columbus" id="locationUS" value=0>
+                        <label class="location-label" for="locationUS">
+                            In the US, but not in Columbus, OH 
+                        </label>
+                    </div>
+                    <div>
+                        <input class="location-input" type="radio" name="in_columbus" id="locationOutside" value=0>
+                        <label class="location-label" for="locationOutside">
+                            Outside the US  
+                        </label>
+                    </div>
+                </div> <br/>
+
+                <div class="previous-grader">
+                        <h6> Have you been hired as a CSE grader before?</h6>
+                    <div>
+                        <input class="grader-input" type="radio" name="previous_grader" id="graderYes" value=1>
+                        <label class="grader-label" for="graderYes">
+                            Yes 
+                        </label>
+                    </div>
+                    <div>
+                        <input class="grader-input" type="radio" name="previous_grader" id="graderNo" value=0>
+                        <label class="grader-label" for="graderNo">
+                            No 
+                        </label>
+                </div> <br/>
+
+                <div class="recent-term-grader">
+                    <h6> Have you been hired as a CSE grader within the last academic year (last 3 terms)?</h6>
+                <div>
+                    <input class="grader-input" type="radio" name="recent_term_grader" id="graderYes" value=1>
+                    <label class="grader-label" for="graderYes">
+                        Yes 
+                    </label>
+                </div>
+                <div>
+                    <input class="grader-input" type="radio" name="recent_term_grader" id="graderNo" value=0>
+                    <label class="grader-label" for="graderNo">
+                        No 
+                    </label>
+            </div> <br/>
+
+                <div class="prev-class">
+                    <h6>If yes: </h6>
+                    <label for="prev-class"> List the classes, separated by a comma, that you have graded for previously. : </label>
+                    <input id="prev-class" type="text" name="prev-class">
+                </div> <br/>
+
+                <div class="requested-classes">
+                    <label for="requested-classes"> Which CSE course(s) would you like to grade for this coming term (in order of preference)?
+                        Just put the 4 digit number since I know it is a CSE course, in preference order, separated by a comma.<br/>
+                        Remember that you should have earned an A/A- equivalent grade to be a grader for each course you list. <br/>
+                    </label>
+                    <h6>NOTE: If you are interested in being a grader for 2221 or 2231, please contact your instructor for a recommendation.  :<h6/>
+                    <em style="color: #BB0000"> Enter your response as course number and last name of instructor, separated by commas. (ex. 3231 Jones, 2901 Thomas):</em>
+                    <input id="preferred-classes" type="text" name="preferred-classes">
+                </div> <br/>
+                    <input type="submit" value="Submit Application" >
+            </div>
+        </form>
+
+        {% comment %} <form id="class-pref-form" action="" method="POST" style="display: none;">
+            {% csrf_token %}
+            <input id="course-num" type="number" name="course-num" placeholder="Course Number"/>
+            <input id="instructor" type="text" name="instructor" placeholder="Instructor"/>
+        </form> {% endcomment %}
+
+        {% comment %} <script>
+            document.getElementById('add-class-btn').addEventListener('click', function() {
+                document.getElementById('class-pref-form').style.display = 'block';
+            }); {% endcomment %}
+
+        {% comment %} {% load static %}
+        <div class="bottom-container">
+            <img src="{% static 'osu_coe.png' %}" alt="" width="226.8" height="32.5" class="bottom-image">
+        </div> {% endcomment %}
+
+{%endblock%}
