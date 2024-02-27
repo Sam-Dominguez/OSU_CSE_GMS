@@ -10,11 +10,11 @@ class Student(models.Model):
     last_name = models.CharField(max_length=30)
 
     # Using IntegerField instead of BooleanField b/c SQLLite does not support boolean values: (1 = True, 0 = False)
-    in_columbus = models.IntegerField()
-    previous_grader = models.IntegerField()
+    in_columbus = models.IntegerField(null=True)
+    previous_grader = models.IntegerField(null=True)
 
-    # Either None or a course number (Ex: 2221)
-    graded_last_term = models.CharField(max_length=4, default=None)
+    # Either null or a course number (Ex: 2221)
+    graded_last_term = models.CharField(max_length=4, blank=True)
 
 class Administrator(models.Model):
     id = models.IntegerField(primary_key=True)

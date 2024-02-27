@@ -1,7 +1,8 @@
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.contrib.auth.decorators import login_required
-from .forms import CourseForm
-from .models import Course
+from django.contrib.auth.models import User
+from .forms import CourseForm, SignUpForm
+from .models import Course, Student
 
 def administrator(request):
     context = {}
@@ -54,6 +55,29 @@ def course_detail(request, course_number):
         'course': course
     }
     return render(request, 'course_detail.html', context)
+
+def sign_up(request):
+    form = SignUpForm()
+
+    if request.method == 'POST':
+        form = SignUpForm(request.POST)
+
+        if form.is_valid():
+            form.save()
+            first_name = form.cleaned_data.get('first_name')
+            last_name = form.cleaned_data.get('last_name')
+            username = form.cleaned_data.get('username')
+            email = form.cleaned_data.get('email')
+            user = User.objects.get(username=username)
+            student = Student(user=user, email=email, first_name=first_name, last_name=last_name)
+            student.save()
+            return redirect('student')
+        
+    context = {
+        'form' : form
+    }
+
+    return render(request, 'registration/signup.html', context)
 
 @login_required
 def student(request):
