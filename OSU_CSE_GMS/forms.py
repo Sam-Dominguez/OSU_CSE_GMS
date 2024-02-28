@@ -16,8 +16,8 @@ class SignUpForm(UserCreationForm):
     EMAIL_VALIDATION = '^([a-zA-Z]|-)+\.(\d)+@(osu|buckeyemail\.osu)\.edu$'
 
     email = forms.EmailField(label='Email Address', required=True, 
-                             help_text='name.#@osu.edu Ex: buckeye.1@osu.edu', 
-                             validators=[RegexValidator(EMAIL_VALIDATION, "Email must be of the form [name].#@osu.edu")])
+                             help_text='name.#@buckeyemail.osu.edu Ex: buckeye.1@buckeyemail.osu.edu', 
+                             validators=[RegexValidator(EMAIL_VALIDATION, "Email must be of the form [name].#@buckeyemail.osu.edu")])
     
     class Meta:
         model = User
