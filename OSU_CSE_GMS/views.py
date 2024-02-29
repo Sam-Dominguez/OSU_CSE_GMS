@@ -2,7 +2,7 @@ from django.shortcuts import redirect, render
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from .forms import CourseForm, SignUpForm
-from .models import Course, Student
+from .models import Course, Student, Section
 
 def administrator(request):
     context = {}
@@ -48,8 +48,10 @@ def administrator(request):
 
 def course_detail(request, course_number):
     course = Course.objects.get(course_number=course_number)
+    sections = Section.objects.filter(course_number=course_number)
     context = {
-        'course': course
+        'course': course,
+        'sections': sections
     }
     return render(request, 'course_detail.html', context)
 

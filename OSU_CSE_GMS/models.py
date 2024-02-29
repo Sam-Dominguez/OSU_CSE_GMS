@@ -43,7 +43,7 @@ class Section(models.Model):
     # term (AU, SU, SP) + year (XXXX)
     semester = models.CharField(max_length=6)
 
-    instructor = models.ForeignKey(Instructor, on_delete=models.SET_DEFAULT, default='No Instructor')
+    instructor = models.ForeignKey(Instructor, on_delete=models.SET_DEFAULT, default=None, null=True)
     
     INSTRUCTION_MODES = [
         ('SYNCHRNONOUS', 'SYNCHRNONOUS'),
