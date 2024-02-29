@@ -1,8 +1,9 @@
 from django.shortcuts import redirect, render
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from .forms import CourseForm, SignUpForm
+from .forms import CourseForm, SignUpForm, GraderForm
 from .models import Course, Student
+import logging
 
 def administrator(request):
     context = {}
@@ -81,18 +82,12 @@ def sign_up(request):
 @login_required
 def student(request):
     return render(request, 'student.html')
-import logging
-import sys
-from venv import logger
-from django.http import HttpResponseRedirect
-from django.shortcuts import redirect, render
-from .forms import ClassPrefForm, GraderForm
-from .models import Student
 
 def test(request):
     context = {'form':GraderForm()}
     return render(request, 'user_intake/test.html', context)
 
+@login_required
 def student_intake(request):
     context = {'form': GraderForm()}
     logger = logging.getLogger('django')
@@ -103,13 +98,11 @@ def student_intake(request):
         if form.is_valid():
             user = request.user
             id = form.cleaned_data.get('id')
-            email = request.POST['name_num'] + '@buckeyemail.osu.edu'
             first_name = form.cleaned_data.get('first_name')
             last_name = form.cleaned_data.get('last_name')
             in_columbus = request.POST['in_columbus']
             previous_grader = request.POST['previous_grader']
-            previous_classes = 0
-            grader = Student(id=id, user=user, email=email, first_name=first_name, last_name=last_name, in_columbus=in_columbus, previous_grader=previous_grader, previous_classes=previous_classes)
+            grader = Student(id=id, user=user, first_name=first_name, last_name=last_name, in_columbus=in_columbus, previous_grader=previous_grader)
             logger.info('saving!')
             grader.save()
             # form.save()
@@ -123,8 +116,3 @@ def student_intake(request):
     logger.info('This is students in DB')
     logger.info(students)
     return render(request, 'user_intake/application.html', context)
-
-def create_course(request):
-    if request.method == 'POST':
-        pass
-    return ren
