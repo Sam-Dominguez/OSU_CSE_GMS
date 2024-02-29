@@ -94,7 +94,7 @@
             <!-- Sections subtable -->
             <tr class="sections-row" style="display: none;">
                 <td>
-                    <table class="table">
+                    <table class="table table-sm">
                         <thead>
                             <tr>
                                 <th>Section Number</th>
@@ -110,7 +110,7 @@
                         <tbody>
                             {% for section in sections %}
                                 {% if section.course_number.course_number == course.course_number %}
-                                <tr>
+                                <tr {% if section.num_graders_needed == 0 %} class="table-success" {% else %} class="table-danger" {% endif %}>
                                     <td>{{ section.section_number }}</td>
                                     <td>{{ section.instruction_mode }}</td>
                                     <td>{{ section.semester }}</td>

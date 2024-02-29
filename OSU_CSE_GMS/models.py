@@ -46,8 +46,8 @@ class Section(models.Model):
     instructor = models.ForeignKey(Instructor, on_delete=models.SET_DEFAULT, default=None, null=True)
     
     INSTRUCTION_MODES = [
-        ('SYNCHRNONOUS', 'SYNCHRNONOUS'),
-        ('ASYNCHRNONOUS', 'ASYNCHRNONOUS')
+        ('SYNCHRONOUS', 'SYNCHRONOUS'),
+        ('ASYNCHRONOUS', 'ASYNCHRONOUS')
     ]
     instruction_mode = models.CharField(max_length=13, choices=INSTRUCTION_MODES)
     
