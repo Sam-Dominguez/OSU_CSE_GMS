@@ -104,12 +104,23 @@
                                 <th>Days of Week</th>
                                 <th>Classroom</th>
                                 <th>Instructor</th>
+                                <th>Graders Needed</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for section in sections %}
-                            <tr>
-                            </tr>
+                                {% if section.course_number.course_number == course.course_number %}
+                                <tr>
+                                    <td>{{ section.section_number }}</td>
+                                    <td>{{ section.instruction_mode }}</td>
+                                    <td>{{ section.semester }}</td>
+                                    <td>{{ section.time }}</td>
+                                    <td>{{ section.days_of_week }}</td>
+                                    <td>{{ section.classroom }}</td>
+                                    <td>{{ section.instructor }}</td>
+                                    <td>{{ section.num_graders_needed }}</td>
+                                </tr>
+                                {% endif %}
                             {% endfor %}
                         </tbody>
                     </table>

@@ -24,8 +24,9 @@ def administrator(request):
             course = Course.objects.get(course_number=course_number)
             course.delete()
 
-    # Fetch all existing courses from the database
+    # Fetch all existing courses and section from the database
     courses = Course.objects.all()
+    sections = Section.objects.all()
 
     # Sort the courses by course_number
     sort_direction = 'asc'
@@ -41,6 +42,7 @@ def administrator(request):
     context = {
         'form': form,
         'courses': courses,
+        'sections': sections,
         'sort_direction': sort_direction,
     }
     
