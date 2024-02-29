@@ -55,6 +55,8 @@ class Section(models.Model):
     days_of_week = models.CharField(max_length=30, blank=True)
     classroom = models.CharField(max_length=30, blank=True)
 
+    num_graders_needed = models.IntegerField(default=1)
+
     class Meta:
         unique_together = [['course_number', 'section_number', 'semester']]
 
