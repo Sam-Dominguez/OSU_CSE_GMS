@@ -2,10 +2,73 @@
 
 {% block title %}Home{% endblock %}
 
+{% block style %}
+<style>
+    #steps, h1 h2 h3 p {
+        color: white;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-{% if user.is_authenticated %}
-Hi {{ user.username }}!
-{% else %}
-<p>You are not logged in</p>
-{% endif %}
+<div class="main mt-3">
+    <div class="container text-start">
+        <div class="row justify-content-between">
+            <div class="col-6 my-auto">
+                <h1 class="display-1">Help Students.</h1>
+                <br>
+                <h1 class="display-1">Gain Experience.</h1>
+                <br>
+                <h1 class="display-1">Get Paid.</h1>
+            </div>
+            {% load static %}
+            <div class="col-6">
+                <img src="{% static 'grader_helping_student.jpg' %}" alt="" width="800" height="533" class="img-fluid rounded">
+            </div>
+            <div class="d-flex align-items-center justify-content-center mt-5">
+                <h2 class="display-5">Become a CSE grader at Ohio State in just a few steps!</h2>
+            </div>
+        </div>
+    </div>
+    
+    <div class="d-flex align-items-center justify-content-center my-3">
+        <form action="{% url 'student' %}">
+            <button type="submit" class="btn btn-primary btn-lg" style="background-color: #BB0000 !important;">Get Started</button>
+        </form>
+    </div>
+</div>
+
+<div class="container-fluid text-start" id="steps" style="background-color: #BB0000;">
+
+    <div class="row justify-content-center pt-5">
+        <div class="col-3 text-center my-auto">
+            <h3 class="display-1">1</h1>
+        </div>
+        <div class="col-3 text-center my-auto">
+            <h3 class="display-5">Create an account</h3>
+            <form action="{% url 'signup' %}">
+                <button type="submit" class="btn btn-outline-light btn-sm">Sign Up</button>
+            </form>
+        </div>
+    </div>
+    <div class="row justify-content-center py-5">
+        <div class="col-3 text-center my-auto">
+            <h3 class="display-1">2</h1>
+        </div>
+        <div class="col-3 text-center my-auto">
+            <h3 class="display-5">Complete the Grader Application Form</h3>
+            <p>Fill in basic information, classes you have received at least an A-, and any preferences.</p>
+        </div>
+    </div>
+    <div class="row justify-content-center pb-5">
+        <div class="col-3 text-center my-auto">
+            <h3 class="display-1">3</h1>
+        </div>
+        <div class="col-3 text-center my-auto">
+            <h3 class="display-5">Receive your grader assignment</h3>
+            <p>An algorithm will assign you based on course needs and your experience, completed coursework, and preferences.</p>
+        </div>
+    </div>
+</div>
+
 {% endblock %}

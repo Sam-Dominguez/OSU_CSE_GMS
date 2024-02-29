@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+{% block style %}
+<style>
+    /* Center the image horizontally */
+    .bottom-container {
+        position: absolute;
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .course-link {
+        text-decoration: none; /* Remove default underline */ 
+        color: inherit; /* Inherit the color from the parent */
+    }
+
+    .course-link:hover {
+        color: #6c757d; /* Change color on hover */
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<header class="bg-light p-3">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center">
+            <h1 class="m-0">Courses</h1>
+            <button id="add-course-btn" class="btn btn-primary" style="background-color: #BB0000 !important;">Add
+                Course</button>
+        </div>
+    </div>
+</header>
+
+<div class="container mt-4">
+    <a href="?sort={{ sort_direction }}" class="btn btn-outline-secondary">{{ sort_text }}</a>
+    <table class="table">
+        <tbody>
+            {% for course in courses %}
+            <tr>
+                <td>
+                    <a href="{% url 'course_detail' course.course_number %}" class="course-link">{{ course }}</a>
+                </td>
+                <td>
+                    <button class="btn btn-sm btn-outline-secondary manage-course-btn"
+                        data-course-number="{{ course.course_number }}" data-course-name="{{ course.name }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            class="bi bi-gear" viewBox="0 0 16 16">
+                            <path
+                                d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492M5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0" />
+                            <path
+                                d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115z" />
+                        </svg>
+                    </button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal for the course form -->
+<div class="modal" id="courseModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Course</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="course-form" action="" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="add_course" value="add_course">
+                    <div class="form-group">
+                        <label for="id_course_number">Course Number</label>
+                        <input type="text" class="form-control" id="id_course_number" name="course_number">
+                    </div>
+                    <div class="form-group">
+                        <label for="id_name">Name</label>
+                        <input type="text" class="form-control" id="id_name" name="name">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary"
+                            style="background-color: #BB0000 !important;">Add</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal to manage course -->
+<div class="modal" id="manageCourseModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Manage Course</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="manage-course-form" action="" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="update_course" value="update_course">
+                    <div class="form-group">
+                        <label for="id_course_number">Course Number</label>
+                        <input type="text" class="form-control" id="id_edit_course_number" name="course_number"
+                            readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="id_name">Name</label>
+                        <input type="text" class="form-control" id="id_edit_name" name="name">
+                    </div>
+                    <div class="modal-footer justify-content-between">
+                        <button type="button" class="btn btn-primary delete-button"
+                            data-course-number="{{ course.course_number }}" data-bs-toggle="modal"
+                            data-bs-target="#deleteCourseModal"
+                            style="background-color: #BB0000 !important;">Delete</button>
+                        <div>
+                            <button type="submit" class="btn btn-primary"
+                                style="background-color: #BB0000 !important;">Update</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal to delete course -->
+<div class="modal" id="deleteCourseModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Delete Course</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this course?</p>
+                <p><b>All sections of this course will also be deleted.</b></p>
+                <div class="modal-footer">
+                    <form id="delete-course-form" action="" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="delete_course" value="delete_course">
+                        <input type="hidden" name="course_number" id="delete-course-number"
+                            value="{{ course.course_number }}">
+                        <button type="submit" class="btn btn-primary" style="background-color: #BB0000 !important;"
+                            id="delete-btn">Delete</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Ensure DOM is fully loaded before executing the script
+    document.addEventListener('DOMContentLoaded', function () {
+        document.getElementById('add-course-btn').addEventListener('click', function () {
+            var addCourseModal = new bootstrap.Modal(document.getElementById('courseModal'));
+            addCourseModal.show();
+        });
+
+        document.getElementById('cancel-btn').addEventListener('click', function () {
+            var addCourseModal = new bootstrap.Modal(document.getElementById('courseModal'));
+            addCourseModal.hide();
+        });
+    });
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.manage-course-btn').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var courseNumber = btn.getAttribute('data-course-number');
+                var courseName = btn.getAttribute('data-course-name');
+
+                document.getElementById('id_edit_course_number').value = courseNumber;
+                document.getElementById('id_edit_name').value = courseName;
+                document.getElementById('delete-course-number').value = courseNumber;
+
+                var manageCourseModal = new bootstrap.Modal(document.getElementById('manageCourseModal'));
+                manageCourseModal.show();
+            });
+        });
+    });
+</script>
+
+{% load static %}
+<div class="bottom-container">
+    <img src="{% static 'osu_coe.png' %}" alt="" width="226.8" height="32.5" class="bottom-image">
+</div>
+
+{% endblock %}

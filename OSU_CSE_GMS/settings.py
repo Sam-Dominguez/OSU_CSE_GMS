@@ -38,8 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'OSU_CSE_GMS',
-    'bootstrap5',
-    'accounts',
+    'bootstrap5'
 ]
 
 LOGGING = {

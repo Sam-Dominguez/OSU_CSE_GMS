@@ -7,14 +7,16 @@
   {% load bootstrap5 %}
   {% bootstrap_css %}
   {% bootstrap_javascript %}
+  {% load static %}
+ <link rel="icon" href="{% static 'favicon.ico' %}" type="image/svg+xml">
+  {% block style %}
+  {% endblock %}
 </head>
 
 <body>
     {% include 'navbar.html' %}
-  <main>
     {% block content %}
     {% endblock %}
-  </main>
 </body>
 
 </html>
