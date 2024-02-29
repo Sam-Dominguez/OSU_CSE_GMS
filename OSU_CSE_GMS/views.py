@@ -8,7 +8,6 @@ def administrator(request):
     context = {}
     form = CourseForm()
     if request.method == 'POST':
-        print(request.POST)
         if 'add_course' in request.POST:
             form = CourseForm(request.POST)
             if form.is_valid():
