@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.views.defaults import server_error
 from .forms import CourseForm, SignUpForm
-from .models import Course, Student, Assignment, Section
+from .models import Course, Student, Assignment, Section, UnassignedStudent, Instructor
 
 def administrator(request):
     context = {}
@@ -81,6 +81,15 @@ def sign_up(request):
 
 @login_required
 def student(request):
+    if request.method == 'POST' and 'reject_assignment' in request.POST:
+        # Delete the assignment
+        assignment_id = request.POST['assignment_id']
+        Assignment.objects.filter(id=assignment_id).delete()
+
+        # Add the student back to the unassigned students table
+        student_id = request.POST['student_id']
+        UnassignedStudent(student_id_id=student_id).save()
+
     # Get signed in user
     user = request.user
 
@@ -104,19 +113,24 @@ def student(request):
             section_objects = Section.objects.filter(section_number=assignment.section_number_id)
             if section_objects.exists():
                 section = section_objects[0]
+
+                # Get instructor if they are in the database
+                instructor = Instructor.objects.filter(id=section.instructor_id)
+                instructor = instructor[0] if instructor.exists() else None
+
                 # get course related to section
                 course_object = Course.objects.filter(course_number=section.course_number_id)
 
                 if not course_object.exists():
                     print("Course does not exist")
                 else:
-                    assigned_sections.append((course_object[0], section))
-                
+                    assigned_sections.append((assignment.id, (course_object[0], section, instructor)))
 
         context = {
             'user' : user,
             'student' : student,
             'assignments' : dict(assigned_sections)
+
         }
 
         return render(request, 'student.html', context)

@@ -3,7 +3,6 @@ from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator
 
 class Student(models.Model):
-    id = models.IntegerField(primary_key=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE) # tie Django 'User' to OSU CSE 'user'
     email = models.CharField(max_length=30)
     first_name = models.CharField(max_length=30)
@@ -17,14 +16,12 @@ class Student(models.Model):
     graded_last_term = models.CharField(max_length=4, blank=True)
 
 class Administrator(models.Model):
-    id = models.IntegerField(primary_key=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE) # tie Django 'User' to OSU CSE 'user'
     email = models.CharField(max_length=30)
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
 
 class Instructor(models.Model):
-    id = models.IntegerField(primary_key=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE) # tie Django 'User' to OSU CSE 'user'
     email = models.CharField(max_length=30)
     first_name = models.CharField(max_length=30)

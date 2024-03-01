@@ -13,32 +13,74 @@
 
 <div class="container mt-4">
     <h1>Your Assignment:</h1>
-{% for course, section in assignments.items %}
+    {% for assignment_id, assignment_info in assignments.items %}
     <ul>
         <div id="accordion">
             <div class="card">
-              <div class="card-header" id="headingOne">
-                <h5 class="mb-0">
-                  <button class="btn btn-link" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                    {{ course }}
-                  </button>
-                </h5>
-              </div>
-          
-              <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-bs-parent="#accordion">
-                <div class="card-body">
-                    <ol>Section: {{ section.section_number}}</ol>
-                    <ol>Instruction Mode: {{ section.instruction_mode }}</ol>
-                    <ol>Days: {{ section.days_of_week }}</ol>
-                    <ol>Time: {{ section.time }}</ol>
-                    <ol>Classroom: {{ section.classroom }}</ol>
+                <div class="card-header" id="headingOne">
+                    <h5 class="mb-0">
+                        <button class="btn btn-link" data-bs-toggle="collapse" data-bs-target="#collapseOne"
+                            aria-expanded="true" aria-controls="collapseOne">
+                            {{ assignment_info.0 }}
+                        </button>
+                        <div class="float-end">
+                            <button type="button" class="btn btn-primary delete-button" data-bs-toggle="modal"
+                                data-bs-target="#rejectAssignmentModal" style="background-color: #BB0000 !important;">
+                                Reject
+                            </button>
+                        </div>
+
+                    </h5>
                 </div>
-              </div>
+                <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-bs-parent="#accordion">
+                    <div class="card-body">
+                        <ol>Instructor:
+                            {% if assignment_info.2 %}
+                                {{ assignment_info.2.first_name }}, {{ assignment_info.2.last_name }}
+                            {% else %}
+                                TBD
+                            {% endif %}
+                        </ol>
+                        <ol>Section: {{ assignment_info.1.section_number}}</ol>
+                        <ol>Instruction Mode: {{ assignment_info.1.instruction_mode }}</ol>
+                        <ol>Days: {{ assignment_info.1.days_of_week }}</ol>
+                        <ol>Time: {{ assignment_info.1.time }}</ol>
+                        <ol>Classroom: {{ assignment_info.1.classroom }}</ol>
+                    </div>
+                </div>
             </div>
     </ul>
 </div>
 
+<!-- Modal to reject assignment -->
+<div class="modal" id="rejectAssignmentModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Reject Assignment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to reject this assignment?</p>
+                <p><b>The system will attempt to reassign you, but you may not receive a new assignment.</b></p>
+                <div class="modal-footer">
+                    <form id="reject-assignment-form" action="" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="reject_assignment" value="reject_assignment">
+                        <input type="hidden" name="student_id" value="{{ student.id }}">
+                        <input type="hidden" name="assignment_id" id="assignment_id" value="{{ assignment_id }}">
+                        <button type="submit" class="btn btn-primary" style="background-color: #BB0000 !important;"
+                            id="delete-btn">Reject</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% empty %}
-<p>No assignment (yet). You will be notified if you are assigned a grader position.</p>
+<h5>No assignment (yet). You will be notified if you are assigned a grader position.</h5>
 {% endfor %}
+
 {% endblock %}
