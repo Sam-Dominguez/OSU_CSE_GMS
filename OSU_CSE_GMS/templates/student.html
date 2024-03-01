@@ -3,5 +3,42 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
-<h1>Hello Student</h1>
+<header class="bg-light p-3">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center">
+            <h1 class="m-0">Hi {{student.first_name}}!</h1>
+        </div>
+    </div>
+</header>
+
+<div class="container mt-4">
+    <h1>Your Assignment:</h1>
+{% for course, section in assignments.items %}
+    <ul>
+        <div id="accordion">
+            <div class="card">
+              <div class="card-header" id="headingOne">
+                <h5 class="mb-0">
+                  <button class="btn btn-link" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                    {{ course }}
+                  </button>
+                </h5>
+              </div>
+          
+              <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-bs-parent="#accordion">
+                <div class="card-body">
+                    <ol>Section: {{ section.section_number}}</ol>
+                    <ol>Instruction Mode: {{ section.instruction_mode }}</ol>
+                    <ol>Days: {{ section.days_of_week }}</ol>
+                    <ol>Time: {{ section.time }}</ol>
+                    <ol>Classroom: {{ section.classroom }}</ol>
+                </div>
+              </div>
+            </div>
+    </ul>
+</div>
+
+{% empty %}
+<p>No assignment (yet). You will be notified if you are assigned a grader position.</p>
+{% endfor %}
 {% endblock %}

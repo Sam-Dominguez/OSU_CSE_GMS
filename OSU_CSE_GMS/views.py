@@ -1,8 +1,9 @@
 from django.shortcuts import redirect, render
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.views.defaults import server_error
 from .forms import CourseForm, SignUpForm
-from .models import Course, Student
+from .models import Course, Student, Assignment, Section
 
 def administrator(request):
     context = {}
@@ -80,4 +81,42 @@ def sign_up(request):
 
 @login_required
 def student(request):
-    return render(request, 'student.html')
+    # Get signed in user
+    user = request.user
+
+    # Get associated student object
+    student = Student.objects.filter(user_id=user.id)
+
+    if not student.exists():
+        # Handle case where student and user are not propery linked
+        print(f'ERROR: The student linked with user id: {user.id} does not exist.')
+        return server_error(request, '500.html')
+    else:
+        student = student[0]
+        # Get assignment(s)
+        assignments_objects = Assignment.objects.filter(student_id_id=student.id, status='ACCEPTED')
+        assignments = list(assignments_objects)
+
+        assigned_sections = []
+
+        # Add the section objects related to the assignments to a list
+        for assignment in assignments:
+            section_objects = Section.objects.filter(section_number=assignment.section_number_id)
+            if section_objects.exists():
+                section = section_objects[0]
+                # get course related to section
+                course_object = Course.objects.filter(course_number=section.course_number_id)
+
+                if not course_object.exists():
+                    print("Course does not exist")
+                else:
+                    assigned_sections.append((course_object[0], section))
+                
+
+        context = {
+            'user' : user,
+            'student' : student,
+            'assignments' : dict(assigned_sections)
+        }
+
+        return render(request, 'student.html', context)
