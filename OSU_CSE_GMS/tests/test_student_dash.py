@@ -37,7 +37,7 @@ class AdministratorTests(TestCase):
         self.client.login(username='testStudent', password='12345')
 
         # Reject assignment
-        response = self.client.post(STUDENT_URL, data=assignment_rejection)
+        self.client.post(STUDENT_URL, data=assignment_rejection)
 
         # Check that the assignment was deleted
         assignment = Assignment.objects.filter(id='1')
