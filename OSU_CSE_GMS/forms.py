@@ -2,12 +2,22 @@ from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from django.core.validators import RegexValidator
-from .models import Course
+from .models import Course, Section, Instructor
 
 class CourseForm(forms.ModelForm):
     class Meta:
         model = Course
         fields = ['course_number', 'name']
+
+class SectionForm(forms.ModelForm):
+    class Meta:
+        model = Section
+        fields = ['course_number', 'section_number', 'semester', 'instructor', 'instruction_mode', 'time', 'days_of_week', 'classroom', 'num_graders_needed']
+    
+    def __init__(self, *args, **kwargs):
+        super(SectionForm, self).__init__(*args, **kwargs)
+        self.fields['instructor'].queryset = Instructor.objects.all()
+        self.fields['instructor'].required = False
 
 class SignUpForm(UserCreationForm):
     first_name = forms.CharField(label='First Name', max_length=30)

@@ -67,7 +67,7 @@
                 </td>
                 <td>
                     <!-- Add section button -->
-                    <button class="btn btn-sm btn-outline-secondary">
+                    <button class="btn btn-sm btn-outline-secondary add-section-btn" data-course-number="{{ course.course_number }}">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
                             <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
                           </svg>
@@ -98,12 +98,12 @@
                         <thead>
                             <tr>
                                 <th>Section Number</th>
-                                <th>Instruction Mode</th>
                                 <th>Semester</th>
+                                <th>Instructor</th>
+                                <th>Instruction Mode</th>
                                 <th>Time</th>
                                 <th>Days of Week</th>
                                 <th>Classroom</th>
-                                <th>Instructor</th>
                                 <th>Graders Needed</th>
                             </tr>
                         </thead>
@@ -112,12 +112,12 @@
                                 {% if section.course_number.course_number == course.course_number %}
                                 <tr {% if section.num_graders_needed == 0 %} class="table-success" {% else %} class="table-danger" {% endif %}>
                                     <td>{{ section.section_number }}</td>
-                                    <td>{{ section.instruction_mode }}</td>
                                     <td>{{ section.semester }}</td>
+                                    <td>{% if section.instructor is not none %}{{ section.instructor }}{% else %}TBD{% endif %}</td>
+                                    <td>{{ section.instruction_mode }}</td>
                                     <td>{{ section.time }}</td>
                                     <td>{{ section.days_of_week }}</td>
                                     <td>{{ section.classroom }}</td>
-                                    <td>{{ section.instructor }}</td>
                                     <td>{{ section.num_graders_needed }}</td>
                                 </tr>
                                 {% endif %}
@@ -176,8 +176,7 @@
                     <input type="hidden" name="update_course" value="update_course">
                     <div class="form-group">
                         <label for="id_course_number">Course Number</label>
-                        <input type="text" class="form-control" id="id_edit_course_number" name="course_number"
-                            readonly>
+                        <input type="text" class="form-control" id="id_edit_course_number" name="course_number"readonly>
                     </div>
                     <div class="form-group">
                         <label for="id_name">Name</label>
@@ -227,6 +226,73 @@
     </div>
 </div>
 
+<!-- Modal for the section form -->
+<div class="modal" id="sectionModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Section</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="section-form" action="" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="add_section" value="add_section">
+                    <div class="form-group">
+                        <label for="id_section_course_number">Course Number</label>
+                        <input type="text" class="form-control" id="id_section_course_number" name="course_number"readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="id_section_number">Section Number</label>
+                        <input type="text" class="form-control" id="id_section_number" name="section_number">
+                    </div>
+                    <div class="form-group">
+                        <label for="id_semester">Semester</label>
+                        <input type="text" class="form-control" id="id_semester" name="semester">
+                    </div>
+                    <div class="form-group">
+                        <label for="id_instructor">Instructor</label>
+                        <select class="form-control" id="id_instructor" name="instructor">
+                            <option value="" selected>TBD</option>
+                            {% for instructor in instructors %}
+                                <option value="{{ instructor.pk }}">{{ instructor.first_name }} {{ instructor.last_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="id_instruction_mode">Instruction Mode</label>
+                        <select class="form-control" id="id_instruction_mode" name="instruction_mode">
+                            <option value="SYNCHRONOUS">SYNCHRONOUS</option>
+                            <option value="ASYNCHRONOUS">ASYNCHRONOUS</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="id_time">Time</label>
+                        <input type="text" class="form-control" id="id_time" name="time">
+                    </div>
+                    <div class="form-group">
+                        <label for="id_days_of_week">Days of Week</label>
+                        <input type="text" class="form-control" id="id_days_of_week" name="days_of_week">
+                    </div>
+                    <div class="form-group">
+                        <label for="id_classroom">Classroom</label>
+                        <input type="text" class="form-control" id="id_classroom" name="classroom">
+                    </div>
+                    <div class="form-group">
+                        <label for="id_num_graders_needed">Graders Needed</label>
+                        <input type="text" class="form-control" id="id_num_graders_needed" name="num_graders_needed">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary"
+                            style="background-color: #BB0000 !important;">Add</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% load static %}
 <div class="bottom-container">
     <img src="{% static 'osu_coe.png' %}" alt="" width="226.8" height="32.5" class="bottom-image">
@@ -258,6 +324,16 @@
 
                 var manageCourseModal = new bootstrap.Modal(document.getElementById('manageCourseModal'));
                 manageCourseModal.show();
+            });
+        });
+    });
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.add-section-btn').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var courseNumber = btn.getAttribute('data-course-number');
+                document.getElementById('id_section_course_number').value = courseNumber;
+                var sectionModal = new bootstrap.Modal(document.getElementById('sectionModal'));
+                sectionModal.show();
             });
         });
     });
@@ -296,8 +372,8 @@
         });
 </script>
 
+<!-- Script for expanding course sections -->
 <script>
-    // JavaScript to handle show/expand sections button
     document.querySelectorAll('.show-sections-btn').forEach(function(btn) {
         btn.addEventListener('click', function() {
             var sectionsRow = this.closest('tr').nextElementSibling;

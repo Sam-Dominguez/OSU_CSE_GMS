@@ -2,31 +2,41 @@ from django.shortcuts import redirect, render
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.views.defaults import server_error
-from .forms import CourseForm, SignUpForm
+from .forms import CourseForm, SectionForm, SignUpForm
 from .models import Course, Student, Assignment, Section, UnassignedStudent, Instructor
 
 def administrator(request):
     context = {}
-    form = CourseForm()
+    course_form = CourseForm()
+    section_form = SectionForm()
     if request.method == 'POST':
         if 'add_course' in request.POST:
-            form = CourseForm(request.POST)
-            if form.is_valid():
-                form.save()
+            course_form = CourseForm(request.POST)
+            if course_form.is_valid():
+                course_form.save()
         elif 'update_course' in request.POST:
             course_number = request.POST['course_number']
             course = Course.objects.get(course_number=course_number)
-            form = CourseForm(request.POST, instance=course)
-            if form.is_valid():
-                form.save()
+            course_form = CourseForm(request.POST, instance=course)
+            if course_form.is_valid():
+                course_form.save()
         elif 'delete_course' in request.POST:
             course_number = request.POST['course_number']
             course = Course.objects.get(course_number=course_number)
             course.delete()
+        elif 'add_section' in request.POST:
+            section_form = SectionForm(request.POST)
+            print(request.POST)
+            if section_form.is_valid():
+                section_form.save()
+            else:
+                print(section_form.errors)
 
-    # Fetch all existing courses and section from the database
+
+    # Fetch all existing courses, sections, instructors from the database
     courses = Course.objects.all()
     sections = Section.objects.all()
+    instructors = Instructor.objects.all()
 
     # Sort the courses by course_number
     sort_direction = 'asc'
@@ -40,9 +50,11 @@ def administrator(request):
         courses = courses.order_by('-course_number')
 
     context = {
-        'form': form,
+        'course_form': course_form,
         'courses': courses,
+        'section_form': section_form,
         'sections': sections,
+        'instructors': instructors,
         'sort_direction': sort_direction,
     }
     
