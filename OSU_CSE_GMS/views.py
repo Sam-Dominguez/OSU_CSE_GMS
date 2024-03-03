@@ -8,7 +8,6 @@ from .models import Course, Student, Assignment, Section, UnassignedStudent, Ins
 def administrator(request):
     context = {}
     course_form = CourseForm()
-    section_form = SectionForm()
     if request.method == 'POST':
         if 'add_course' in request.POST:
             course_form = CourseForm(request.POST)
@@ -24,14 +23,6 @@ def administrator(request):
             course_number = request.POST['course_number']
             course = Course.objects.get(course_number=course_number)
             course.delete()
-        elif 'add_section' in request.POST:
-            section_form = SectionForm(request.POST)
-            print(request.POST)
-            if section_form.is_valid():
-                section_form.save()
-            else:
-                print(section_form.errors)
-
 
     # Fetch all existing courses, sections, instructors from the database
     courses = Course.objects.all()
@@ -52,7 +43,6 @@ def administrator(request):
     context = {
         'course_form': course_form,
         'courses': courses,
-        'section_form': section_form,
         'sections': sections,
         'instructors': instructors,
         'sort_direction': sort_direction,
@@ -61,9 +51,18 @@ def administrator(request):
     return render(request, 'administrator.html', context)
 
 def course_detail(request, course_number):
+    context = {}
+    section_form = SectionForm()
+    if request.method == 'POST':
+        if 'add_section' in request.POST:
+            section_form = SectionForm(request.POST)
+            if section_form.is_valid():
+                section_form.save()
+
     course = Course.objects.get(course_number=course_number)
     sections = Section.objects.filter(course_number=course_number)
     context = {
+        'section_form': section_form,
         'course': course,
         'sections': sections
     }
