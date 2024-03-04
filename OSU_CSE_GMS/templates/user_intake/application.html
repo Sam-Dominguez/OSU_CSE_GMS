@@ -27,6 +27,8 @@
 
         <form action="{% url 'application' %}" method="POST" enctype="mutipart/form-data">
             {% csrf_token %}
+            
+            <!-- display error message -->
             {% for message in messages %}
                 <p class="text-center text-danger font-weight-bold"> {{ message }} </p>
             {% endfor%}
