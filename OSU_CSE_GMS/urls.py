@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.views.generic.base import TemplateView
 from .views import administrator, course_detail, student, sign_up
+from .algo.algo import algoTest
 from django.views.generic import RedirectView
 
 urlpatterns = [
@@ -28,5 +29,6 @@ urlpatterns = [
     path('administrator/courses/', administrator, name='administrator'),
     path('administrator/courses/<str:course_number>/', course_detail, name='course_detail'),
     path('sign_up/', sign_up, name='signup'),
-    path('student/', student, name="student")
+    path('student/', student, name="student"),
+    path('algo/', algoTest, name="algoTest")
 ]
