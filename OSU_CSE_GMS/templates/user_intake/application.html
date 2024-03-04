@@ -20,13 +20,9 @@
         <form action="{% url 'application' %}" method="POST" enctype="mutipart/form-data">
             {% csrf_token %}
             {% for message in messages %}
-            <p class="text-center text-danger font-weight-bold"> {{ message }} </p>
+                <p class="text-center text-danger font-weight-bold"> {{ message }} </p>
             {% endfor%}
             <div class="container mt-4">
-                <div>
-                    <label for="id">Student ID: </label>
-                    <input id="id" type="text" name="id">
-            </div><br/>
 
                 {% comment %} <div class="first-name">
                     <label for="first_name">First name: </label>
@@ -67,7 +63,7 @@
                     </div>
                 </div> <br/>
 
-                <div class="previous-grader">
+                <div id="previous-grader">
                         <h6> Have you been hired as a CSE grader before?</h6>
                     <div>
                         <input class="grader-input" type="radio" name="previous_grader" id="graderYes" value=1>
@@ -82,7 +78,7 @@
                         </label>
                 </div> <br/>
 
-                <div class="recent-term-grader">
+                <div id="recent-term-grader">
                     <h6> Were you a CSE Grader last term? </h6>
                 <div>
                     <input class="grader-input" type="radio" name="recent_term_grader" id="graderYes" value=1>
@@ -97,32 +93,32 @@
                     </label>
             </div> <br/>
 
-                <div class="prev-class">
+                <div id="prev-class">
                     <h6>If yes: </h6>
                     <label for="prev-class"> Enter the course number of the class you graded. If there is more than one, enter the <em>ONE</em> that you would prefer to grade for : </label>
-                    <input id="prev-class" type="text" name="prev-class">
+                    <input id="prev-class" type="text" name="prev_class">
                 </div> <br/>
 
-                <div class="requested-classes">
+                <div id="requested-classes">
                     <label for="requested-classes"> Which CSE course(s) would you like to grade for this coming term (in order of preference)?
                         Just put the 4 digit number.<br/>
                         Remember that you should have earned an A/A- equivalent grade to be a grader for each course you list. <br/>
                     </label>
                     <h6>NOTE: If you are interested in being a grader for 2221 or 2231, please contact your instructor for a recommendation. :<h6/>
                     <div class="input-group container mt-4">
-                            <input id="preferred-class" type="text" name="preferred-class-1" placeholder="Course Number">
+                            <input id="preferred-class" type="text" name="preferred_class_1" placeholder="Course Number">
                             <span class="input-group-space"/>
-                            <input id="preferred-class-instr" type="text" name="preferred-class-instr-1" placeholder="Instructor Name.#">
+                            <input id="preferred-class-instr" type="text" name="preferred_class_instr_1" placeholder="Instructor Name.#">
                     </div>
                     <div class="input-group container mt-1">
-                        <input id="preferred-class" type="text" name="preferred-class-2" placeholder="Course Number">
+                        <input id="preferred-class" type="text" name="preferred_class_2" placeholder="Course Number">
                         <span class="input-group-space"/>
-                        <input id="preferred-class-instr" type="text" name="preferred-class-instr-2" placeholder="Instructor Name.#">
+                        <input id="preferred-class-instr" type="text" name="preferred_class_instr_2" placeholder="Instructor Name.#">
                 </div>
                 <div class="input-group container mt-1">
-                    <input id="preferred-class" type="text" name="preferred-class3" placeholder="Course Number">
+                    <input id="preferred-class" type="text" name="preferred_class_3" placeholder="Course Number">
                     <span class="input-group-space"/>
-                    <input id="preferred-class-instr" type="text" name="preferred-class-instr-3" placeholder="Instructor Name.#">
+                    <input id="preferred-class-instr" type="text" name="preferred_class_instr_3" placeholder="Instructor Name.#">
             </div>
                 </div> <br/>
                     <input class="btn-success" type="submit" value="Submit Application" >

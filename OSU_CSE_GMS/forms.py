@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from django.core.validators import RegexValidator
-from .models import Student, Course
+from .models import Student, Course, PreviousClassTaken
 
 class CourseForm(forms.ModelForm):
     class Meta:
@@ -22,17 +22,14 @@ class SignUpForm(UserCreationForm):
     class Meta:
         model = User
         fields = ('first_name', 'last_name', 'username', 'email', 'password1', 'password2')
-
-class GraderForm(forms.ModelForm):
-    class Meta:
-        model = Student
-        fields = ['id']
-    
-class ClassPrefForm(forms.ModelForm):
-    class Meta:
-        model = Course
-        fields = ['course_number', 'name']
-        widgets = {
-            'course_number': forms.NumberInput(attrs={'class': 'form-control'}),
-            'name': forms.TextInput(attrs={'class': 'form-control'})
-        }
+        
+class ApplicationForm(forms.Form):
+    in_columbus = forms.IntegerField()
+    previous_grader = forms.IntegerField()
+    prev_class = forms.CharField(max_length=4)
+    preferred_class_1 = forms.CharField(max_length=15)
+    preferred_class_instr_1 = forms.CharField(max_length=40)
+    preferred_class_2 = forms.CharField(max_length=15)
+    preferred_class_instr_2 = forms.CharField(max_length=40)
+    preferred_class_3 = forms.CharField(max_length=15)
+    preferred_class_instr_3 = forms.CharField(max_length=40)

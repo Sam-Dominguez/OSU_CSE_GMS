@@ -1,8 +1,8 @@
 from django.shortcuts import redirect, render
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from .forms import CourseForm, SignUpForm, GraderForm
-from .models import Course, Student
+from .forms import CourseForm, SignUpForm, ApplicationForm
+from .models import Course, Student, PreviousClassTaken, UnassignedStudent
 import logging
 
 def administrator(request):
@@ -83,36 +83,53 @@ def sign_up(request):
 def student(request):
     return render(request, 'student.html')
 
-def test(request):
-    context = {'form':GraderForm()}
-    return render(request, 'user_intake/test.html', context)
-
 @login_required
 def student_intake(request):
-    context = {'form': GraderForm()}
+    context = {'form': ApplicationForm()}
     logger = logging.getLogger('django')
     if request.method == 'POST':
-        form = GraderForm(request.POST)
-        logger.info('checking validity')
-        logger.info(form.errors)
+        form = ApplicationForm(request.POST)
+        
         if form.is_valid():
-            user = request.user
-            id = form.cleaned_data.get('id')
-            first_name = form.cleaned_data.get('first_name')
-            last_name = form.cleaned_data.get('last_name')
-            in_columbus = request.POST['in_columbus']
-            previous_grader = request.POST['previous_grader']
-            grader = Student(id=id, user=user, first_name=first_name, last_name=last_name, in_columbus=in_columbus, previous_grader=previous_grader)
-            logger.info('saving!')
-            grader.save()
-            # form.save()
+            
+            # Update student record in database
+            student = Student.objects.filter(user_id=request.user.id)
+            if student.exists():
+                student = student[0]
+                student.in_columbus = form.cleaned_data.get('in_columbus')
+                student.previous_grader = form.cleaned_data.get('previous_grader')
+                student.graded_last_term = form.cleaned_data.get('prev_class')
+                logger.info('updating student record')
+                student.save(update_fields=['in_columbus','previous_grader'])
+            else:
+                logger.error('Student does not exist in the database.')
+
+            # Add student course preferences to database
+            student = Student.objects.get(user_id=request.user)
+            course_num_1 = form.cleaned_data.get('preferred_class_1')
+            course_instr_1 = form.cleaned_data.get('preferred_class_instr_1')
+            course1 = Course.objects.get(course_number=course_num_1)
+            course_1_record = PreviousClassTaken(student_id=student, course_number=course1, instructor=course_instr_1, pref_num=1)
+            course_1_record.save()
+            course_num_2 = form.cleaned_data.get('preferred_class_2')
+            course_instr_2 = form.cleaned_data.get('preferred_class_instr_2')
+            course2 = Course.objects.get(course_number=course_num_2)
+            course_2 = PreviousClassTaken(student_id=student, course_number=course2, instructor=course_instr_2, pref_num=2)
+            course_2.save()
+            course_num_3 = form.cleaned_data.get('preferred_class_3')
+            course_instr_3 = form.cleaned_data.get('preferred_class_instr_3')
+            course3 = Course.objects.get(course_number=course_num_3)
+            course_3 = PreviousClassTaken(student_id=student, course_number=course3, instructor=course_instr_3, pref_num=3)
+            course_3.save()   
+            
+            # Add student to unassigned students
+            unassigned_student = UnassignedStudent(student_id=student)
+            unassigned_student.save()
+            
             return redirect('/thanks/')
         else:
-            context = {'messages': {"Form is invalid. Try again."}, 'form': GraderForm()}
+            context = {'messages': {"Form is incomplete. Try again."}, 'form': ApplicationForm()}
     else:
-        form = GraderForm()
+        form = ApplicationForm()
     
-    students = Student.objects.all()
-    logger.info('This is students in DB')
-    logger.info(students)
     return render(request, 'user_intake/application.html', context)
