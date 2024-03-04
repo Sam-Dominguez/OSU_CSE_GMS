@@ -19,6 +19,10 @@ Mac
 `git clone https://github.com/Sam-Dominguez/OSU-CSE-GMS.git`
 
 ## Install the requirements
+Windows
+`python -m pip install -r requirements.txt`
+
+Mac
 `pip install -r requirements.txt`
 
 ## Run the Migrations
