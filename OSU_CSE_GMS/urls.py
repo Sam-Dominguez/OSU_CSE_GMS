@@ -30,7 +30,7 @@ urlpatterns = [
     path('administrator/courses/<str:course_number>/', course_detail, name='course_detail'),
     path('sign_up/', sign_up, name='signup'),
     path('student/', student, name="student"),
-    path('algo/', algoTest, name="algoTest")
+    path('algo/', algoTest, name="algoTest"),
     path('student/', student, name="student"),
     path('application/', student_intake, name="application"),
     path('thanks/', TemplateView.as_view(template_name="thanks.html"), name="thanks"),
