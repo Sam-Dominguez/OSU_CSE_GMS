@@ -1,6 +1,14 @@
 {% extends "base.html" %}
 {% block style %}
     <style>
+        /* Center the image horizontally */
+        .bottom-container {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
         .input-group-space {
             padding-left: 5px;
             padding-right: 5px;
@@ -124,5 +132,9 @@
                     <input class="btn-success" type="submit" value="Submit Application" >
             </div>
         </form>
+        {% load static %}
+        <div class="bottom-container">
+            <img src="{% static 'osu_coe.png' %}" alt="" width="226.8" height="32.5" class="bottom-image">
+        </div>
 
 {% endblock %}

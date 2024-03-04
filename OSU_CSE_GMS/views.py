@@ -2,8 +2,8 @@ from django.shortcuts import redirect, render
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.views.defaults import server_error
-from .forms import CourseForm, SectionForm, SignUpForm
-from .models import Course, Student, Assignment, Section, UnassignedStudent, Instructor, PreviousClassTaken, ApplicationForm
+from .forms import CourseForm, SectionForm, SignUpForm, ApplicationForm
+from .models import Course, Student, Assignment, Section, UnassignedStudent, Instructor, PreviousClassTaken
 import logging
 
 def administrator(request):
