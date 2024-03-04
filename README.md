@@ -18,12 +18,8 @@ Mac
 ## Clone the Project
 `git clone https://github.com/Sam-Dominguez/OSU-CSE-GMS.git`
 
-## Install django
-Windows
-`py -m pip install Django`
-
-Mac
-`python -m pip install Django`
+## Install the requirements
+`pip install -r requirements.txt`
 
 ## Run the Migrations
 `python manage.py migrate && python manage.py migrate OSU_CSE_GMS`
