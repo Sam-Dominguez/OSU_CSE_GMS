@@ -2,30 +2,32 @@ from django.shortcuts import redirect, render
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.views.defaults import server_error
-from .forms import CourseForm, SignUpForm
+from .forms import CourseForm, SectionForm, SignUpForm
 from .models import Course, Student, Assignment, Section, UnassignedStudent, Instructor
 
 def administrator(request):
     context = {}
-    form = CourseForm()
+    course_form = CourseForm()
     if request.method == 'POST':
         if 'add_course' in request.POST:
-            form = CourseForm(request.POST)
-            if form.is_valid():
-                form.save()
+            course_form = CourseForm(request.POST)
+            if course_form.is_valid():
+                course_form.save()
         elif 'update_course' in request.POST:
             course_number = request.POST['course_number']
             course = Course.objects.get(course_number=course_number)
-            form = CourseForm(request.POST, instance=course)
-            if form.is_valid():
-                form.save()
+            course_form = CourseForm(request.POST, instance=course)
+            if course_form.is_valid():
+                course_form.save()
         elif 'delete_course' in request.POST:
             course_number = request.POST['course_number']
             course = Course.objects.get(course_number=course_number)
             course.delete()
 
-    # Fetch all existing courses from the database
+    # Fetch all existing courses, sections, instructors from the database
     courses = Course.objects.all()
+    sections = Section.objects.all()
+    instructors = Instructor.objects.all()
 
     # Sort the courses by course_number
     sort_direction = 'asc'
@@ -35,24 +37,38 @@ def administrator(request):
 
     if sort_direction == 'asc':
         courses = courses.order_by('course_number')
-        sort_text = 'Sorting (asc)'
     else:
         courses = courses.order_by('-course_number')
-        sort_text = 'Sorting (desc)'
+
+    # Query to get all courses that have at least one section that needs at least one grader
+    courses_needing_graders = Course.objects.filter(section__num_graders_needed__gt=0).distinct()
 
     context = {
-        'form': form,
+        'course_form': course_form,
         'courses': courses,
+        'sections': sections,
+        'instructors': instructors,
+        'courses_needing_graders': courses_needing_graders,
         'sort_direction': sort_direction,
-        'sort_text': sort_text
     }
     
     return render(request, 'administrator.html', context)
 
 def course_detail(request, course_number):
+    context = {}
+    section_form = SectionForm()
+    if request.method == 'POST':
+        if 'add_section' in request.POST:
+            section_form = SectionForm(request.POST)
+            if section_form.is_valid():
+                section_form.save()
+
     course = Course.objects.get(course_number=course_number)
+    sections = Section.objects.filter(course_number=course_number)
     context = {
-        'course': course
+        'section_form': section_form,
+        'course': course,
+        'sections': sections
     }
     return render(request, 'course_detail.html', context)
 
