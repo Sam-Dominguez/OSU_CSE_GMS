@@ -1,31 +1,34 @@
 from django.shortcuts import redirect, render
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from .forms import CourseForm, SignUpForm, ApplicationForm
-from .models import Course, Student, PreviousClassTaken, UnassignedStudent
+from django.views.defaults import server_error
+from .forms import CourseForm, SectionForm, SignUpForm
+from .models import Course, Student, Assignment, Section, UnassignedStudent, Instructor, PreviousClassTaken, ApplicationForm
 import logging
 
 def administrator(request):
     context = {}
-    form = CourseForm()
+    course_form = CourseForm()
     if request.method == 'POST':
         if 'add_course' in request.POST:
-            form = CourseForm(request.POST)
-            if form.is_valid():
-                form.save()
+            course_form = CourseForm(request.POST)
+            if course_form.is_valid():
+                course_form.save()
         elif 'update_course' in request.POST:
             course_number = request.POST['course_number']
             course = Course.objects.get(course_number=course_number)
-            form = CourseForm(request.POST, instance=course)
-            if form.is_valid():
-                form.save()
+            course_form = CourseForm(request.POST, instance=course)
+            if course_form.is_valid():
+                course_form.save()
         elif 'delete_course' in request.POST:
             course_number = request.POST['course_number']
             course = Course.objects.get(course_number=course_number)
             course.delete()
 
-    # Fetch all existing courses from the database
+    # Fetch all existing courses, sections, instructors from the database
     courses = Course.objects.all()
+    sections = Section.objects.all()
+    instructors = Instructor.objects.all()
 
     # Sort the courses by course_number
     sort_direction = 'asc'
@@ -35,24 +38,38 @@ def administrator(request):
 
     if sort_direction == 'asc':
         courses = courses.order_by('course_number')
-        sort_text = 'Sorting (asc)'
     else:
         courses = courses.order_by('-course_number')
-        sort_text = 'Sorting (desc)'
+
+    # Query to get all courses that have at least one section that needs at least one grader
+    courses_needing_graders = Course.objects.filter(section__num_graders_needed__gt=0).distinct()
 
     context = {
-        'form': form,
+        'course_form': course_form,
         'courses': courses,
+        'sections': sections,
+        'instructors': instructors,
+        'courses_needing_graders': courses_needing_graders,
         'sort_direction': sort_direction,
-        'sort_text': sort_text
     }
     
     return render(request, 'administrator.html', context)
 
 def course_detail(request, course_number):
+    context = {}
+    section_form = SectionForm()
+    if request.method == 'POST':
+        if 'add_section' in request.POST:
+            section_form = SectionForm(request.POST)
+            if section_form.is_valid():
+                section_form.save()
+
     course = Course.objects.get(course_number=course_number)
+    sections = Section.objects.filter(course_number=course_number)
     context = {
-        'course': course
+        'section_form': section_form,
+        'course': course,
+        'sections': sections
     }
     return render(request, 'course_detail.html', context)
 
@@ -81,7 +98,59 @@ def sign_up(request):
 
 @login_required
 def student(request):
-    return render(request, 'student.html')
+    if request.method == 'POST' and 'reject_assignment' in request.POST:
+        # Delete the assignment
+        assignment_id = request.POST['assignment_id']
+        Assignment.objects.filter(id=assignment_id).delete()
+
+        # Add the student back to the unassigned students table
+        student_id = request.POST['student_id']
+        UnassignedStudent(student_id_id=student_id).save()
+
+    # Get signed in user
+    user = request.user
+
+    # Get associated student object
+    student = Student.objects.filter(user_id=user.id)
+
+    if not student.exists():
+        # Handle case where student and user are not propery linked
+        print(f'ERROR: The student linked with user id: {user.id} does not exist.')
+        return server_error(request, '500.html')
+    
+    student = student[0]
+    # Get assignment(s)
+    assignments_objects = Assignment.objects.filter(student_id_id=student.id, status='ACCEPTED')
+    assignments = list(assignments_objects)
+
+    assigned_sections = []
+
+    # Add the section objects related to the assignments to a list
+    for assignment in assignments:
+        section_objects = Section.objects.filter(section_number=assignment.section_number_id)
+        if section_objects.exists():
+            section = section_objects[0]
+
+            # Get instructor if they are in the database
+            instructor = Instructor.objects.filter(id=section.instructor_id)
+            instructor = instructor[0] if instructor.exists() else None
+
+            # get course related to section
+            course_object = Course.objects.filter(course_number=section.course_number_id)
+
+            if not course_object.exists():
+                print("Course does not exist")
+            else:
+                assigned_sections.append((assignment.id, (course_object[0], section, instructor)))
+
+    context = {
+        'user' : user,
+        'student' : student,
+        'assignments' : dict(assigned_sections)
+
+    }
+
+    return render(request, 'student.html', context)
 
 @login_required
 def student_intake(request):
