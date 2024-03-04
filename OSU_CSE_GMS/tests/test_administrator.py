@@ -19,7 +19,7 @@ class AdministratorTests(TestCase):
         # Make POST
         response = self.client.post(ADMIN_FORM_URL, data=course_data, follow=True)
 
-        self.assertTrue(response.context['form'].is_valid())
+        self.assertTrue(response.context['course_form'].is_valid())
 
         # Assert the number of courses in the DB increased by 1
         num_courses_after = Course.objects.all().count()
@@ -46,7 +46,7 @@ class AdministratorTests(TestCase):
         response = self.client.post(ADMIN_FORM_URL, data=course_data, follow=True)
 
         # Verify the course name was changed
-        self.assertTrue(response.context['form'].is_valid())        
+        self.assertTrue(response.context['course_form'].is_valid())        
         course = Course.objects.get(course_number='2221')
 
         self.assertEqual(course.course_number, '2221')
