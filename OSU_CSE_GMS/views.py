@@ -40,11 +40,15 @@ def administrator(request):
     else:
         courses = courses.order_by('-course_number')
 
+    # Query to get all courses that have at least one section that needs at least one grader
+    courses_needing_graders = Course.objects.filter(section__num_graders_needed__gt=0).distinct()
+
     context = {
         'course_form': course_form,
         'courses': courses,
         'sections': sections,
         'instructors': instructors,
+        'courses_needing_graders': courses_needing_graders,
         'sort_direction': sort_direction,
     }
     
