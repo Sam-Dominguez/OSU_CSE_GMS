@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        {% load bootstrap5 %}
+        {% bootstrap_css %}
+        {% bootstrap_javascript %}
+
+        <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <style>
+                /* Center the image horizontally */
+                .bottom-container {
+                    position: absolute;
+                    bottom: 10px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                }
+            </style>
+    </head>
+
+    <body>
+        {% include 'navbar.html' %}
+        {% csrf_token %}
+        <div class='container'>
+            <h3>Thank you for submitting an application to be a grader!</h3>
+            Your application has been submitted to our system.
+        <div>
+    </body>
+
+</html>

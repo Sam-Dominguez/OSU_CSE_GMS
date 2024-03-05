@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% block style %}
+    <style>
+        /* Center the image horizontally */
+        .bottom-container {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .input-group-space {
+            padding-left: 5px;
+            padding-right: 5px;
+        }
+    </style>
+{% endblock %}
+
+{%block content %}
+<header class="bg-light p-3">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center">
+            <h1 class="m-0">Grader Application Form</h1>
+        </div>
+    </div>
+</header>
+
+        <form action="{% url 'application' %}" method="POST" enctype="mutipart/form-data">
+            {% csrf_token %}
+            
+            <!-- display error message -->
+            {% for message in messages %}
+                <p class="text-center text-danger font-weight-bold"> {{ message }} </p>
+            {% endfor%}
+            <div class="container mt-4">
+
+                {% comment %} <div class="first-name">
+                    <label for="first_name">First name: </label>
+                    <input id="first_name" type="text" name="first_name">
+                </div> <br/>
+
+                <div class="last-name">
+                    <label for="last_name">Last name: </label>
+                    <input id="last_name" type="text" name="last_name">
+                </div> <br/>
+
+                <div class="name-num">
+                    <label for="name_num">Specify your lastname.# only. Do not put the @ portion (ex. reeves.92).: </label>
+                    <input id="name_num" type="text" name="name_num">
+                </div> <br/> {% endcomment %}
+
+                <div>
+                    <div>
+                        <div>
+                            <h6> What is your location for this term?</h6>
+                        </div>
+                        <input class="location-input" type="radio" name="in_columbus" id="locationColumbus" value=1>
+                        <label class="location-label" for="locationColumbus">
+                            Columbus, OH
+                        </label>
+                    </div>
+                    <div>
+                        <input class="location-input" type="radio" name="in_columbus" id="locationUS" value=0>
+                        <label class="location-label" for="locationUS">
+                            In the US, but not in Columbus, OH 
+                        </label>
+                    </div>
+                    <div>
+                        <input class="location-input" type="radio" name="in_columbus" id="locationOutside" value=0>
+                        <label class="location-label" for="locationOutside">
+                            Outside the US  
+                        </label>
+                    </div>
+                </div> <br/>
+
+                <div id="previous-grader">
+                        <h6> Have you been hired as a CSE grader before?</h6>
+                    <div>
+                        <input class="grader-input" type="radio" name="previous_grader" id="graderYes" value=1>
+                        <label class="grader-label" for="graderYes">
+                            Yes 
+                        </label>
+                    </div>
+                    <div>
+                        <input class="grader-input" type="radio" name="previous_grader" id="graderNo" value=0>
+                        <label class="grader-label" for="graderNo">
+                            No 
+                        </label>
+                </div> <br/>
+
+                <div id="recent-term-grader">
+                    <h6> Were you a CSE Grader last term? </h6>
+                <div>
+                    <input class="grader-input" type="radio" name="recent_term_grader" id="graderYes" value=1>
+                    <label class="grader-label" for="graderYes">
+                        Yes 
+                    </label>
+                </div>
+                <div>
+                    <input class="grader-input" type="radio" name="recent_term_grader" id="graderNo" value=0>
+                    <label class="grader-label" for="graderNo">
+                        No 
+                    </label>
+            </div> <br/>
+
+                <div id="prev-class">
+                    <h6>If yes: </h6>
+                    <label for="prev-class"> Enter the course number of the class you graded. If there is more than one, enter the <em>ONE</em> that you would prefer to grade for : </label>
+                    <input id="prev-class" type="text" name="prev_class">
+                </div> <br/>
+
+                <div id="requested-classes">
+                    <label for="requested-classes"> Which CSE course(s) would you like to grade for this coming term (in order of preference)?
+                        Just put the 4 digit number.<br/>
+                        Remember that you should have earned an A/A- equivalent grade to be a grader for each course you list. <br/>
+                    </label>
+                    <h6>NOTE: If you are interested in being a grader for 2221 or 2231, please contact your instructor for a recommendation. :<h6/>
+                    <div class="input-group container mt-4">
+                            <input id="preferred-class" type="text" name="preferred_class_1" placeholder="Course Number">
+                            <span class="input-group-space"/>
+                            <input id="preferred-class-instr" type="text" name="preferred_class_instr_1" placeholder="Instructor Name.#">
+                    </div>
+                    <div class="input-group container mt-1">
+                        <input id="preferred-class" type="text" name="preferred_class_2" placeholder="Course Number">
+                        <span class="input-group-space"/>
+                        <input id="preferred-class-instr" type="text" name="preferred_class_instr_2" placeholder="Instructor Name.#">
+                </div>
+                <div class="input-group container mt-1">
+                    <input id="preferred-class" type="text" name="preferred_class_3" placeholder="Course Number">
+                    <span class="input-group-space"/>
+                    <input id="preferred-class-instr" type="text" name="preferred_class_instr_3" placeholder="Instructor Name.#">
+            </div>
+                </div> <br/>
+                    <input class="btn btn-primary btn-lg" style="background-color: #BB0000 !important;" type="submit" value="Submit Application" >
+            </div>
+        </form>
+        {% load static %}
+        <div class="bottom-container">
+            <img src="{% static 'osu_coe.png' %}" alt="" width="226.8" height="32.5" class="bottom-image">
+        </div>
+
+{% endblock %}
