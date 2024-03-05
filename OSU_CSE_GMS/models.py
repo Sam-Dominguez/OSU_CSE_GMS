@@ -27,6 +27,16 @@ class Instructor(models.Model):
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
 
+    def __str__(self):
+        if self.first_name and self.last_name:
+            return self.last_name + ', ' + self.first_name
+        elif self.last_name:
+            return self.last_name
+        elif self.first_name:
+            return self.first_name
+        else:
+            return 'No name available'
+
 class Course(models.Model):
     course_number = models.CharField(primary_key=True, max_length=15)
     name = models.CharField(max_length=200)

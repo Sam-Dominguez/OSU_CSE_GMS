@@ -99,6 +99,7 @@ def sign_up(request):
 
 @login_required
 def student(request):
+
     if request.method == 'POST' and 'reject_assignment' in request.POST:
         # Delete the assignment
         assignment_id = request.POST['assignment_id']
@@ -128,7 +129,8 @@ def student(request):
 
     # Add the section objects related to the assignments to a list
     for assignment in assignments:
-        section_objects = Section.objects.filter(section_number=assignment.section_number_id)
+        section_objects = Section.objects.filter(id=assignment.section_number_id)
+
         if section_objects.exists():
             section = section_objects[0]
 
@@ -215,7 +217,7 @@ def student_intake(request):
             unassigned_student = UnassignedStudent(student_id=student)
             unassigned_student.save()
             
-            # massAssign('SP2024')
+            massAssign('SP2024')
             
             return redirect('/thanks/')
         else:
