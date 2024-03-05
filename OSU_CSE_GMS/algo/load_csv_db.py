@@ -1,4 +1,5 @@
 import csv
+from datetime import timezone, datetime
 from ..models import *
 # load all courses from csv with columns (Courses, Course Title)
 def clearDB():
@@ -44,7 +45,7 @@ def loadInstructors(filePath):
             # csv file data is messed up so 
 
             if not i: 
-                u = User.objects.create_user(username=mName, email=mEmail, password='password123')
+                u = User.objects.create_user(username=mName, email=mEmail, password='password123', last_login=datetime.now(timezone.utc))
                 u.save()
                 newI = Instructor.objects.create(user = u, email = mEmail ,last_name = mName)
                 

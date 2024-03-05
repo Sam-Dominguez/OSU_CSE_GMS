@@ -44,12 +44,28 @@ INSTALLED_APPS = [
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "[{levelname}] {asctime} {filename}#{funcName}: {message}",
+            "style": "{",
+        }
+    },
+    # Log Out to both a file and console
     "handlers": {
-        "console": {"class": "logging.StreamHandler"},
+        "console": {
+            "class": "logging.StreamHandler", 
+            "formatter": "verbose"
+        },
+        "logfile": {
+            "class": "logging.FileHandler",
+            "filename" : "main.log",
+            "formatter": "verbose",
+            "mode": "w" # Overwrite the file on server restart
+        },
     },
     "loggers": {
         "django": {
-            "handlers": ["console"],
+            "handlers": ["console", "logfile"],
             "level": "INFO",
         },
     }

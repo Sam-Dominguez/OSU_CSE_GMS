@@ -4,7 +4,7 @@ from OSU_CSE_GMS.models import Student, UnassignedStudent, Assignment, Course, S
 
 STUDENT_URL = '/student/'
 
-class AdministratorTests(TestCase):
+class StudentDashboard(TestCase):
 
     def setUp(self):
         user_instructor = User.objects.create_user(username='testInstructor', password='12345')
