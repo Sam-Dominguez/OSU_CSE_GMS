@@ -8,6 +8,9 @@ from django.db.models import IntegerField
 from django.db.models.functions import Cast
 import os
 import os.path
+import logging
+
+LOGGER = logging.getLogger('django')
 
 prevclasses = ['2221','2222','2421','2432','3521','3461','3231','3232','99999','0000','9','22']
 def algoTest(request):
@@ -34,6 +37,8 @@ def algoTest(request):
 # algorithm to assign graders in mass/batches
 def massAssign(assignSemester):
 
+    LOGGER.info("~~BEGINNING MASS ASSIGN~~")
+
     # get all courses and sort in descending order so 5911 gets assigned first 
     courses = Course.objects.annotate(course_number_int=Cast('course_number', IntegerField()))
     courses = courses.order_by('-course_number_int')
@@ -52,6 +57,7 @@ def massAssign(assignSemester):
             if validStudents:
                 selectFromPriority(sect,validStudents)
             
+    LOGGER.info("~~ENDING MASS ASSIGN~~")
 
 # select students to assign for a section
 def SelectStuFromSection(sec, stu ):
@@ -65,7 +71,18 @@ def SelectStuFromSection(sec, stu ):
             if  us and not assigned:
                 a = Assignment(student_id = s.student_id, section_number = sec, status = 'PENDING')
                 a.save()
-                us.delete()
+
+                if not a.pk:
+                    LOGGER.error(f"Failed to create assignment with student id: {s.student_id.id} and section_number {sec.id}")
+                else:
+                    LOGGER.info(f"Created assignment with id: {a.pk} - Assigned Student Id: {s.student_id.id} to section_number id: {sec.id}")
+
+                status_code = us.delete()[0]
+                if status_code == 0:
+                    LOGGER.error(f'Failed to delete unassigned student with student id: {s.student_id.id}')
+                else:
+                    LOGGER.info(f'Successfully deleted unassigned student with student id: {s.student_id.id}')
+
                 sec.num_graders_needed -= 1
         else:
             break

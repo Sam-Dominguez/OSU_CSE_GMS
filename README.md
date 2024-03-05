@@ -36,7 +36,7 @@ Each time you revist the project:
 4. Run the server: `python manage.py runserver`
 
 # Before Commit
-1. Run the test cases: `python manage.py test OSU_CSE_GMS` and ensure all pass
+1. Run the test cases: `python manage.py test` and ensure all pass
 
 # Database Commands
 
