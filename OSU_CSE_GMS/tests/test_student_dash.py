@@ -36,6 +36,10 @@ class StudentDashboard(TestCase):
         # Login Student
         self.client.login(username='testStudent', password='12345')
 
+        # Get initial value of num_graders_needed
+        section = Section.objects.get(id='1')
+        num_graders_needed = section.num_graders_needed
+
         # Reject assignment
         self.client.post(STUDENT_URL, data=assignment_rejection)
 
@@ -50,3 +54,9 @@ class StudentDashboard(TestCase):
         unassigned_student_entry = unassigned_student[0]
 
         self.assertEqual(unassigned_student_entry.student_id_id, 1)
+
+        # Check that the num_graders_needed was incremented
+        updated_section = Section.objects.get(id='1')
+        updated_num_graders_needed = updated_section.num_graders_needed
+        
+        self.assertEqual(updated_num_graders_needed, num_graders_needed + 1)
