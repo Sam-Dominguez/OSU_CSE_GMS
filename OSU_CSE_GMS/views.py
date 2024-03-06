@@ -226,12 +226,9 @@ def student_intake(request):
                 course1 = Course.objects.filter(course_number=course_num_1)
                 
                 if course1.exists():
-                    LOGGER.info('course is in the db')
                     course1 = course1[0]
                     course_1_record = PreviousClassTaken(student_id=student, course_number=course1, instructor=course_instr_1, pref_num=1)
-                    LOGGER.info('SAVING COURSE 1')
                     course_1_record.save()
-                    LOGGER.info('COURSE 1 SAVED')
                 
                 course_num_2 = form.cleaned_data.get('preferred_class_2')
                 course_instr_2 = form.cleaned_data.get('preferred_class_instr_2')

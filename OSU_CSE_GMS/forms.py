@@ -36,7 +36,7 @@ class SignUpForm(UserCreationForm):
 class ApplicationForm(forms.Form):
     in_columbus = forms.IntegerField()
     previous_grader = forms.IntegerField()
-    prev_class = forms.CharField(max_length=4)
+    prev_class = forms.CharField(max_length=4, required=False)
     preferred_class_1 = forms.CharField(max_length=15)
     preferred_class_instr_1 = forms.CharField(max_length=40, required=False)
     preferred_class_2 = forms.CharField(max_length=15, required=False)
