@@ -116,12 +116,18 @@ def sign_up(request):
 
 @login_required
 def student(request):
-
     if request.method == 'POST' and 'reject_assignment' in request.POST:
         LOGGER.info('Rejecting Assignment...')
-        # Delete the assignment
+        
+        # Increment num_graders_needed for the section
         assignment_id = request.POST['assignment_id']
+        assignment = Assignment.objects.get(id=assignment_id)
+        section = Section.objects.get(id=assignment.section_number_id)
+        section.num_graders_needed += 1
+        section.save(update_fields=['num_graders_needed'])
+        LOGGER.info(f'Incremented num_graders_needed for section with id: {section.id}')
 
+        # Delete the assignment
         status_code = Assignment.objects.filter(id=assignment_id).delete()[0]
         if status_code == 0:
             LOGGER.error(f'Failed to delete assignment with id: {assignment_id}')
