@@ -20,6 +20,7 @@ from django.views.generic.base import TemplateView
 from .views import administrator, course_detail, student, sign_up, student_intake
 from .algo.algo import algoTest
 from django.views.generic import RedirectView
+import logging
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -35,3 +36,8 @@ urlpatterns = [
     path('application/', student_intake, name="application"),
     path('thanks/', TemplateView.as_view(template_name="thanks.html"), name="thanks"),
 ]
+
+logger = logging.getLogger('django')
+
+# Code to only run on server restart, allows logs to identify sessions
+logger.info("\nSTARTING SERVER\n")
