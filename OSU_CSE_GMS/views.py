@@ -8,6 +8,7 @@ import logging
 from .algo.algo import massAssign
 
 LOGGER = logging.getLogger('django')
+REJECTION_LOGGER = logging.getLogger('rejection_reason_logging')
 
 def administrator(request):
     context = {}
@@ -118,6 +119,10 @@ def sign_up(request):
 def student(request):
     if request.method == 'POST' and 'reject_assignment' in request.POST:
         LOGGER.info('Rejecting Assignment...')
+        LOGGER.info(request.POST)
+
+        # Process rejection reason
+        reason = request.POST['rejection_reason']
         
         # Increment num_graders_needed for the section
         assignment_id = request.POST['assignment_id']
@@ -134,14 +139,22 @@ def student(request):
         else:
             LOGGER.info(f'Successfully deleted assignment with id: {assignment_id}')
 
-        # Add the student back to the unassigned students table
         student_id = request.POST['student_id']
-        new_unassigned_student = UnassignedStudent.objects.create(student_id_id=student_id)
-        if not new_unassigned_student.pk:
-            LOGGER.error(f'Failed to save new unassigned student with student id: {student_id}')
-        else:
-            LOGGER.info(f'Successfully saved new unassigned student with student id: {student_id}')
+        if reason != 'dont-reassign':
+            rejection_reason = request.POST['other_reason']
 
+            # Log reason for rejecting
+            rejection_reason_message = rejection_reason if rejection_reason else 'No Reason Given'
+            REJECTION_LOGGER.info(f'Student Id {student_id} rejected {section.course_number} with {section.instructor} because: {rejection_reason_message}')
+
+            # Add the student back to the unassigned students table
+            new_unassigned_student = UnassignedStudent.objects.create(student_id_id=student_id)
+            if not new_unassigned_student.pk:
+                LOGGER.error(f'Failed to save new unassigned student with student id: {student_id}')
+            else:
+                LOGGER.info(f'Successfully saved new unassigned student with student id: {student_id}')
+        else:
+            LOGGER.info(f'Not adding student id {student_id} back to unassigned students table, student does not want to be a grader anymore')
 
     # Get signed in user
     user = request.user

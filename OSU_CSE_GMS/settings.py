@@ -45,6 +45,10 @@ LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
     "formatters": {
+        "simple": {
+            "format": "{message}",
+            "style": "{",
+        },
         "verbose": {
             "format": "[{levelname}] {asctime} {filename}#{funcName}: {message}",
             "style": "{",
@@ -56,18 +60,26 @@ LOGGING = {
             "class": "logging.StreamHandler", 
             "formatter": "verbose"
         },
-        "logfile": {
+        "logfile_overwrite": {
             "class": "logging.FileHandler",
             "filename" : "main.log",
             "formatter": "verbose",
-            "mode": "w" # Overwrite the file on server restart
         },
+        "logfile_preserve": {
+            "class": "logging.FileHandler",
+            "filename" : "rejection_reasons.log",
+            "formatter": "simple",
+        }
     },
     "loggers": {
         "django": {
-            "handlers": ["console", "logfile"],
+            "handlers": ["console", "logfile_overwrite"],
             "level": "INFO",
         },
+        "rejection_reason_logging" : {
+            "handlers": ["logfile_preserve"],
+            "level": "INFO"
+        }
     }
 }
 
