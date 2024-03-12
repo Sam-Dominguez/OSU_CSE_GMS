@@ -3,11 +3,10 @@ from datetime import timezone, datetime
 from ..models import *
 # load all courses from csv with columns (Courses, Course Title)
 def clearDB():
-    # WARNING: CAN'T DELETE USERS or instructors. DONT CALL THIS FUNC!!
-
+    User.objects.all().delete()
+    Administrator.objects.all().delete()
     Section.objects.all().delete()
-    #Instructor.objects.all().delete()
-    #User.objects.all().delete()
+    Instructor.objects.all().delete()
     Student.objects.all().delete()
     UnassignedStudent.objects.all().delete()
     Course.objects.all().delete()
@@ -43,7 +42,7 @@ def loadInstructors(filePath):
             
             # create new instructor  if not present
             # csv file data is messed up so 
-
+            # WARNING, potential errors of duplicath auth.username. This occurs when all instructors are deleted but not the User for that instructor
             if not i: 
                 u = User.objects.create_user(username=mName, email=mEmail, password='password123', last_login=datetime.now(timezone.utc))
                 u.save()
@@ -68,7 +67,7 @@ def loadInstructors(filePath):
                     Course_sections[c].append(sec_number)
                     # create new section
                     newS = Section.objects.create(course_number = c, section_number = str(sec_number), semester = "SP2024",
-                                           instructor = instr, instruction_mode = 'SYNCHRNONOUS' , num_graders_needed = 2)
+                                           instructor = instr, instruction_mode = 'SYNCHRONOUS' , num_graders_needed = 2)
                     newS.save()
         #printInstruct()
         #printSections()
