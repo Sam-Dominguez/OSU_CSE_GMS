@@ -86,14 +86,13 @@ class SignUpTests(TestCase):
         self.assertFalse(response.context['form'].is_valid())
         self.assertFormError(response, 'form', 'email', BAD_EMAIL_ERROR)    
 
-    # CURRENTLY A FAILING TEST, MARKED IN DEFECT CHART, REMOVE THIS COMMENT AND UNCOMMENT TEST WHEN FIXED
-    # def test_form_rejects_missing_name_emails(self):
-    #     form_data = VALID_FORM_WITHOUT_EMAIL
-    #     form_data['email'] = '------.1@osu.edu'        
-    #     response = self.client.post(SIGNUP_FORM_URL, data=form_data)
+    def test_form_rejects_missing_name_emails(self):
+        form_data = VALID_FORM_WITHOUT_EMAIL
+        form_data['email'] = '------.1@osu.edu'        
+        response = self.client.post(SIGNUP_FORM_URL, data=form_data)
 
-    #     self.assertFalse(response.context['form'].is_valid())
-    #     self.assertFormError(response, 'form', 'email', BAD_EMAIL_ERROR)
+        self.assertFalse(response.context['form'].is_valid())
+        self.assertFormError(response, 'form', 'email', BAD_EMAIL_ERROR)
         
     def test_form_accepts_valid_osu_email(self):
         form_data = VALID_FORM_WITHOUT_EMAIL

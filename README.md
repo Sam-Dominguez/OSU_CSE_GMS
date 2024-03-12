@@ -18,12 +18,12 @@ Mac
 ## Clone the Project
 `git clone https://github.com/Sam-Dominguez/OSU-CSE-GMS.git`
 
-## Install django
+## Install the requirements
 Windows
-`py -m pip install Django`
+`python -m pip install -r requirements.txt`
 
 Mac
-`python -m pip install Django`
+`pip install -r requirements.txt`
 
 ## Run the Migrations
 `python manage.py migrate && python manage.py migrate OSU_CSE_GMS`
@@ -36,7 +36,7 @@ Each time you revist the project:
 4. Run the server: `python manage.py runserver`
 
 # Before Commit
-1. Run the test cases: `python manage.py test OSU_CSE_GMS` and ensure all pass
+1. Run the test cases: `python manage.py test` and ensure all pass
 
 # Database Commands
 

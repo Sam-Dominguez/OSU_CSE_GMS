@@ -41,6 +41,48 @@ INSTALLED_APPS = [
     'bootstrap5'
 ]
 
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "simple": {
+            "format": "{message}",
+            "style": "{",
+        },
+        "verbose": {
+            "format": "[{levelname}] {asctime} {filename}#{funcName}: {message}",
+            "style": "{",
+        }
+    },
+    # Log Out to both a file and console
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler", 
+            "formatter": "verbose"
+        },
+        "logfile_overwrite": {
+            "class": "logging.FileHandler",
+            "filename" : "main.log",
+            "formatter": "verbose",
+        },
+        "logfile_preserve": {
+            "class": "logging.FileHandler",
+            "filename" : "rejection_reasons.log",
+            "formatter": "simple",
+        }
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console", "logfile_overwrite"],
+            "level": "INFO",
+        },
+        "rejection_reason_logging" : {
+            "handlers": ["logfile_preserve"],
+            "level": "INFO"
+        }
+    }
+}
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

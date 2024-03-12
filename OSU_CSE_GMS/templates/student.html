@@ -36,7 +36,7 @@
                     <div class="card-body">
                         <ol>Instructor:
                             {% if assignment_info.2 %}
-                            {{ assignment_info.2.first_name }}, {{ assignment_info.2.last_name }}
+                            {{ assignment_info.2}}
                             {% else %}
                             TBD
                             {% endif %}
@@ -61,19 +61,30 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p>Are you sure you want to reject this assignment?</p>
-                <p><b>The system will attempt to reassign you, but you may not receive a new assignment.</b></p>
-                <div class="modal-footer">
-                    <form id="reject-assignment-form" action="" method="post">
-                        {% csrf_token %}
+                <h5>Are you sure you want to reject this assignment?</h5>
+                <p>The system will attempt to reassign you, but you may not receive a new assignment.</p>
+                <form id="reject-assignment-form" action="" method="post">
+                    {% csrf_token %}
+                    <h5>Reason for rejecting assignment:</h5>
+                    <p>Note: Selecting "I do not want to be a grader anymore" means the system will NOT reassign you.</p>
+                    <select class="form-select" aria-label="rejection reason select" id="rejection_reason" name="rejection_reason">
+                        <option value="dont-reassign">I do not want to be a grader anymore</option>
+                        <option value="bad-assignment">I dont like my assignment</option>
+                    </select>
+                    
+                    <p class="pt-2">If you selected "I dont like my assignment", please explain:</p>
+                    <div class="input-group">
+                        <textarea class="form-control" aria-label="With textarea" name="other_reason"></textarea>
+                    </div>
+                    <div class="modal-footer">
                         <input type="hidden" name="reject_assignment" value="reject_assignment">
                         <input type="hidden" name="student_id" value="{{ student.id }}">
                         <input type="hidden" name="assignment_id" id="assignment_id" value="{{ assignment_id }}">
                         <button type="submit" class="btn btn-primary" style="background-color: #BB0000 !important;"
                             id="delete-btn">Reject</button>
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    </form>
-                </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
