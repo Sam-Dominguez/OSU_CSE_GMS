@@ -59,7 +59,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('section_number', models.CharField(max_length=30)),
-                ('instruction_mode', models.CharField(choices=[('SYNCHRNONOUS', 'SYNCHRNONOUS'), ('ASYNCHRNONOUS', 'ASYNCHRNONOUS')], max_length=13)),
+                ('instruction_mode', models.CharField(choices=[('SYNCHRONOUS', 'SYNCHRONOUS'), ('ASYNCHRONOUS', 'ASYNCHRONOUS')], max_length=13)),
                 ('semester', models.CharField(max_length=6)),
                 ('time', models.CharField(blank=True, max_length=30)),
                 ('days_of_week', models.CharField(blank=True, max_length=30)),

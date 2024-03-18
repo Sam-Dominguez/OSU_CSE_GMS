@@ -68,7 +68,7 @@ def loadInstructors(filePath):
                     Course_sections[c].append(sec_number)
                     # create new section
                     newS = Section.objects.create(course_number = c, section_number = str(sec_number), semester = "SP2024",
-                                           instructor = instr, instruction_mode = 'SYNCHRNONOUS' , num_graders_needed = 2)
+                                           instructor = instr, instruction_mode = 'SYNCHRONOUS' , num_graders_needed = 2)
                     newS.save()
         #printInstruct()
         #printSections()

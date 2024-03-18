@@ -18,7 +18,7 @@ class StudentDashboard(TestCase):
 
         Course.objects.create(course_number='2221', name='Software 1: Software Components')
 
-        section = Section(section_number='10021', instruction_mode='SYNCHRNONOUS', semester='AU24', time='11:30-12:25', 
+        section = Section(section_number='10021', instruction_mode='SYNCHRONOUS', semester='AU24', time='11:30-12:25', 
                 days_of_week='MWF', classroom='Dreese Lab 300', course_number_id='2221', instructor_id=instructor.id)
         section.save()
 
