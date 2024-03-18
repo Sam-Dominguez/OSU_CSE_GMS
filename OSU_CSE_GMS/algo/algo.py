@@ -74,9 +74,9 @@ def retrievePrevClassAndSections(cour,assignSemester):
         # valid graders. In columbus = 1
         validUnassign = UnassignedStudent.objects.filter(student_id__in_columbus = 1 ).values_list('student_id',flat=True)
         # get all PrevClassTaken which relate to students unassigned and is for the current course
-        validStudents = PreviousClassTaken.objects.filter(course_number = cour.course_number, student_id__in=validUnassign)
+        validStudents = PreviousClassTaken.objects.filter(course_number = cour, student_id__in=validUnassign)
         # get all sections that need graders to assign for
-        sections = Section.objects.filter(course_number = cour.course_number, num_graders_needed__gt = 0,semester = assignSemester )
+        sections = Section.objects.filter(course_number = cour, num_graders_needed__gt = 0,semester = assignSemester )
         return validStudents , sections
 
 # select students to assign for a section
@@ -112,7 +112,7 @@ def SelectStuFromSection(sec, stu ):
 
 # Considers priority of preferences
 def selectFromPref(section, pClassTaken):
-    for i in range(3):
+    for i in range(1,4): # priority is 1,2, or 3.
         curPrio = pClassTaken.filter(pref_num = i) # only check for this prio
         section,curPrio = SelectStuFromSection(section,curPrio)
 
@@ -154,7 +154,7 @@ def selectFromPriority(section, pClassTaken,courseNum):
 #         if gradedLastTerm:
 #             if gradedSameCourse
 #                 if run through pref(1,2,3). :
-#                     checkInstructors
+#                     checkInstructors (instructors is actually checked before loop through sections)
 #                 else:
 #                     noInstructors
 #             else:
