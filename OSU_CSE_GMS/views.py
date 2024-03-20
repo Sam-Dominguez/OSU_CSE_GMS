@@ -73,13 +73,27 @@ def course_detail(request, course_number):
             section_form = SectionForm(request.POST)
             if section_form.is_valid():
                 section_form.save()
+        elif 'update_section' in request.POST:
+            section_number = request.POST['section_number']
+            LOGGER.info(f'Updating Section with section number: {section_number}')
+            section = Section.objects.get(section_number=section_number, course_number=course_number)
+            section_form = SectionForm(request.POST, instance=section)
+            if section_form.is_valid():
+                section_form.save()
+        elif 'delete_section' in request.POST:
+            section_number = request.POST['section_number']
+            LOGGER.info(f'Deleting Section with section number: {section_number}')
+            section = Section.objects.get(section_number=section_number, course_number=course_number)
+            section.delete()
 
     course = Course.objects.get(course_number=course_number)
     sections = Section.objects.filter(course_number=course_number)
+    instructors = Instructor.objects.all()
     context = {
         'section_form': section_form,
         'course': course,
-        'sections': sections
+        'sections': sections,
+        'instructors': instructors
     }
     return render(request, 'course_detail.html', context)
 
