@@ -1,6 +1,14 @@
 {% extends "base.html" %}
 {% block title %}Course Detail{% endblock %}
 {% block content %}
+<style>
+    .subtable th {
+        font-weight: normal;
+        font-style: italic;
+        /*background-color: #f2f2f2;*/
+    }
+</style>
+
 <header class="bg-light p-3">
     <div class="container">
         <div class="d-flex justify-content-between align-items-center">
@@ -46,25 +54,64 @@
                             <td>{{ section.num_graders_needed }}</td>
                             <td>
                                 <div class="btn-group">
-                                <!-- Show assignments button -->
-                                <button class="btn btn-sm btn-outline-secondary show-assignments-btn">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-expand" viewBox="0 0 16 16">
-                                        <path fill-rule="evenodd" d="M3.646 9.146a.5.5 0 0 1 .708 0L8 12.793l3.646-3.647a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 0-.708m0-2.292a.5.5 0 0 0 .708 0L8 3.207l3.646 3.647a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 0 0 0 .708"/>
-                                    </svg>
-                                </button>
-                                <!-- Manage section button -->
-                                <button class="btn btn-sm btn-outline-secondary manage-section-btn"
-                                    data-section-number="{{ section.section_number }}" data-semester="{{ section.semester }}" data-instructor="{{ section.instructor.pk }}"
-                                    data-instruction_mode="{{ section.instruction_mode }}" data-time="{{ section.time }}" data-days_of_week="{{ section.days_of_week }}"
-                                    data-classroom="{{ section.classroom }}" data-num_graders_needed="{{ section.num_graders_needed}}">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                        class="bi bi-gear" viewBox="0 0 16 16">
-                                        <path
-                                            d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492M5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0" />
-                                        <path
-                                            d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115z" />
-                                    </svg>
-                                </button>
+                                    <!-- Show assignments button -->
+                                    <button class="btn btn-sm btn-outline-secondary show-assignments-btn">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-expand" viewBox="0 0 16 16">
+                                            <path fill-rule="evenodd" d="M3.646 9.146a.5.5 0 0 1 .708 0L8 12.793l3.646-3.647a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 0-.708m0-2.292a.5.5 0 0 0 .708 0L8 3.207l3.646 3.647a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 0 0 0 .708"/>
+                                        </svg>
+                                    </button>
+                                    <!-- Manage section button -->
+                                    <button class="btn btn-sm btn-outline-secondary manage-section-btn"
+                                        data-section-number="{{ section.section_number }}" data-semester="{{ section.semester }}" data-instructor="{{ section.instructor.pk }}"
+                                        data-instruction_mode="{{ section.instruction_mode }}" data-time="{{ section.time }}" data-days_of_week="{{ section.days_of_week }}"
+                                        data-classroom="{{ section.classroom }}" data-num_graders_needed="{{ section.num_graders_needed}}">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                            class="bi bi-gear" viewBox="0 0 16 16">
+                                            <path
+                                                d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492M5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0" />
+                                            <path
+                                                d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115z" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <!-- Assignments subtable -->
+                        <tr class="assignments-row" style="display: none;">
+                            <td colspan="8">
+                                <div class="container mt-4">
+                                    <table class="table table-sm subtable" style="width: 100%">
+                                        <thead>
+                                            <tr>
+                                                <th>Student</th>
+                                                <th>Email</th>
+                                                <th>In Columbus?</th>
+                                                <th>Previous Grader?</th>
+                                                <th>Course Graded Last Term</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for assignment in assignments %}
+                                                {% if assignment.section_number.section_number == section.section_number %}
+                                                    {% with assignment.student_id as student %}
+                                                        <!--
+                                                        <tr {% if assignment.status == 'ACCEPTED' %} class="table-success"
+                                                        {% elif assignment.status == 'DECLINED' %} class="table-danger"
+                                                        {% elif assignment.status == 'PENDING' %} class="table-warning"
+                                                        {% endif %}>
+                                                        -->
+                                                        <tr class="table-secondary">
+                                                            <td>{{ student.last_name }}, {{ student.first_name }}</td>
+                                                            <td>{{ student.email }}</td>
+                                                            <td>{% if student.in_columbus == '1' %}Yes{% else %}No{% endif %}</td>
+                                                            <td>{% if student.previous_grader == '1' %}Yes{% else %}No{% endif %}</td>
+                                                            <td>{% if student.graded_last_term != '' %}{{ student.graded_last_term }}{% else %}N/A{% endif %}</td>
+                                                        </tr>
+                                                    {% endwith %}
+                                                {% endif %}
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
                                 </div>
                             </td>
                         </tr>
@@ -295,6 +342,75 @@
             }
         }
     }
+</script>
+
+<!-- Script for expanding assignments -->
+<script>
+    // Expand all assignments
+    /*
+    document.getElementById('toggleExpandAllBtn').addEventListener('click', function() {
+        var sectionsRows = document.querySelectorAll('.sections-row');
+        if (sectionsRows[0].style.display === 'none') {
+            sectionsRows.forEach(function(row) {
+                row.style.display = 'table-row';
+            });
+
+            //Change svg icon to collapse
+            var icon = document.querySelector('#expandContractIcon');
+            icon.setAttribute('class', 'bi bi-chevron-contract');
+            var path = document.querySelector('#expandContractIcon path');
+            path.setAttribute('d', 'M3.646 13.854a.5.5 0 0 0 .708 0L8 10.207l3.646 3.647a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 0 0 0 .708m0-11.708a.5.5 0 0 1 .708 0L8 5.793l3.646-3.647a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 0-.708');
+
+            // Change svg icon to collapse for individual sections
+            document.querySelectorAll('.show-sections-btn').forEach(function(btn) {
+                var icon = btn.querySelector('.bi');
+                icon.setAttribute('class', 'bi bi-chevron-contract');
+                var path = btn.querySelector('.bi path');
+                path.setAttribute('d', 'M3.646 13.854a.5.5 0 0 0 .708 0L8 10.207l3.646 3.647a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 0 0 0 .708m0-11.708a.5.5 0 0 1 .708 0L8 5.793l3.646-3.647a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 0-.708');
+            });
+        } else {
+            sectionsRows.forEach(function(row) {
+                row.style.display = 'none';
+            });
+            // Change svg icon to expand
+            var icon = document.querySelector('#expandContractIcon');
+            icon.setAttribute('class', 'bi bi-chevron-expand');
+            var path = document.querySelector('#expandContractIcon path');
+            path.setAttribute('d', 'M3.646 9.146a.5.5 0 0 1 .708 0L8 12.793l3.646-3.647a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 0-.708m0-2.292a.5.5 0 0 0 .708 0L8 3.207l3.646 3.647a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 0 0 0 .708');
+
+            // Change svg icon to expand for individual sections
+            document.querySelectorAll('.show-sections-btn').forEach(function(btn) {
+                var icon = btn.querySelector('.bi');
+                icon.setAttribute('class', 'bi bi-chevron-expand');
+                var path = btn.querySelector('.bi path');
+                path.setAttribute('d', 'M3.646 9.146a.5.5 0 0 1 .708 0L8 12.793l3.646-3.647a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 0-.708m0-2.292a.5.5 0 0 0 .708 0L8 3.207l3.646 3.647a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 0 0 0 .708');
+            });
+        }
+    });
+    */
+    
+
+    // Expand individual assignments
+    document.querySelectorAll('.show-assignments-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var assignmentsRow = this.closest('tr').nextElementSibling;
+            if (assignmentsRow.style.display === 'none') {
+                assignmentsRow.style.display = 'table-row';
+                // Change svg icon to collapse
+                var icon = this.querySelector('.bi');
+                icon.setAttribute('class', 'bi bi-chevron-contract');
+                var path = this.querySelector('.bi path');
+                path.setAttribute('d', 'M3.646 13.854a.5.5 0 0 0 .708 0L8 10.207l3.646 3.647a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 0 0 0 .708m0-11.708a.5.5 0 0 1 .708 0L8 5.793l3.646-3.647a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 0-.708');
+            } else {
+                assignmentsRow.style.display = 'none';
+                // Change svg icon to expand
+                var icon = this.querySelector('.bi');
+                icon.setAttribute('class', 'bi bi-chevron-expand');
+                var path = this.querySelector('.bi path');
+                path.setAttribute('d', 'M3.646 9.146a.5.5 0 0 1 .708 0L8 12.793l3.646-3.647a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 0-.708m0-2.292a.5.5 0 0 0 .708 0L8 3.207l3.646 3.647a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 0 0 0 .708');
+            }
+        });
+    });
 </script>
 
 {% endblock %}

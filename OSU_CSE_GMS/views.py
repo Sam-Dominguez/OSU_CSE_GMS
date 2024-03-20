@@ -89,11 +89,15 @@ def course_detail(request, course_number):
     course = Course.objects.get(course_number=course_number)
     sections = Section.objects.filter(course_number=course_number)
     instructors = Instructor.objects.all()
+    assignments = Assignment.objects.filter(section_number__course_number=course_number)
+    students = Student.objects.filter(assignment__in=assignments)
     context = {
         'section_form': section_form,
         'course': course,
         'sections': sections,
-        'instructors': instructors
+        'instructors': instructors,
+        'assignments': assignments,
+        'students': students
     }
     return render(request, 'course_detail.html', context)
 
