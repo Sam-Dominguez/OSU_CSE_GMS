@@ -382,45 +382,41 @@
 <!-- Script for filtering courses -->
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-    function hideAllSubtables() {
+        // Hide all subtables initially
         var subtables = document.querySelectorAll('.sections-row');
         subtables.forEach(function(subtable) {
             subtable.style.display = 'none';
         });
-    }
 
-    // Hide all subtables initially
-    hideAllSubtables();
-
-    // Function to show all courses
-    document.getElementById('showAllCourses').addEventListener('click', function(e) {
-        e.preventDefault();
-        var courseRows = document.querySelectorAll('.courses-row');
-        courseRows.forEach(function(row) {
-            row.style.display = 'table-row';
+        // Show all courses
+        document.getElementById('showAllCourses').addEventListener('click', function(e) {
+            e.preventDefault();
+            var courseRows = document.querySelectorAll('.courses-row');
+            courseRows.forEach(function(row) {
+                row.style.display = 'table-row';
+            });
         });
-    });
 
-    // Function to show only courses needing graders
-    document.getElementById('showCoursesNeedingGraders').addEventListener('click', function(e) {
-        e.preventDefault();
-        var courseRows = document.querySelectorAll('.courses-row');
-        courseRows.forEach(function(row) {
-            row.style.display = 'none';
-            var sections = row.nextElementSibling.querySelector('tbody').querySelectorAll('tr');
-            var hasGradersNeeded = false;
-            sections.forEach(function(section) {
-                if (section.classList.contains('table-danger')) { // If section needs graders
-                    hasGradersNeeded = true;
-                    return;
+        // Show only courses needing graders
+        document.getElementById('showCoursesNeedingGraders').addEventListener('click', function(e) {
+            e.preventDefault();
+            var courseRows = document.querySelectorAll('.courses-row');
+            courseRows.forEach(function(row) {
+                row.style.display = 'none';
+                var sections = row.nextElementSibling.querySelector('tbody').querySelectorAll('tr');
+                var hasGradersNeeded = false;
+                sections.forEach(function(section) {
+                    if (section.classList.contains('table-danger')) { // If section needs graders
+                        hasGradersNeeded = true;
+                        return;
+                    }
+                });
+                if (hasGradersNeeded) {
+                    row.style.display = 'table-row';
                 }
             });
-            if (hasGradersNeeded) {
-                row.style.display = 'table-row';
-            }
         });
     });
-});
 </script>
 
 {% endblock %}
