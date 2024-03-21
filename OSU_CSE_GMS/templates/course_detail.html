@@ -405,6 +405,27 @@
     document.querySelectorAll('.show-assignments-btn').forEach(function(btn) {
         btn.addEventListener('click', function() {
             var assignmentsRow = this.closest('tr').nextElementSibling;
+            var subtableRows = assignmentsRow.querySelectorAll('.subtable tbody tr');
+
+            if (subtableRows.length === 0) {
+                // Create a popover for this button
+                var popover = new bootstrap.Popover(btn, {
+                    content: 'This section has no assignments yet!',
+                    trigger: 'manual'
+                });
+                popover.show();
+            
+                // Hide the popover when clicking outside of it
+                document.addEventListener('click', function hidePopover(event) {
+                    if (!btn.contains(event.target)) {
+                        popover.dispose();
+                        document.removeEventListener('click', hidePopover);
+                    }
+                });
+
+                return;
+            }
+
             if (assignmentsRow.style.display === 'none') {
                 assignmentsRow.style.display = 'table-row';
                 // Change svg icon to collapse

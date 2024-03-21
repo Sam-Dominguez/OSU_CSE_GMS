@@ -360,6 +360,27 @@
     document.querySelectorAll('.show-sections-btn').forEach(function(btn) {
         btn.addEventListener('click', function() {
             var sectionsRow = this.closest('tr').nextElementSibling;
+            var subtableRows = sectionsRow.querySelectorAll('.subtable tbody tr');
+
+            if (subtableRows.length === 0) {
+                // Create a popover for this button
+                var popover = new bootstrap.Popover(btn, {
+                    content: 'This course has no sections yet!',
+                    trigger: 'manual'
+                });
+                popover.show();
+            
+                // Hide the popover when clicking outside of it
+                document.addEventListener('click', function hidePopover(event) {
+                    if (!btn.contains(event.target)) {
+                        popover.dispose();
+                        document.removeEventListener('click', hidePopover);
+                    }
+                });
+
+                return;
+            }
+
             if (sectionsRow.style.display === 'none') {
                 sectionsRow.style.display = 'table-row';
                 // Change svg icon to collapse
