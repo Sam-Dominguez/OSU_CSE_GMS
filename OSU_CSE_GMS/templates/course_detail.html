@@ -2,6 +2,10 @@
 {% block title %}Course Detail{% endblock %}
 {% block content %}
 <style>
+    .email-link {
+        color: inherit; /* Inherit the color from the parent */
+    }
+
     .subtable th {
         font-weight: normal;
         font-style: italic;
@@ -116,7 +120,7 @@
                                                     -->
                                                     <tr class="table-secondary">
                                                         <td>{{ student.last_name }}, {{ student.first_name }}</td>
-                                                        <td>{{ student.email }}</td>
+                                                        <td><a href="mailto:{{ student.email }}" class="email-link">{{ student.email }}</a></td>
                                                         <td>{% if student.in_columbus == '1' %}Yes{% else %}No{% endif %}</td>
                                                         <td>{% if student.previous_grader == '1' %}Yes{% else %}No{% endif %}</td>
                                                         <td>{% if student.graded_last_term != '' %}{{ student.graded_last_term }}{% else %}N/A{% endif %}</td>
