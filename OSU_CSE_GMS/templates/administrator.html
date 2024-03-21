@@ -2,12 +2,6 @@
 {% load custom_filters %}
 {% block style %}
 <style>
-    /* Center the image horizontally */
-    .bottom-container {
-        text-align: center; /* Center the image horizontally */
-        padding: 10px; /* Add padding around the image */
-    }
-
     .course-link {
         text-decoration: none; /* Remove default underline */ 
         color: inherit; /* Inherit the color from the parent */
@@ -75,74 +69,82 @@
 
 <!--<input type="text" id="searchInput" class="form-control" placeholder="Search..." style="display: none; margin-top: 10px">-->
 <div class="container mt-4">
-    <table class="table">
-        <tbody>
-            {% for course in courses %}
-            <tr class="courses-row">
-                <td>
-                    <a href="{% url 'course_detail' course.course_number %}" class="course-link">{{ course }}</a><br>
-                    <small><span class="graders-needed"><i>Graders Needed: {{ course.course_number|get_total_graders_needed }}</i></span></small>
-                </td>
-                <td>
-                    <div class="btn-group">
-                        <!-- Show sections button -->
-                        <button class="btn btn-sm btn-outline-secondary show-sections-btn">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-expand" viewBox="0 0 16 16">
-                                <path fill-rule="evenodd" d="M3.646 9.146a.5.5 0 0 1 .708 0L8 12.793l3.646-3.647a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 0-.708m0-2.292a.5.5 0 0 0 .708 0L8 3.207l3.646 3.647a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 0 0 0 .708"/>
-                            </svg>
-                        </button>
-                        <!-- Manage course button -->
-                        <button class="btn btn-sm btn-outline-secondary manage-course-btn"
-                            data-course-number="{{ course.course_number }}" data-course-name="{{ course.name }}">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                class="bi bi-gear" viewBox="0 0 16 16">
-                                <path
-                                    d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492M5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0" />
-                                <path
-                                    d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115z" />
-                            </svg>
-                        </button>
-                    </div>
-                </td>
-            </tr>
-            <!-- Sections subtable -->
-            <tr class="sections-row" style="display: none;">
-                <td>
-                    <table class="table table-sm subtable">
-                        <thead class="thead-light">
-                            <tr>
-                                <th>Section Number</th>
-                                <th>Semester</th>
-                                <th>Instructor</th>
-                                <th>Instruction Mode</th>
-                                <th>Time</th>
-                                <th>Days of Week</th>
-                                <th>Classroom</th>
-                                <th>Graders Needed</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for section in sections %}
-                                {% if section.course_number.course_number == course.course_number %}
-                                <tr {% if section.num_graders_needed == 0 %} class="table-success" {% else %} class="table-danger" {% endif %}>
-                                    <td>{{ section.section_number }}</td>
-                                    <td>{{ section.semester }}</td>
-                                    <td>{% if section.instructor is not none %}{{ section.instructor }}{% else %}TBD{% endif %}</td>
-                                    <td>{{ section.instruction_mode }}</td>
-                                    <td>{{ section.time }}</td>
-                                    <td>{{ section.days_of_week }}</td>
-                                    <td>{{ section.classroom }}</td>
-                                    <td>{{ section.num_graders_needed }}</td>
+    {% if courses %}
+        <table class="table">
+            <tbody>
+                {% for course in courses %}
+                <tr class="courses-row">
+                    <td>
+                        <a href="{% url 'course_detail' course.course_number %}" class="course-link">{{ course }}</a><br>
+                        <small><span class="graders-needed"><i>Graders Needed: {{ course.course_number|get_total_graders_needed }}</i></span></small>
+                    </td>
+                    <td>
+                        <div class="btn-group">
+                            <!-- Show sections button -->
+                            <button class="btn btn-sm btn-outline-secondary show-sections-btn">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-expand" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M3.646 9.146a.5.5 0 0 1 .708 0L8 12.793l3.646-3.647a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 0-.708m0-2.292a.5.5 0 0 0 .708 0L8 3.207l3.646 3.647a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 0 0 0 .708"/>
+                                </svg>
+                            </button>
+                            <!-- Manage course button -->
+                            <button class="btn btn-sm btn-outline-secondary manage-course-btn"
+                                data-course-number="{{ course.course_number }}" data-course-name="{{ course.name }}">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    class="bi bi-gear" viewBox="0 0 16 16">
+                                    <path
+                                        d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492M5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0" />
+                                    <path
+                                        d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115z" />
+                                </svg>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                <!-- Sections subtable -->
+                <tr class="sections-row" style="display: none;">
+                    <td colspan="10">
+                        <table class="table table-sm subtable">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Section Number</th>
+                                    <th>Semester</th>
+                                    <th>Instructor</th>
+                                    <th>Instruction Mode</th>
+                                    <th>Time</th>
+                                    <th>Days of Week</th>
+                                    <th>Classroom</th>
+                                    <th>Graders Needed</th>
                                 </tr>
-                                {% endif %}
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+                            </thead>
+                            <tbody>
+                                {% for section in sections %}
+                                    {% if section.course_number.course_number == course.course_number %}
+                                    <tr {% if section.num_graders_needed == 0 %} class="table-success" {% else %} class="table-danger" {% endif %}>
+                                        <td>{{ section.section_number }}</td>
+                                        <td>{{ section.semester }}</td>
+                                        <td>{% if section.instructor is not none %}{{ section.instructor }}{% else %}TBD{% endif %}</td>
+                                        <td>{{ section.instruction_mode }}</td>
+                                        <td>{{ section.time }}</td>
+                                        <td>{{ section.days_of_week }}</td>
+                                        <td>{{ section.classroom }}</td>
+                                        <td>{{ section.num_graders_needed }}</td>
+                                    </tr>
+                                    {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <h3>No Courses Exist</h3>
+        <p>Click the 'Add Course' button to add a course</p>
+        <script>
+            document.getElementById("toggleFilterBtn").style.display = "none";
+        </script>
+    {% endif %}
 </div>
 
 <!-- Modal for the course form -->
@@ -238,11 +240,6 @@
             </div>
         </div>
     </div>
-</div>
-
-{% load static %}
-<div class="bottom-container">
-    <img src="{% static 'osu_coe.png' %}" alt="" width="226.8" height="32.5" class="bottom-image">
 </div>
 
 <!-- Script to show the modals -->
