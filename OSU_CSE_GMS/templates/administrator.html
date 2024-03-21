@@ -3,12 +3,12 @@
 {% block style %}
 <style>
     .course-link {
-        text-decoration: none; /* Remove default underline */ 
-        color: inherit; /* Inherit the color from the parent */
+        text-decoration: none;
+        color: inherit
     }
 
     .course-link:hover {
-        color: #6c757d; /* Change color on hover */
+        color: #6c757d;
     }
 
     .subtable th {
@@ -41,19 +41,6 @@
             </svg>
         {% endif %}
     </a>
-    <!--
-    <button id="toggleSearchBtn" class="btn btn-sm btn-outline-secondary">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
-        </svg>
-    </button>
-
-    <button id="toggleExpandAllBtn" class="btn btn-sm btn-outline-secondary" style="margin-right: 5px;">
-        <svg id="expandContractIcon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-expand" viewBox="0 0 16 16">
-            <path fill-rule="evenodd" d="M3.646 9.146a.5.5 0 0 1 .708 0L8 12.793l3.646-3.647a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 0-.708m0-2.292a.5.5 0 0 0 .708 0L8 3.207l3.646 3.647a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 0 0 0 .708"/>
-        </svg>
-    </button>
-    -->
     <div class="dropdown">
         <button id="toggleFilterBtn" class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-funnel" viewBox="0 0 16 16">
@@ -67,7 +54,6 @@
     </div>
 </div>
 
-<!--<input type="text" id="searchInput" class="form-control" placeholder="Search..." style="display: none; margin-top: 10px">-->
 <div class="container mt-4">
     {% if courses %}
         <table class="table">
@@ -273,87 +259,8 @@
     });
 </script>
 
-<!-- Script for search functionality
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        document.getElementById('toggleSearchBtn').addEventListener('click', function () {
-            var searchInput = document.getElementById('searchInput');
-            if (searchInput.style.display === 'none') {
-                searchInput.style.display = 'block';
-            } else {
-                searchInput.style.display = 'none';
-                document.querySelectorAll('.course-link').forEach(function(link) {
-                    link.parentElement.parentElement.style.display = 'table-row';
-                });
-                document.getElementById('searchInput').value = '';
-            }
-        });
-    });
-
-    // Filter table rows based on search input
-    document.getElementById('searchInput').addEventListener('keyup', function () {
-            var filter = this.value.toUpperCase();
-            var rows = document.querySelectorAll('.table tbody tr');
-
-            rows.forEach(function(row) {
-                var text = row.textContent || row.innerText;
-                if (text.toUpperCase().indexOf(filter) > -1) {
-                    row.style.display = "";
-                } else {
-                    row.style.display = "none";
-                }
-            });
-        });
-</script>
--->
-
 <!-- Script for expanding course sections -->
 <script>
-    // Expand all sections
-    /*
-    document.getElementById('toggleExpandAllBtn').addEventListener('click', function() {
-        var sectionsRows = document.querySelectorAll('.sections-row');
-        if (sectionsRows[0].style.display === 'none') {
-            sectionsRows.forEach(function(row) {
-                row.style.display = 'table-row';
-            });
-
-            //Change svg icon to collapse
-            var icon = document.querySelector('#expandContractIcon');
-            icon.setAttribute('class', 'bi bi-chevron-contract');
-            var path = document.querySelector('#expandContractIcon path');
-            path.setAttribute('d', 'M3.646 13.854a.5.5 0 0 0 .708 0L8 10.207l3.646 3.647a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 0 0 0 .708m0-11.708a.5.5 0 0 1 .708 0L8 5.793l3.646-3.647a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 0-.708');
-
-            // Change svg icon to collapse for individual sections
-            document.querySelectorAll('.show-sections-btn').forEach(function(btn) {
-                var icon = btn.querySelector('.bi');
-                icon.setAttribute('class', 'bi bi-chevron-contract');
-                var path = btn.querySelector('.bi path');
-                path.setAttribute('d', 'M3.646 13.854a.5.5 0 0 0 .708 0L8 10.207l3.646 3.647a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 0 0 0 .708m0-11.708a.5.5 0 0 1 .708 0L8 5.793l3.646-3.647a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 0-.708');
-            });
-        } else {
-            sectionsRows.forEach(function(row) {
-                row.style.display = 'none';
-            });
-            // Change svg icon to expand
-            var icon = document.querySelector('#expandContractIcon');
-            icon.setAttribute('class', 'bi bi-chevron-expand');
-            var path = document.querySelector('#expandContractIcon path');
-            path.setAttribute('d', 'M3.646 9.146a.5.5 0 0 1 .708 0L8 12.793l3.646-3.647a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 0-.708m0-2.292a.5.5 0 0 0 .708 0L8 3.207l3.646 3.647a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 0 0 0 .708');
-
-            // Change svg icon to expand for individual sections
-            document.querySelectorAll('.show-sections-btn').forEach(function(btn) {
-                var icon = btn.querySelector('.bi');
-                icon.setAttribute('class', 'bi bi-chevron-expand');
-                var path = btn.querySelector('.bi path');
-                path.setAttribute('d', 'M3.646 9.146a.5.5 0 0 1 .708 0L8 12.793l3.646-3.647a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 0-.708m0-2.292a.5.5 0 0 0 .708 0L8 3.207l3.646 3.647a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 0 0 0 .708');
-            });
-        }
-    });
-    */
-    
-
-    // Expand individual sections
     document.querySelectorAll('.show-sections-btn').forEach(function(btn) {
         btn.addEventListener('click', function() {
             var sectionsRow = this.closest('tr').nextElementSibling;

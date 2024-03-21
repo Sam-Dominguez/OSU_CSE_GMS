@@ -3,13 +3,12 @@
 {% block content %}
 <style>
     .email-link {
-        color: inherit; /* Inherit the color from the parent */
+        color: inherit;
     }
 
     .subtable th {
         font-weight: normal;
         font-style: italic;
-        /*background-color: #f2f2f2;*/
     }
 </style>
 
@@ -112,12 +111,6 @@
                                         {% for assignment in assignments %}
                                             {% if assignment.section_number.section_number == section.section_number %}
                                                 {% with assignment.student_id as student %}
-                                                    <!--
-                                                    <tr {% if assignment.status == 'ACCEPTED' %} class="table-success"
-                                                    {% elif assignment.status == 'DECLINED' %} class="table-danger"
-                                                    {% elif assignment.status == 'PENDING' %} class="table-warning"
-                                                    {% endif %}>
-                                                    -->
                                                     <tr class="table-secondary">
                                                         <td>{{ student.last_name }}, {{ student.first_name }}</td>
                                                         <td><a href="mailto:{{ student.email }}" class="email-link">{{ student.email }}</a></td>
@@ -369,51 +362,6 @@
 
 <!-- Script for expanding assignments -->
 <script>
-    // Expand all assignments
-    /*
-    document.getElementById('toggleExpandAllBtn').addEventListener('click', function() {
-        var sectionsRows = document.querySelectorAll('.sections-row');
-        if (sectionsRows[0].style.display === 'none') {
-            sectionsRows.forEach(function(row) {
-                row.style.display = 'table-row';
-            });
-
-            //Change svg icon to collapse
-            var icon = document.querySelector('#expandContractIcon');
-            icon.setAttribute('class', 'bi bi-chevron-contract');
-            var path = document.querySelector('#expandContractIcon path');
-            path.setAttribute('d', 'M3.646 13.854a.5.5 0 0 0 .708 0L8 10.207l3.646 3.647a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 0 0 0 .708m0-11.708a.5.5 0 0 1 .708 0L8 5.793l3.646-3.647a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 0-.708');
-
-            // Change svg icon to collapse for individual sections
-            document.querySelectorAll('.show-sections-btn').forEach(function(btn) {
-                var icon = btn.querySelector('.bi');
-                icon.setAttribute('class', 'bi bi-chevron-contract');
-                var path = btn.querySelector('.bi path');
-                path.setAttribute('d', 'M3.646 13.854a.5.5 0 0 0 .708 0L8 10.207l3.646 3.647a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 0 0 0 .708m0-11.708a.5.5 0 0 1 .708 0L8 5.793l3.646-3.647a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 0-.708');
-            });
-        } else {
-            sectionsRows.forEach(function(row) {
-                row.style.display = 'none';
-            });
-            // Change svg icon to expand
-            var icon = document.querySelector('#expandContractIcon');
-            icon.setAttribute('class', 'bi bi-chevron-expand');
-            var path = document.querySelector('#expandContractIcon path');
-            path.setAttribute('d', 'M3.646 9.146a.5.5 0 0 1 .708 0L8 12.793l3.646-3.647a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 0-.708m0-2.292a.5.5 0 0 0 .708 0L8 3.207l3.646 3.647a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 0 0 0 .708');
-
-            // Change svg icon to expand for individual sections
-            document.querySelectorAll('.show-sections-btn').forEach(function(btn) {
-                var icon = btn.querySelector('.bi');
-                icon.setAttribute('class', 'bi bi-chevron-expand');
-                var path = btn.querySelector('.bi path');
-                path.setAttribute('d', 'M3.646 9.146a.5.5 0 0 1 .708 0L8 12.793l3.646-3.647a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 0-.708m0-2.292a.5.5 0 0 0 .708 0L8 3.207l3.646 3.647a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 0 0 0 .708');
-            });
-        }
-    });
-    */
-    
-
-    // Expand individual assignments
     document.querySelectorAll('.show-assignments-btn').forEach(function(btn) {
         btn.addEventListener('click', function() {
             var assignmentsRow = this.closest('tr').nextElementSibling;
@@ -489,8 +437,5 @@
         });
     });
 </script>
-
-
-
 
 {% endblock %}
