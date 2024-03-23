@@ -52,6 +52,11 @@
             <li><a class="dropdown-item" href="" data-filter="all" id="showCoursesNeedingGraders">Show Courses Needing Graders</a></li>
         </ul>
     </div>
+    <button id="expand-all-btn" class="btn btn-sm btn-outline-secondary" style="margin-left: 5px;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-expand" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M3.646 9.146a.5.5 0 0 1 .708 0L8 12.793l3.646-3.647a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 0-.708m0-2.292a.5.5 0 0 0 .708 0L8 3.207l3.646 3.647a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 0 0 0 .708"/>
+        </svg>
+    </button>
 </div>
 
 <div class="container mt-4">
@@ -261,6 +266,7 @@
 
 <!-- Script for expanding course sections -->
 <script>
+    // Expand and collapse subtables individually
     document.querySelectorAll('.show-sections-btn').forEach(function(btn) {
         btn.addEventListener('click', function() {
             var sectionsRow = this.closest('tr').nextElementSibling;
@@ -303,6 +309,55 @@
         });
     });
 </script>
+
+<!-- Script for expanding and collapsing all subtables -->
+<script>
+    document.getElementById('expand-all-btn').addEventListener('click', function() {
+        var expandAllBtn = document.getElementById('expand-all-btn');
+        var icon = expandAllBtn.querySelector('.bi');
+
+        // Change the all-button svg icon
+        if (icon.classList.contains('bi-chevron-expand')) {
+            icon.setAttribute('class', 'bi bi-chevron-contract');
+            var path = expandAllBtn.querySelector('.bi path');
+            path.setAttribute('d', 'M3.646 13.854a.5.5 0 0 0 .708 0L8 10.207l3.646 3.647a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 0 0 0 .708m0-11.708a.5.5 0 0 1 .708 0L8 5.793l3.646-3.647a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 0-.708');
+        } else {
+            icon.setAttribute('class', 'bi bi-chevron-expand');
+            var path = expandAllBtn.querySelector('.bi path');
+            path.setAttribute('d', 'M3.646 9.146a.5.5 0 0 1 .708 0L8 12.793l3.646-3.647a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 0-.708m0-2.292a.5.5 0 0 0 .708 0L8 3.207l3.646 3.647a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 0 0 0 .708');
+        }
+
+        // Display all subtables
+        var subtables = document.querySelectorAll('.sections-row');
+        subtables.forEach(function(subtable) {
+            var courseRow = subtable.previousElementSibling;
+            if (courseRow.style.display !== 'none') {
+                var subtableRows = subtable.querySelectorAll('.subtable tbody tr');
+                if (subtableRows.length !== 0) {
+                    if (icon.classList.contains('bi-chevron-expand')) {
+                        subtable.style.display = 'none';
+                    } else {
+                        subtable.style.display = 'table-row';
+                    }
+                    
+                    // Change svg icon for individual row button
+                    var button = courseRow.querySelector('.show-sections-btn');
+                    var buttonIcon = button.querySelector('.bi');
+                    if (icon.classList.contains('bi-chevron-expand')) {
+                        buttonIcon.setAttribute('class', 'bi bi-chevron-expand');
+                        var buttonPath = button.querySelector('.bi path');
+                        buttonPath.setAttribute('d', 'M3.646 9.146a.5.5 0 0 1 .708 0L8 12.793l3.646-3.647a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 0-.708m0-2.292a.5.5 0 0 0 .708 0L8 3.207l3.646 3.647a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 0 0 0 .708');
+                    } else {
+                        buttonIcon.setAttribute('class', 'bi bi-chevron-contract');
+                        var buttonPath = button.querySelector('.bi path');
+                        buttonPath.setAttribute('d', 'M3.646 13.854a.5.5 0 0 0 .708 0L8 10.207l3.646 3.647a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 0 0 0 .708m0-11.708a.5.5 0 0 1 .708 0L8 5.793l3.646-3.647a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 0-.708');
+                    }
+                }
+            }
+        });
+    });
+</script>
+
 
 <!-- Script for filtering courses -->
 <script>
