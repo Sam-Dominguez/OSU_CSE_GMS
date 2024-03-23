@@ -134,6 +134,7 @@
         <p>Click the 'Add Course' button to add a course</p>
         <script>
             document.getElementById("toggleFilterBtn").style.display = "none";
+            document.getElementById("expand-all-btn").style.display = "none";
         </script>
     {% endif %}
 </div>
@@ -339,7 +340,7 @@
                     } else {
                         subtable.style.display = 'table-row';
                     }
-                    
+
                     // Change svg icon for individual row button
                     var button = courseRow.querySelector('.show-sections-btn');
                     var buttonIcon = button.querySelector('.bi');
