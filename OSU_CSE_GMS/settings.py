@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+import sys
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -168,3 +169,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_REDIRECT_URL = "home" 
 LOGOUT_REDIRECT_URL = "home"
+
+# TODO: Change 'filebased' email backend to smtp service once set up
+# Use 'locmem' backend for tests so 'mail.outbox' can be used in assertions
+EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend" if not 'test' in sys.argv else "django.core.mail.backends.locmem.EmailBackend"
+EMAIL_FILE_PATH = "emails/"  
