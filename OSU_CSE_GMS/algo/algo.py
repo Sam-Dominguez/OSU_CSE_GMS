@@ -1,4 +1,5 @@
 from ..models import *
+from ..services import email_service
 from django.shortcuts import render
 import random
 from django.db.models.functions import Random
@@ -67,6 +68,7 @@ def massAssign(assignSemester):
                 selectFromPriority(sect,validStudents,cour.course_number)
             
     LOGGER.info("~~ENDING MASS ASSIGN~~")
+    email_service.notify_assignments_complete()
 
 # gets PreviousClassTaken and sections for a course that needs to be assigned
 def retrievePrevClassAndSections(cour,assignSemester):
@@ -97,6 +99,7 @@ def SelectStuFromSection(sec, stu ):
                     LOGGER.error(f"Failed to create assignment with student id: {s.student_id.id} and section_number {sec.id}")
                 else:
                     LOGGER.info(f"Created assignment with id: {a.pk} - Assigned Student Id: {s.student_id.id} to section_number id: {sec.id}")
+                    email_service.notify_single_assignment(a)
 
                 status_code = us.delete()[0]
                 if status_code == 0:
