@@ -1,3 +1,4 @@
+from django.core import mail
 from django.test import TestCase
 from OSU_CSE_GMS.models import *
 from ..algo.algo import massAssign
@@ -41,7 +42,11 @@ class AdministratorTests(TestCase):
         # there should be 1 spot taken already in 3902 boguss, 2 is open in kirby before assignment
         # test 5 times to ensure it is not randomly correct because assignments are made randomly
         for i in range(5):
+            num_assignments_before = Assignment.objects.count()
+            num_emails_sent_before = len(mail.outbox)
             massAssign("SP2024")
+            num_assignments_after = Assignment.objects.count()
+            num_emails_sent_after = len(mail.outbox)
             instructKirby = Instructor.objects.filter(email = 'kirby.249').first()
             instructBoggus = Instructor.objects.filter(email = 'boggus.2').first()
             sections3902 = Section.objects.filter(course_number = cour3902 )
@@ -50,7 +55,12 @@ class AdministratorTests(TestCase):
             for s in sections3902:
                 self.assertEqual(s.num_graders_needed, 0)
             assignments = Assignment.objects.filter(student_id__in = [s1,s2,s3])
-            self.assertEqual(assignments.count(),3) 
+            self.assertEqual(assignments.count(),3)
+
+            num_assignments_made = num_assignments_after - num_assignments_before
+            num_emails_sent = num_emails_sent_after - num_emails_sent_before
+            self.assertEqual(num_emails_sent, (num_assignments_made * 2) + 1) # 2 emails per assignment + 1 admin email
+            
             # make sure they all went to correct assignments
             s1GoToKirby = assignments.filter(student_id = s1).first()
             s2GoToBoggus = assignments.filter(student_id = s2).first()
@@ -95,7 +105,11 @@ class AdministratorTests(TestCase):
                                                       pref_num=1)
         
         for i in range(2):
+            num_assignments_before = Assignment.objects.count()
+            num_emails_sent_before = len(mail.outbox)
             massAssign("SP2024")
+            num_assignments_after = Assignment.objects.count()
+            num_emails_sent_after = len(mail.outbox)
             instructKirby = Instructor.objects.filter(email = 'kirby.249').first()
             instructBoggus = Instructor.objects.filter(email = 'boggus.2').first()
             sections3902 = Section.objects.filter(course_number = cour3902 )
@@ -105,6 +119,11 @@ class AdministratorTests(TestCase):
                 self.assertEqual(s.num_graders_needed, 0)
             assignments = Assignment.objects.filter(student_id__in = [s1,s2,s3])
             self.assertEqual(assignments.count(),3) 
+
+            num_assignments_made = num_assignments_after - num_assignments_before
+            num_emails_sent = num_emails_sent_after - num_emails_sent_before
+            self.assertEqual(num_emails_sent, (num_assignments_made * 2) + 1) # 2 emails per assignment + 1 admin email
+
             # make sure they all went to correct assignments
             a1 = assignments.filter(student_id = s1).first()
             a2 = assignments.filter(student_id = s2).first()
@@ -147,11 +166,20 @@ class AdministratorTests(TestCase):
                                                       pref_num=1)
         
         for i in range(5):
+            num_assignments_before = Assignment.objects.count()
+            num_emails_sent_before = len(mail.outbox)
             massAssign("SP2024")
+            num_assignments_after = Assignment.objects.count()
+            num_emails_sent_after = len(mail.outbox)
             instruct = Instructor.objects.filter(email = 'pichkar.3').first()
             section = Section.objects.filter(course_number = cour2123 ).first()
             assignments = Assignment.objects.filter(student_id__in = [s1,s2,s3])
             self.assertEqual(assignments.count(),2) 
+
+            num_assignments_made = num_assignments_after - num_assignments_before
+            num_emails_sent = num_emails_sent_after - num_emails_sent_before
+            self.assertEqual(num_emails_sent, (num_assignments_made * 2) + 1) # 2 emails per assignment + 1 admin email
+
             # make sure they all went to correct assignments
             a1 = assignments.filter(student_id = s1).first()
             a2 = assignments.filter(student_id = s2).first()
@@ -187,11 +215,20 @@ class AdministratorTests(TestCase):
             s.num_graders_needed = 2
             s.save()
         for i in range(5):
+            num_assignments_before = Assignment.objects.count()
+            num_emails_sent_before = len(mail.outbox)
             massAssign("SP2024")
+            num_assignments_after = Assignment.objects.count()
+            num_emails_sent_after = len(mail.outbox)
             instruct = Instructor.objects.filter(email = 'shareef.1').first()
           
             section = Section.objects.filter(course_number = cour3341)
             self.assertEqual(section.count(),3)
+
+            num_assignments_made = num_assignments_after - num_assignments_before
+            num_emails_sent = num_emails_sent_after - num_emails_sent_before
+            self.assertEqual(num_emails_sent, (num_assignments_made * 2) + 1) # 2 emails per assignment + 1 admin email
+
             sectionShareef = section.filter(instructor = instruct).first()
             assignments = Assignment.objects.filter(student_id__in = [s1])
             self.assertEqual(assignments.count(),1) 
@@ -226,13 +263,22 @@ class AdministratorTests(TestCase):
             s.num_graders_needed = 2
             s.save()
         for i in range(5):
+            num_assignments_before = Assignment.objects.count()
+            num_emails_sent_before = len(mail.outbox)
             massAssign("SP2024")
+            num_assignments_after = Assignment.objects.count()
+            num_emails_sent_after = len(mail.outbox)
             instruct = Instructor.objects.filter(email = 'close.2').first()
           
             section = Section.objects.filter(course_number = cour2321)
             self.assertEqual(section.count(),5)
             sectionClose = section.filter(instructor = instruct).first()
             assignments = Assignment.objects.filter(student_id__in = [s1])
+
+            num_assignments_made = num_assignments_after - num_assignments_before
+            num_emails_sent = num_emails_sent_after - num_emails_sent_before
+            self.assertEqual(num_emails_sent, (num_assignments_made * 2) + 1) # 2 emails per assignment + 1 admin email
+
             self.assertEqual(assignments.count(),1) 
    
             a1 = assignments.filter(student_id = s1).first()
@@ -269,9 +315,18 @@ class AdministratorTests(TestCase):
                                                       pref_num=3)
 
         for i in range(5):
+            num_assignments_before = Assignment.objects.count()
+            num_emails_sent_before = len(mail.outbox)
             massAssign("SP2024")
+            num_assignments_after = Assignment.objects.count()
+            num_emails_sent_after = len(mail.outbox)
             section2123 = Section.objects.filter(course_number = cour2123 ).first()
             assignments = Assignment.objects.filter(student_id__in = [s1,s2,s3])
+
+            num_assignments_made = num_assignments_after - num_assignments_before
+            num_emails_sent = num_emails_sent_after - num_emails_sent_before
+            self.assertEqual(num_emails_sent, (num_assignments_made * 2) + 1) # 2 emails per assignment + 1 admin email
+
             self.assertEqual(assignments.count(),2) 
             s1AssignedFirst = assignments.filter(student_id = s1).first()
             self.assertEqual(s1AssignedFirst.section_number,section2123)
@@ -309,10 +364,19 @@ class AdministratorTests(TestCase):
         newp3 = PreviousClassTaken.objects.create(student_id = s3, course_number = cour3232, instructor = "" ,
                                                       pref_num=3)
         for i in range(5):
+            num_assignments_before = Assignment.objects.count()
+            num_emails_sent_before = len(mail.outbox)
             massAssign("SP2024")
+            num_assignments_after = Assignment.objects.count()
+            num_emails_sent_after = len(mail.outbox)
             section3232 = Section.objects.filter(course_number = cour3232 ).first()
             assignments = Assignment.objects.filter(student_id__in = [s1,s2,s3])
             self.assertEqual(assignments.count(),1) 
+
+            num_assignments_made = num_assignments_after - num_assignments_before
+            num_emails_sent = num_emails_sent_after - num_emails_sent_before
+            self.assertEqual(num_emails_sent, (num_assignments_made * 2) + 1) # 2 emails per assignment + 1 admin email
+
             s1AssignedFirst = assignments.filter(student_id = s1).first()
             self.assertEqual(s1AssignedFirst.section_number,section3232)
             section3232.num_graders_needed = 1
@@ -334,10 +398,19 @@ class AdministratorTests(TestCase):
         newp1 = PreviousClassTaken.objects.create(student_id = s1, course_number = cour3232, instructor = "" ,
                                                       pref_num=3)
         for i in range(5):
+            num_assignments_before = Assignment.objects.count()
+            num_emails_sent_before = len(mail.outbox)
             massAssign("SP2024")
+            num_assignments_after = Assignment.objects.count()
+            num_emails_sent_after = len(mail.outbox)
             section3232 = Section.objects.filter(course_number = cour3232 ).first()
             assignments = Assignment.objects.filter(student_id__in = [s1])
             self.assertEqual(assignments.count(),1) 
+
+            num_assignments_made = num_assignments_after - num_assignments_before
+            num_emails_sent = num_emails_sent_after - num_emails_sent_before
+            self.assertEqual(num_emails_sent, (num_assignments_made * 2) + 1) # 2 emails per assignment + 1 admin email
+
             s1AssignedFirst = assignments.filter(student_id = s1).first()
             self.assertEqual(s1AssignedFirst.section_number,section3232)
             section3232.num_graders_needed = 1
@@ -369,10 +442,19 @@ class AdministratorTests(TestCase):
         newp3 = PreviousClassTaken.objects.create(student_id = s3, course_number = cour3232, instructor = "" ,
                                                       pref_num=3)
         for i in range(5):
+            num_assignments_before = Assignment.objects.count()
+            num_emails_sent_before = len(mail.outbox)
             massAssign("SP2024")
+            num_assignments_after = Assignment.objects.count()
+            num_emails_sent_after = len(mail.outbox)
             section3232 = Section.objects.filter(course_number = cour3232 ).first()
             assignments = Assignment.objects.filter(student_id__in = [s1,s2,s3])
             self.assertEqual(assignments.count(),1) 
+
+            num_assignments_made = num_assignments_after - num_assignments_before
+            num_emails_sent = num_emails_sent_after - num_emails_sent_before
+            self.assertEqual(num_emails_sent, (num_assignments_made * 2) + 1) # 2 emails per assignment + 1 admin email
+
             s3AssignedFirst = assignments.filter(student_id = s3).first()
             self.assertEqual(s3AssignedFirst.section_number,section3232)
             section3232.num_graders_needed = 1
@@ -405,10 +487,19 @@ class AdministratorTests(TestCase):
         newp3 = PreviousClassTaken.objects.create(student_id = s3, course_number = cour3232, instructor = "" ,
                                                       pref_num=3)
         for i in range(5):
+            num_assignments_before = Assignment.objects.count()
+            num_emails_sent_before = len(mail.outbox)
             massAssign("SP2024")
+            num_assignments_after = Assignment.objects.count()
+            num_emails_sent_after = len(mail.outbox)
             section3232 = Section.objects.filter(course_number = cour3232 ).first()
             assignments = Assignment.objects.filter(student_id__in = [s1,s2,s3])
             self.assertEqual(assignments.count(),1) 
+
+            num_assignments_made = num_assignments_after - num_assignments_before
+            num_emails_sent = num_emails_sent_after - num_emails_sent_before
+            self.assertEqual(num_emails_sent, (num_assignments_made * 2) + 1) # 2 emails per assignment + 1 admin email
+
             s2AssignedFirst = assignments.filter(student_id = s2).first()
             self.assertEqual(s2AssignedFirst.section_number,section3232)
             section3232.num_graders_needed = 1
@@ -444,10 +535,19 @@ class AdministratorTests(TestCase):
         newp3 = PreviousClassTaken.objects.create(student_id = s3, course_number = cour3232, instructor = "" ,
                                                       pref_num=3)
         for i in range(5):
+            num_assignments_before = Assignment.objects.count()
+            num_emails_sent_before = len(mail.outbox)
             massAssign("SP2024")
+            num_assignments_after = Assignment.objects.count()
+            num_emails_sent_after = len(mail.outbox)
             section3232 = Section.objects.filter(course_number = cour3232 ).first()
             assignments = Assignment.objects.filter(student_id__in = [s1,s2,s3])
             self.assertEqual(assignments.count(),1) 
+
+            num_assignments_made = num_assignments_after - num_assignments_before
+            num_emails_sent = num_emails_sent_after - num_emails_sent_before
+            self.assertEqual(num_emails_sent, (num_assignments_made * 2) + 1) # 2 emails per assignment + 1 admin email
+
             s3AssignedFirst = assignments.filter(student_id = s3).first()
             self.assertEqual(s3AssignedFirst.section_number,section3232)
             section3232.num_graders_needed = 1
@@ -481,10 +581,19 @@ class AdministratorTests(TestCase):
         newp3 = PreviousClassTaken.objects.create(student_id = s3, course_number = cour3232, instructor = "" ,
                                                       pref_num=1)
         for i in range(5):
+            num_assignments_before = Assignment.objects.count()
+            num_emails_sent_before = len(mail.outbox)
             massAssign("SP2024")
+            num_assignments_after = Assignment.objects.count()
+            num_emails_sent_after = len(mail.outbox)
             section3232 = Section.objects.filter(course_number = cour3232 ).first()
             assignments = Assignment.objects.filter(student_id__in = [s1,s2,s3])
             self.assertEqual(assignments.count(),1) 
+
+            num_assignments_made = num_assignments_after - num_assignments_before
+            num_emails_sent = num_emails_sent_after - num_emails_sent_before
+            self.assertEqual(num_emails_sent, (num_assignments_made * 2) + 1) # 2 emails per assignment + 1 admin email
+
             AssignedFirst = assignments.filter(student_id = s2).first()
             self.assertEqual(AssignedFirst.section_number,section3232)
             section3232.num_graders_needed = 1
@@ -518,10 +627,19 @@ class AdministratorTests(TestCase):
         newp3 = PreviousClassTaken.objects.create(student_id = s3, course_number = cour3232, instructor = "" ,
                                                       pref_num=1)
         for i in range(5):
+            num_assignments_before = Assignment.objects.count()
+            num_emails_sent_before = len(mail.outbox)
             massAssign("SP2024")
+            num_assignments_after = Assignment.objects.count()
+            num_emails_sent_after = len(mail.outbox)
             section3232 = Section.objects.filter(course_number = cour3232 ).first()
             assignments = Assignment.objects.filter(student_id__in = [s1,s2,s3])
             self.assertEqual(assignments.count(),1) 
+
+            num_assignments_made = num_assignments_after - num_assignments_before
+            num_emails_sent = num_emails_sent_after - num_emails_sent_before
+            self.assertEqual(num_emails_sent, (num_assignments_made * 2) + 1) # 2 emails per assignment + 1 admin email
+
             AssignedFirst = assignments.filter(student_id = s2).first()
             self.assertEqual(AssignedFirst.section_number,section3232)
             section3232.num_graders_needed = 1
@@ -545,10 +663,19 @@ class AdministratorTests(TestCase):
                                                       pref_num=1)
 
         for i in range(5):
+            num_assignments_before = Assignment.objects.count()
+            num_emails_sent_before = len(mail.outbox)
             massAssign("SP2024")
+            num_assignments_after = Assignment.objects.count()
+            num_emails_sent_after = len(mail.outbox)
             section3232 = Section.objects.filter(course_number = cour3232 ).first()
             assignments = Assignment.objects.filter(student_id__in = [s1])
             self.assertEqual(assignments.count(),1) 
+
+            num_assignments_made = num_assignments_after - num_assignments_before
+            num_emails_sent = num_emails_sent_after - num_emails_sent_before
+            self.assertEqual(num_emails_sent, (num_assignments_made * 2) + 1) # 2 emails per assignment + 1 admin email
+
             AssignedFirst = assignments.filter(student_id = s1).first()
             self.assertEqual(AssignedFirst.section_number,section3232)
             section3232.num_graders_needed = 1
@@ -582,9 +709,17 @@ class AdministratorTests(TestCase):
         newp3 = PreviousClassTaken.objects.create(student_id = s3, course_number = cour4471, instructor = "" ,
                                                       pref_num=1)
         for i in range(2): # if it fails, it will always fail
+            num_assignments_before = Assignment.objects.count()
+            num_emails_sent_before = len(mail.outbox)
             massAssign("SP2024")
+            num_assignments_after = Assignment.objects.count()
+            num_emails_sent_after = len(mail.outbox)
             assignments = Assignment.objects.filter(student_id__in = [s1,s2,s3])
             self.assertEqual(assignments.count(),0) 
+
+            num_assignments_made = num_assignments_after - num_assignments_before
+            num_emails_sent = num_emails_sent_after - num_emails_sent_before
+            self.assertEqual(num_emails_sent, (num_assignments_made * 2) + 1) # 2 emails per assignment + 1 admin email
 
 
     # test if a higher number course 5236 will be assigned first, also tests if student only assigned to one open course
@@ -606,10 +741,19 @@ class AdministratorTests(TestCase):
         newp3 = PreviousClassTaken.objects.create(student_id = s1, course_number = cour5236, instructor = "" ,
                                                       pref_num=3)
         for i in range(5):
+            num_assignments_before = Assignment.objects.count()
+            num_emails_sent_before = len(mail.outbox)
             massAssign("SP2024")
+            num_assignments_after = Assignment.objects.count()
+            num_emails_sent_after = len(mail.outbox)
             section5236 = Section.objects.filter(course_number = cour5236 ).first()
             assignments = Assignment.objects.filter(student_id__in = [s1])
             self.assertEqual(assignments.count(),1) 
+
+            num_assignments_made = num_assignments_after - num_assignments_before
+            num_emails_sent = num_emails_sent_after - num_emails_sent_before
+            self.assertEqual(num_emails_sent, (num_assignments_made * 2) + 1) # 2 emails per assignment + 1 admin email
+
             AssignedFirst = assignments.filter(student_id = s1).first()
             self.assertEqual(AssignedFirst.section_number,section5236)
             section5236.num_graders_needed = 2
@@ -633,10 +777,19 @@ class AdministratorTests(TestCase):
                                                       pref_num=2)
        
         for i in range(3):
+            num_assignments_before = Assignment.objects.count()
+            num_emails_sent_before = len(mail.outbox)
             massAssign("SP2024")
+            num_assignments_after = Assignment.objects.count()
+            num_emails_sent_after = len(mail.outbox)
             section3231 = Section.objects.filter(course_number = cour3231 ).first()
             assignments = Assignment.objects.filter(student_id__in = [s1])
             self.assertEqual(assignments.count(),1) 
+
+            num_assignments_made = num_assignments_after - num_assignments_before
+            num_emails_sent = num_emails_sent_after - num_emails_sent_before
+            self.assertEqual(num_emails_sent, (num_assignments_made * 2) + 1) # 2 emails per assignment + 1 admin email
+
             AssignedFirst = assignments.filter(student_id = s1).first()
             self.assertEqual(AssignedFirst.section_number,section3231)
             section3231.num_graders_needed = 1
@@ -670,9 +823,18 @@ class AdministratorTests(TestCase):
         newp3 = PreviousClassTaken.objects.create(student_id = s3, course_number = cour5236, instructor = "" ,
                                                       pref_num=1)
         for i in range(2):# only one run needed to show valid
+            num_assignments_before = Assignment.objects.count()
+            num_emails_sent_before = len(mail.outbox)
             massAssign("SP2024")
+            num_assignments_after = Assignment.objects.count()
+            num_emails_sent_after = len(mail.outbox)
             assignments = Assignment.objects.filter(student_id__in = [s1,s2,s3])
             self.assertEqual(assignments.count(),0) 
+
+            num_assignments_made = num_assignments_after - num_assignments_before
+            num_emails_sent = num_emails_sent_after - num_emails_sent_before
+            self.assertEqual(num_emails_sent, (num_assignments_made * 2) + 1) # 2 emails per assignment + 1 admin email
+
             us1.save()
             us2.save()
             us3.save()
@@ -703,10 +865,19 @@ class AdministratorTests(TestCase):
         newp3 = PreviousClassTaken.objects.create(student_id = s3, course_number = cour5236, instructor = "" ,
                                                       pref_num=1)
         for i in range(2):# only one run needed to show valid
+            num_assignments_before = Assignment.objects.count()
+            num_emails_sent_before = len(mail.outbox)
             massAssign("SP2024")
+            num_assignments_after = Assignment.objects.count()
+            num_emails_sent_after = len(mail.outbox)
             section = Section.objects.filter(course_number = cour5236 ).first()
             assignments = Assignment.objects.filter(student_id__in = [s1,s2,s3])
             self.assertEqual(assignments.count(),1) 
+
+            num_assignments_made = num_assignments_after - num_assignments_before
+            num_emails_sent = num_emails_sent_after - num_emails_sent_before
+            self.assertEqual(num_emails_sent, (num_assignments_made * 2) + 1) # 2 emails per assignment + 1 admin email
+
             a1 = assignments.filter(student_id__in = [s3]).first()
             self.assertEqual(a1.student_id,s3)
             section.num_graders_needed = 2
