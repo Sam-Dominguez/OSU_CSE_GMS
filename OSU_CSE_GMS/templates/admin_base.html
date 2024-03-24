@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>{% block title %}OSU CSE GMS{% endblock %}</title>
+  {% load bootstrap5 %}
+  {% bootstrap_css %}
+  {% bootstrap_javascript %}
+  {% load static %}
+ <link rel="icon" href="{% static 'favicon.ico' %}" type="image/svg+xml">
+  {% block style %}
+  {% endblock %}
+</head>
+
+<body>
+    {% include 'admin_navbar.html' %}
+    {% block content %}
+    {% endblock %}
+</body>
+
+</html>
