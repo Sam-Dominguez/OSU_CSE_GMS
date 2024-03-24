@@ -21,7 +21,7 @@ class ApplicationTests(TestCase):
         Course.objects.create(course_number='3901', name='Project: Design, Development, and Documentation of Web Applications')
         Course.objects.create(course_number='1222', name='Introduction to Computer Programming in C++ for Engineers and Scientists')
 
-        section = Section(section_number='10021', instruction_mode='SYNCHRNONOUS', semester='AU24', time='11:30-12:25', 
+        section = Section(section_number='10021', instruction_mode='SYNCHRONOUS', semester='AU24', time='11:30-12:25', 
                 days_of_week='MWF', classroom='Dreese Lab 300', course_number_id='2221', instructor_id=instructor.id)
         section.save()
 
