@@ -363,12 +363,6 @@
 <!-- Script for filtering courses -->
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Hide all subtables initially
-        var subtables = document.querySelectorAll('.sections-row');
-        subtables.forEach(function(subtable) {
-            subtable.style.display = 'none';
-        });
-
         // Show all courses
         document.getElementById('showAllCourses').addEventListener('click', function(e) {
             e.preventDefault();
@@ -394,6 +388,11 @@
                 });
                 if (hasGradersNeeded) {
                     row.style.display = 'table-row';
+                } else {
+                    var expandedSections = row.nextElementSibling;
+                    if (expandedSections.style.display === 'table-row') {
+                        expandedSections.style.display = 'none';
+                    }
                 }
             });
         });

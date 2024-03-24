@@ -462,12 +462,6 @@
 <!-- Script for filtering sections -->
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Hide all subtables initially
-        var subtables = document.querySelectorAll('.assignments-row');
-        subtables.forEach(function(subtable) {
-            subtable.style.display = 'none';
-        });
-
         // Show all sections
         document.getElementById('showAllSections').addEventListener('click', function(e) {
             e.preventDefault();
@@ -482,14 +476,19 @@
             e.preventDefault();
             var sectionRows = document.querySelectorAll('.class-sections-row');
             sectionRows.forEach(function(row) {
-                if (row.classList.contains('table-danger')) {
-                    row.style.display = 'table-row';
-                } else {
+                if (!row.classList.contains('table-danger')) {
                     row.style.display = 'none';
+
+                    // Hide assignment subtable if section is filtered out
+                    var assignmentRow = row.nextElementSibling;
+                    assignmentRow.style.display = 'none';
+                } else {
+                    row.style.display = 'table-row';
                 }
             });
         });
     });
 </script>
+
 
 {% endblock %}
