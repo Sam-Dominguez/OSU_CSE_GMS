@@ -2,19 +2,18 @@
 {% load custom_filters %}
 {% block style %}
 <style>
-    /* Center the image horizontally */
-    .bottom-container {
-        text-align: center; /* Center the image horizontally */
-        padding: 10px; /* Add padding around the image */
-    }
-
     .course-link {
-        text-decoration: none; /* Remove default underline */ 
-        color: inherit; /* Inherit the color from the parent */
+        text-decoration: none;
+        color: inherit
     }
 
     .course-link:hover {
-        color: #6c757d; /* Change color on hover */
+        color: #6c757d;
+    }
+
+    .subtable th {
+        font-weight: normal;
+        font-style: italic;
     }
 </style>
 {% endblock %}
@@ -42,19 +41,6 @@
             </svg>
         {% endif %}
     </a>
-    <!--
-    <button id="toggleSearchBtn" class="btn btn-sm btn-outline-secondary">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
-        </svg>
-    </button>
-
-    <button id="toggleExpandAllBtn" class="btn btn-sm btn-outline-secondary" style="margin-right: 5px;">
-        <svg id="expandContractIcon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-expand" viewBox="0 0 16 16">
-            <path fill-rule="evenodd" d="M3.646 9.146a.5.5 0 0 1 .708 0L8 12.793l3.646-3.647a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 0-.708m0-2.292a.5.5 0 0 0 .708 0L8 3.207l3.646 3.647a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 0 0 0 .708"/>
-        </svg>
-    </button>
-    -->
     <div class="dropdown">
         <button id="toggleFilterBtn" class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-funnel" viewBox="0 0 16 16">
@@ -66,76 +52,91 @@
             <li><a class="dropdown-item" href="" data-filter="all" id="showCoursesNeedingGraders">Show Courses Needing Graders</a></li>
         </ul>
     </div>
+    <button id="expand-all-btn" class="btn btn-sm btn-outline-secondary" style="margin-left: 5px;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-expand" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M3.646 9.146a.5.5 0 0 1 .708 0L8 12.793l3.646-3.647a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 0-.708m0-2.292a.5.5 0 0 0 .708 0L8 3.207l3.646 3.647a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 0 0 0 .708"/>
+        </svg>
+    </button>
 </div>
 
-<!--<input type="text" id="searchInput" class="form-control" placeholder="Search..." style="display: none; margin-top: 10px">-->
 <div class="container mt-4">
-    <table class="table">
-        <tbody>
-            {% for course in courses %}
-            <tr class="courses-row">
-                <td>
-                    <a href="{% url 'course_detail' course.course_number %}" class="course-link">{{ course }}</a><br>
-                    <small><span class="graders-needed"><i>Graders Needed: {{ course.course_number|get_total_graders_needed }}</i></span></small>
-                </td>
-                <td>
-                    <!-- Show sections button -->
-                    <button class="btn btn-sm btn-outline-secondary show-sections-btn">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-expand" viewBox="0 0 16 16">
-                            <path fill-rule="evenodd" d="M3.646 9.146a.5.5 0 0 1 .708 0L8 12.793l3.646-3.647a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 0-.708m0-2.292a.5.5 0 0 0 .708 0L8 3.207l3.646 3.647a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 0 0 0 .708"/>
-                        </svg>
-                    </button>
-                    <!-- Manage course button -->
-                    <button class="btn btn-sm btn-outline-secondary manage-course-btn"
-                        data-course-number="{{ course.course_number }}" data-course-name="{{ course.name }}">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                            class="bi bi-gear" viewBox="0 0 16 16">
-                            <path
-                                d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492M5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0" />
-                            <path
-                                d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115z" />
-                        </svg>
-                    </button>
-                </td>
-            </tr>
-            <!-- Sections subtable -->
-            <tr class="sections-row" style="display: none;">
-                <td>
-                    <table class="table table-sm">
-                        <thead>
-                            <tr>
-                                <th>Section Number</th>
-                                <th>Semester</th>
-                                <th>Instructor</th>
-                                <th>Instruction Mode</th>
-                                <th>Time</th>
-                                <th>Days of Week</th>
-                                <th>Classroom</th>
-                                <th>Graders Needed</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for section in sections %}
-                                {% if section.course_number.course_number == course.course_number %}
-                                <tr {% if section.num_graders_needed == 0 %} class="table-success" {% else %} class="table-danger" {% endif %}>
-                                    <td>{{ section.section_number }}</td>
-                                    <td>{{ section.semester }}</td>
-                                    <td>{% if section.instructor is not none %}{{ section.instructor }}{% else %}TBD{% endif %}</td>
-                                    <td>{{ section.instruction_mode }}</td>
-                                    <td>{{ section.time }}</td>
-                                    <td>{{ section.days_of_week }}</td>
-                                    <td>{{ section.classroom }}</td>
-                                    <td>{{ section.num_graders_needed }}</td>
+    {% if courses %}
+        <table class="table">
+            <tbody>
+                {% for course in courses %}
+                <tr class="courses-row">
+                    <td>
+                        <a href="{% url 'course_detail' course.course_number %}" class="course-link">{{ course }}</a><br>
+                        <small><span class="graders-needed"><i>Graders Needed: {{ course.course_number|get_total_graders_needed }}</i></span></small>
+                    </td>
+                    <td>
+                        <div class="btn-group">
+                            <!-- Show sections button -->
+                            <button class="btn btn-sm btn-outline-secondary show-sections-btn">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-expand" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M3.646 9.146a.5.5 0 0 1 .708 0L8 12.793l3.646-3.647a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 0-.708m0-2.292a.5.5 0 0 0 .708 0L8 3.207l3.646 3.647a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 0 0 0 .708"/>
+                                </svg>
+                            </button>
+                            <!-- Manage course button -->
+                            <button class="btn btn-sm btn-outline-secondary manage-course-btn"
+                                data-course-number="{{ course.course_number }}" data-course-name="{{ course.name }}">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    class="bi bi-gear" viewBox="0 0 16 16">
+                                    <path
+                                        d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492M5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0" />
+                                    <path
+                                        d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115z" />
+                                </svg>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                <!-- Sections subtable -->
+                <tr class="sections-row" style="display: none;">
+                    <td colspan="10">
+                        <table class="table table-sm subtable">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Section Number</th>
+                                    <th>Semester</th>
+                                    <th>Instructor</th>
+                                    <th>Instruction Mode</th>
+                                    <th>Time</th>
+                                    <th>Days of Week</th>
+                                    <th>Classroom</th>
+                                    <th>Graders Needed</th>
                                 </tr>
-                                {% endif %}
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+                            </thead>
+                            <tbody>
+                                {% for section in sections %}
+                                    {% if section.course_number.course_number == course.course_number %}
+                                    <tr {% if section.num_graders_needed == 0 %} class="table-success" {% else %} class="table-danger" {% endif %}>
+                                        <td>{{ section.section_number }}</td>
+                                        <td>{{ section.semester }}</td>
+                                        <td>{% if section.instructor is not none %}{{ section.instructor }}{% else %}TBD{% endif %}</td>
+                                        <td>{{ section.instruction_mode }}</td>
+                                        <td>{{ section.time }}</td>
+                                        <td>{{ section.days_of_week }}</td>
+                                        <td>{{ section.classroom }}</td>
+                                        <td>{{ section.num_graders_needed }}</td>
+                                    </tr>
+                                    {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <h3>No Courses Exist</h3>
+        <p>Click the 'Add Course' button to add a course</p>
+        <script>
+            document.getElementById("toggleFilterBtn").style.display = "none";
+            document.getElementById("expand-all-btn").style.display = "none";
+        </script>
+    {% endif %}
 </div>
 
 <!-- Modal for the course form -->
@@ -233,11 +234,6 @@
     </div>
 </div>
 
-{% load static %}
-<div class="bottom-container">
-    <img src="{% static 'osu_coe.png' %}" alt="" width="226.8" height="32.5" class="bottom-image">
-</div>
-
 <!-- Script to show the modals -->
 <script>
     // Ensure DOM is fully loaded before executing the script
@@ -269,90 +265,33 @@
     });
 </script>
 
-<!-- Script for search functionality
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        document.getElementById('toggleSearchBtn').addEventListener('click', function () {
-            var searchInput = document.getElementById('searchInput');
-            if (searchInput.style.display === 'none') {
-                searchInput.style.display = 'block';
-            } else {
-                searchInput.style.display = 'none';
-                document.querySelectorAll('.course-link').forEach(function(link) {
-                    link.parentElement.parentElement.style.display = 'table-row';
-                });
-                document.getElementById('searchInput').value = '';
-            }
-        });
-    });
-
-    // Filter table rows based on search input
-    document.getElementById('searchInput').addEventListener('keyup', function () {
-            var filter = this.value.toUpperCase();
-            var rows = document.querySelectorAll('.table tbody tr');
-
-            rows.forEach(function(row) {
-                var text = row.textContent || row.innerText;
-                if (text.toUpperCase().indexOf(filter) > -1) {
-                    row.style.display = "";
-                } else {
-                    row.style.display = "none";
-                }
-            });
-        });
-</script>
--->
-
 <!-- Script for expanding course sections -->
 <script>
-    // Expand all sections
-    /*
-    document.getElementById('toggleExpandAllBtn').addEventListener('click', function() {
-        var sectionsRows = document.querySelectorAll('.sections-row');
-        if (sectionsRows[0].style.display === 'none') {
-            sectionsRows.forEach(function(row) {
-                row.style.display = 'table-row';
-            });
-
-            //Change svg icon to collapse
-            var icon = document.querySelector('#expandContractIcon');
-            icon.setAttribute('class', 'bi bi-chevron-contract');
-            var path = document.querySelector('#expandContractIcon path');
-            path.setAttribute('d', 'M3.646 13.854a.5.5 0 0 0 .708 0L8 10.207l3.646 3.647a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 0 0 0 .708m0-11.708a.5.5 0 0 1 .708 0L8 5.793l3.646-3.647a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 0-.708');
-
-            // Change svg icon to collapse for individual sections
-            document.querySelectorAll('.show-sections-btn').forEach(function(btn) {
-                var icon = btn.querySelector('.bi');
-                icon.setAttribute('class', 'bi bi-chevron-contract');
-                var path = btn.querySelector('.bi path');
-                path.setAttribute('d', 'M3.646 13.854a.5.5 0 0 0 .708 0L8 10.207l3.646 3.647a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 0 0 0 .708m0-11.708a.5.5 0 0 1 .708 0L8 5.793l3.646-3.647a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 0-.708');
-            });
-        } else {
-            sectionsRows.forEach(function(row) {
-                row.style.display = 'none';
-            });
-            // Change svg icon to expand
-            var icon = document.querySelector('#expandContractIcon');
-            icon.setAttribute('class', 'bi bi-chevron-expand');
-            var path = document.querySelector('#expandContractIcon path');
-            path.setAttribute('d', 'M3.646 9.146a.5.5 0 0 1 .708 0L8 12.793l3.646-3.647a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 0-.708m0-2.292a.5.5 0 0 0 .708 0L8 3.207l3.646 3.647a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 0 0 0 .708');
-
-            // Change svg icon to expand for individual sections
-            document.querySelectorAll('.show-sections-btn').forEach(function(btn) {
-                var icon = btn.querySelector('.bi');
-                icon.setAttribute('class', 'bi bi-chevron-expand');
-                var path = btn.querySelector('.bi path');
-                path.setAttribute('d', 'M3.646 9.146a.5.5 0 0 1 .708 0L8 12.793l3.646-3.647a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 0-.708m0-2.292a.5.5 0 0 0 .708 0L8 3.207l3.646 3.647a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 0 0 0 .708');
-            });
-        }
-    });
-    */
-    
-
-    // Expand individual sections
+    // Expand and collapse subtables individually
     document.querySelectorAll('.show-sections-btn').forEach(function(btn) {
         btn.addEventListener('click', function() {
             var sectionsRow = this.closest('tr').nextElementSibling;
+            var subtableRows = sectionsRow.querySelectorAll('.subtable tbody tr');
+
+            if (subtableRows.length === 0) {
+                // Create a popover for this button
+                var popover = new bootstrap.Popover(btn, {
+                    content: 'This course has no sections yet!',
+                    trigger: 'manual'
+                });
+                popover.show();
+            
+                // Hide the popover when clicking outside of it
+                document.addEventListener('click', function hidePopover(event) {
+                    if (!btn.contains(event.target)) {
+                        popover.dispose();
+                        document.removeEventListener('click', hidePopover);
+                    }
+                });
+
+                return;
+            }
+
             if (sectionsRow.style.display === 'none') {
                 sectionsRow.style.display = 'table-row';
                 // Change svg icon to collapse
@@ -372,48 +311,92 @@
     });
 </script>
 
-<!-- Script for filtering courses -->
+<!-- Script for expanding and collapsing all subtables -->
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-    function hideAllSubtables() {
+    document.getElementById('expand-all-btn').addEventListener('click', function() {
+        var expandAllBtn = document.getElementById('expand-all-btn');
+        var icon = expandAllBtn.querySelector('.bi');
+
+        // Change the all-button svg icon
+        if (icon.classList.contains('bi-chevron-expand')) {
+            icon.setAttribute('class', 'bi bi-chevron-contract');
+            var path = expandAllBtn.querySelector('.bi path');
+            path.setAttribute('d', 'M3.646 13.854a.5.5 0 0 0 .708 0L8 10.207l3.646 3.647a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 0 0 0 .708m0-11.708a.5.5 0 0 1 .708 0L8 5.793l3.646-3.647a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 0-.708');
+        } else {
+            icon.setAttribute('class', 'bi bi-chevron-expand');
+            var path = expandAllBtn.querySelector('.bi path');
+            path.setAttribute('d', 'M3.646 9.146a.5.5 0 0 1 .708 0L8 12.793l3.646-3.647a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 0-.708m0-2.292a.5.5 0 0 0 .708 0L8 3.207l3.646 3.647a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 0 0 0 .708');
+        }
+
+        // Display all subtables
         var subtables = document.querySelectorAll('.sections-row');
         subtables.forEach(function(subtable) {
-            subtable.style.display = 'none';
-        });
-    }
+            var courseRow = subtable.previousElementSibling;
+            if (courseRow.style.display !== 'none') {
+                var subtableRows = subtable.querySelectorAll('.subtable tbody tr');
+                if (subtableRows.length !== 0) {
+                    if (icon.classList.contains('bi-chevron-expand')) {
+                        subtable.style.display = 'none';
+                    } else {
+                        subtable.style.display = 'table-row';
+                    }
 
-    // Hide all subtables initially
-    hideAllSubtables();
-
-    // Function to show all courses
-    document.getElementById('showAllCourses').addEventListener('click', function(e) {
-        e.preventDefault();
-        var courseRows = document.querySelectorAll('.courses-row');
-        courseRows.forEach(function(row) {
-            row.style.display = 'table-row';
-        });
-    });
-
-    // Function to show only courses needing graders
-    document.getElementById('showCoursesNeedingGraders').addEventListener('click', function(e) {
-        e.preventDefault();
-        var courseRows = document.querySelectorAll('.courses-row');
-        courseRows.forEach(function(row) {
-            row.style.display = 'none';
-            var sections = row.nextElementSibling.querySelector('tbody').querySelectorAll('tr');
-            var hasGradersNeeded = false;
-            sections.forEach(function(section) {
-                if (section.classList.contains('table-danger')) { // If section needs graders
-                    hasGradersNeeded = true;
-                    return;
+                    // Change svg icon for individual row button
+                    var button = courseRow.querySelector('.show-sections-btn');
+                    var buttonIcon = button.querySelector('.bi');
+                    if (icon.classList.contains('bi-chevron-expand')) {
+                        buttonIcon.setAttribute('class', 'bi bi-chevron-expand');
+                        var buttonPath = button.querySelector('.bi path');
+                        buttonPath.setAttribute('d', 'M3.646 9.146a.5.5 0 0 1 .708 0L8 12.793l3.646-3.647a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 0-.708m0-2.292a.5.5 0 0 0 .708 0L8 3.207l3.646 3.647a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 0 0 0 .708');
+                    } else {
+                        buttonIcon.setAttribute('class', 'bi bi-chevron-contract');
+                        var buttonPath = button.querySelector('.bi path');
+                        buttonPath.setAttribute('d', 'M3.646 13.854a.5.5 0 0 0 .708 0L8 10.207l3.646 3.647a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 0 0 0 .708m0-11.708a.5.5 0 0 1 .708 0L8 5.793l3.646-3.647a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 0-.708');
+                    }
                 }
-            });
-            if (hasGradersNeeded) {
-                row.style.display = 'table-row';
             }
         });
     });
-});
+</script>
+
+
+<!-- Script for filtering courses -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Show all courses
+        document.getElementById('showAllCourses').addEventListener('click', function(e) {
+            e.preventDefault();
+            var courseRows = document.querySelectorAll('.courses-row');
+            courseRows.forEach(function(row) {
+                row.style.display = 'table-row';
+            });
+        });
+
+        // Show only courses needing graders
+        document.getElementById('showCoursesNeedingGraders').addEventListener('click', function(e) {
+            e.preventDefault();
+            var courseRows = document.querySelectorAll('.courses-row');
+            courseRows.forEach(function(row) {
+                row.style.display = 'none';
+                var sections = row.nextElementSibling.querySelector('tbody').querySelectorAll('tr');
+                var hasGradersNeeded = false;
+                sections.forEach(function(section) {
+                    if (section.classList.contains('table-danger')) { // If section needs graders
+                        hasGradersNeeded = true;
+                        return;
+                    }
+                });
+                if (hasGradersNeeded) {
+                    row.style.display = 'table-row';
+                } else {
+                    var expandedSections = row.nextElementSibling;
+                    if (expandedSections.style.display === 'table-row') {
+                        expandedSections.style.display = 'none';
+                    }
+                }
+            });
+        });
+    });
 </script>
 
 {% endblock %}
