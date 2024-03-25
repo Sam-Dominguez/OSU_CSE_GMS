@@ -1,6 +1,17 @@
 {% extends "base.html" %}
 {% block title %}Course Detail{% endblock %}
 {% block content %}
+<style>
+    .email-link {
+        color: inherit;
+    }
+
+    .subtable th {
+        font-weight: normal;
+        font-style: italic;
+    }
+</style>
+
 <header class="bg-light p-3">
     <div class="container">
         <div class="d-flex justify-content-between align-items-center">
@@ -16,41 +27,122 @@
         </div>
     </div>
 </header>
+
+<div class="container mt-4 d-flex">
+    <div class="dropdown">
+        <button id="toggleFilterBtn" class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-funnel" viewBox="0 0 16 16">
+                <path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5zm1 .5v1.308l4.372 4.858A.5.5 0 0 1 7 8.5v5.306l2-.666V8.5a.5.5 0 0 1 .128-.334L13.5 3.308V2z"/>
+            </svg>
+        </button>
+        <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="" data-filter="all" id="showAllSections">Show All Sections</a></li>
+            <li><a class="dropdown-item" href="" data-filter="all" id="showSectionsNeedingGraders">Show Sections Needing Graders</a></li>
+        </ul>
+    </div>
+    <button id="expand-all-btn" class="btn btn-sm btn-outline-secondary ms-1">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-expand" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M3.646 9.146a.5.5 0 0 1 .708 0L8 12.793l3.646-3.647a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 0-.708m0-2.292a.5.5 0 0 0 .708 0L8 3.207l3.646 3.647a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 0 0 0 .708"/>
+        </svg>
+    </button>
+</div>
+
 <div class="container mt-4">
-    <tr class="sections-row" style="display: none;">
-        <td>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Section Number</th>
-                        <th>Semester</th>
-                        <th>Instructor</th>
-                        <th>Instruction Mode</th>
-                        <th>Time</th>
-                        <th>Days of Week</th>
-                        <th>Classroom</th>
-                        <th>Graders Needed</th>
+    {% if sections %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Section Number</th>
+                    <th>Semester</th>
+                    <th>Instructor</th>
+                    <th>Instruction Mode</th>
+                    <th>Time</th>
+                    <th>Days of Week</th>
+                    <th>Classroom</th>
+                    <th>Graders Needed</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for section in sections %}
+                    {% if section.course_number.course_number == course.course_number %}
+                    <tr {% if section.num_graders_needed == 0 %} class="table-success class-sections-row" {% else %} class="table-danger class-sections-row" {% endif %}>
+                        <td>{{ section.section_number }}</td>
+                        <td>{{ section.semester }}</td>
+                        <td>{% if section.instructor is not none %}{{ section.instructor }}{% else %}TBD{% endif %}</td>
+                        <td>{{ section.instruction_mode }}</td>
+                        <td>{{ section.time }}</td>
+                        <td>{{ section.days_of_week }}</td>
+                        <td>{{ section.classroom }}</td>
+                        <td>{{ section.num_graders_needed }}</td>
+                        <td>
+                            <div class="btn-group">
+                                <!-- Show assignments button -->
+                                <button class="btn btn-sm btn-outline-secondary show-assignments-btn">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-expand" viewBox="0 0 16 16">
+                                        <path fill-rule="evenodd" d="M3.646 9.146a.5.5 0 0 1 .708 0L8 12.793l3.646-3.647a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 0-.708m0-2.292a.5.5 0 0 0 .708 0L8 3.207l3.646 3.647a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 0 0 0 .708"/>
+                                    </svg>
+                                </button>
+                                <!-- Manage section button -->
+                                <button class="btn btn-sm btn-outline-secondary manage-section-btn"
+                                    data-section-number="{{ section.section_number }}" data-semester="{{ section.semester }}" data-instructor="{{ section.instructor.pk }}"
+                                    data-instruction_mode="{{ section.instruction_mode }}" data-time="{{ section.time }}" data-days_of_week="{{ section.days_of_week }}"
+                                    data-classroom="{{ section.classroom }}" data-num_graders_needed="{{ section.num_graders_needed}}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                        class="bi bi-gear" viewBox="0 0 16 16">
+                                        <path
+                                            d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492M5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0" />
+                                        <path
+                                            d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115z" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </td>
                     </tr>
-                </thead>
-                <tbody>
-                    {% for section in sections %}
-                        {% if section.course_number.course_number == course.course_number %}
-                        <tr {% if section.num_graders_needed == 0 %} class="table-success" {% else %} class="table-danger" {% endif %}>
-                            <td>{{ section.section_number }}</td>
-                            <td>{{ section.semester }}</td>
-                            <td>{% if section.instructor is not none %}{{ section.instructor }}{% else %}TBD{% endif %}</td>
-                            <td>{{ section.instruction_mode }}</td>
-                            <td>{{ section.time }}</td>
-                            <td>{{ section.days_of_week }}</td>
-                            <td>{{ section.classroom }}</td>
-                            <td>{{ section.num_graders_needed }}</td>
-                        </tr>
-                        {% endif %}
-                    {% endfor %}
-                </tbody>
-            </table>
-        </td>
-    </tr>
+                    <!-- Assignments subtable -->
+                    <tr class="assignments-row" style="display: none;">
+                        <td colspan="10">
+                            <div class="container mt-4">
+                                <table class="table table-sm subtable" style="width: 100%">
+                                    <thead>
+                                        <tr>
+                                            <th>Student</th>
+                                            <th>Email</th>
+                                            <th>In Columbus?</th>
+                                            <th>Previous Grader?</th>
+                                            <th>Course Graded Last Term</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for assignment in assignments %}
+                                            {% if assignment.section_number.section_number == section.section_number %}
+                                                {% with assignment.student_id as student %}
+                                                    <tr class="table-secondary">
+                                                        <td>{{ student.last_name }}, {{ student.first_name }}</td>
+                                                        <td><a href="mailto:{{ student.email }}" class="email-link">{{ student.email }}</a></td>
+                                                        <td>{% if student.in_columbus == 1 %}Yes{% else %}No{% endif %}</td>
+                                                        <td>{% if student.previous_grader == 1 %}Yes{% else %}No{% endif %}</td>
+                                                        <td>{% if student.graded_last_term != '' %}{{ student.graded_last_term }}{% else %}N/A{% endif %}</td>
+                                                    </tr>
+                                                {% endwith %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <h3>No Sections Exist</h3>
+        <p>Click the 'Add Section' button to add a section to the course</p>
+        <script>
+            document.getElementById("toggleFilterBtn").style.display = "none";
+            document.getElementById("expand-all-btn").style.display = "none";
+        </script>
+    {% endif %}
 </div>
 
 <!-- Modal for the section form -->
@@ -120,6 +212,106 @@
     </div>
 </div>
 
+<!-- Modal to manage section -->
+<div class="modal" id="manageSectionModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Manage Section</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="manage-section-form" action="" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="update_section" value="update_section">
+                    <div class="form-group">
+                        <label for="id_section_course_number">Course Number</label>
+                        <input type="text" class="form-control" id="id_edit_section_course_number" name="course_number" value="{{ course.course_number }}"readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="id_section_number">Section Number</label>
+                        <input type="text" class="form-control" id="id_edit_section_number" name="section_number" value="{{ section.section_number }}"readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="id_semester">Semester</label>
+                        <input type="text" class="form-control" id="id_edit_semester" name="semester">
+                    </div>
+                    <div class="form-group">
+                        <label for="id_instructor">Instructor</label>
+                        <select class="form-control" id="id_edit_instructor" name="instructor">
+                            <option value="" selected>TBD</option>
+                            {% for instructor in instructors %}
+                                <option value="{{ instructor.pk }}">{{ instructor.first_name }} {{ instructor.last_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="id_instruction_mode">Instruction Mode</label>
+                        <select class="form-control" id="id_edit_instruction_mode" name="instruction_mode">
+                            <option value="SYNCHRONOUS">SYNCHRONOUS</option>
+                            <option value="ASYNCHRONOUS">ASYNCHRONOUS</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="id_time">Time</label>
+                        <input type="text" class="form-control" id="id_edit_time" name="time">
+                    </div>
+                    <div class="form-group">
+                        <label for="id_days_of_week">Days of Week</label>
+                        <input type="text" class="form-control" id="id_edit_days_of_week" name="days_of_week">
+                    </div>
+                    <div class="form-group">
+                        <label for="id_classroom">Classroom</label>
+                        <input type="text" class="form-control" id="id_edit_classroom" name="classroom">
+                    </div>
+                    <div class="form-group">
+                        <label for="id_num_graders_needed">Graders Needed</label>
+                        <input type="text" class="form-control" id="id_edit_num_graders_needed" name="num_graders_needed">
+                    </div>
+                    <div class="modal-footer justify-content-between">
+                        <button type="button" class="btn btn-primary delete-button"
+                            data-section-number="{{ section.section_number }}" data-bs-toggle="modal"
+                            data-bs-target="#deleteSectionModal"
+                            style="background-color: #BB0000 !important;">Delete</button>
+                        <div>
+                            <button type="submit" class="btn btn-primary"
+                                style="background-color: #BB0000 !important;">Update</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal to delete section -->
+<div class="modal" id="deleteSectionModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Delete Section</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this section?</p>
+                <p><b>All grader assignments made in this section will also be deleted.</b></p>
+                <div class="modal-footer">
+                    <form id="delete-course-form" action="" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="delete_section" value="delete_section">
+                        <input type="hidden" name="section_number" id="delete-section-number"
+                            value="{{ section.section_number }}">
+                        <button type="submit" class="btn btn-primary" style="background-color: #BB0000 !important;"
+                            id="delete-btn">Delete</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Script to show the modals -->
 <script>
     // Ensure DOM is fully loaded before executing the script
@@ -134,6 +326,169 @@
             addSectionModal.hide();
         });
     });
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.manage-section-btn').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var sectionNumber = btn.getAttribute('data-section-number');
+                var semester = btn.getAttribute('data-semester');
+                var instructor = btn.getAttribute('data-instructor');
+                var instruction_mode = btn.getAttribute('data-instruction_mode');
+                var time = btn.getAttribute('data-time');
+                var days_of_week = btn.getAttribute('data-days_of_week');
+                var classroom = btn.getAttribute('data-classroom');
+                var num_graders_needed = btn.getAttribute('data-num_graders_needed');
+
+                document.getElementById('id_edit_section_number').value = sectionNumber;
+                document.getElementById('id_edit_semester').value = semester;
+                setSelectedInstructor(instructor);
+                document.getElementById('id_edit_instruction_mode').value = instruction_mode;
+                document.getElementById('id_edit_time').value = time;
+                document.getElementById('id_edit_days_of_week').value = days_of_week;
+                document.getElementById('id_edit_classroom').value = classroom;
+                document.getElementById('id_edit_num_graders_needed').value = num_graders_needed;
+
+                document.getElementById('delete-section-number').value = sectionNumber;
+
+                var manageCourseModal = new bootstrap.Modal(document.getElementById('manageSectionModal'));
+                manageCourseModal.show();
+            });
+        });
+    });
+
+    function setSelectedInstructor(instructor) {
+        var select = document.getElementById('id_edit_instructor');
+        for (var i = 0; i < select.options.length; i++) {
+            if (select.options[i].value == instructor) {
+                select.options[i].selected = true;
+                break;
+            }
+        }
+    }
 </script>
+
+<!-- Script for expanding individual sections -->
+<script>
+    document.querySelectorAll('.show-assignments-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var assignmentsRow = this.closest('tr').nextElementSibling;
+            var subtableRows = assignmentsRow.querySelectorAll('.subtable tbody tr');
+
+            if (subtableRows.length === 0) {
+                // Create a popover for this button
+                var popover = new bootstrap.Popover(btn, {
+                    content: 'This section has no assignments yet!',
+                    trigger: 'manual'
+                });
+                popover.show();
+            
+                // Hide the popover when clicking outside of it
+                document.addEventListener('click', function hidePopover(event) {
+                    if (!btn.contains(event.target)) {
+                        popover.dispose();
+                        document.removeEventListener('click', hidePopover);
+                    }
+                });
+
+                return;
+            }
+
+            if (assignmentsRow.style.display === 'none') {
+                assignmentsRow.style.display = 'table-row';
+                // Change svg icon to collapse
+                var icon = this.querySelector('.bi');
+                icon.setAttribute('class', 'bi bi-chevron-contract');
+                var path = this.querySelector('.bi path');
+                path.setAttribute('d', 'M3.646 13.854a.5.5 0 0 0 .708 0L8 10.207l3.646 3.647a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 0 0 0 .708m0-11.708a.5.5 0 0 1 .708 0L8 5.793l3.646-3.647a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 0-.708');
+            } else {
+                assignmentsRow.style.display = 'none';
+                // Change svg icon to expand
+                var icon = this.querySelector('.bi');
+                icon.setAttribute('class', 'bi bi-chevron-expand');
+                var path = this.querySelector('.bi path');
+                path.setAttribute('d', 'M3.646 9.146a.5.5 0 0 1 .708 0L8 12.793l3.646-3.647a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 0-.708m0-2.292a.5.5 0 0 0 .708 0L8 3.207l3.646 3.647a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 0 0 0 .708');
+            }
+        });
+    });
+</script>
+
+<!-- Script for expanding all sections -->
+<script>
+    document.getElementById('expand-all-btn').addEventListener('click', function() {
+        var expandAllBtn = document.getElementById('expand-all-btn');
+        var icon = expandAllBtn.querySelector('.bi');
+
+        // Change the all-button svg icon
+        if (icon.classList.contains('bi-chevron-expand')) {
+            icon.setAttribute('class', 'bi bi-chevron-contract');
+            var path = expandAllBtn.querySelector('.bi path');
+            path.setAttribute('d', 'M3.646 13.854a.5.5 0 0 0 .708 0L8 10.207l3.646 3.647a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 0 0 0 .708m0-11.708a.5.5 0 0 1 .708 0L8 5.793l3.646-3.647a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 0-.708');
+        } else {
+            icon.setAttribute('class', 'bi bi-chevron-expand');
+            var path = expandAllBtn.querySelector('.bi path');
+            path.setAttribute('d', 'M3.646 9.146a.5.5 0 0 1 .708 0L8 12.793l3.646-3.647a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 0-.708m0-2.292a.5.5 0 0 0 .708 0L8 3.207l3.646 3.647a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 0 0 0 .708');
+        }
+
+        // Display all subtables
+        var subtables = document.querySelectorAll('.assignments-row');
+        subtables.forEach(function(subtable) {
+            var sectionRow = subtable.previousElementSibling;
+            if (sectionRow.style.display !== 'none') {
+                var subtableRows = subtable.querySelectorAll('.subtable tbody tr');
+                if (subtableRows.length !== 0) {
+                    if (icon.classList.contains('bi-chevron-expand')) {
+                        subtable.style.display = 'none';
+                    } else {
+                        subtable.style.display = 'table-row';
+                    }
+
+                    // Change svg icon for individual row button
+                    var button = sectionRow.querySelector('.show-assignments-btn');
+                    var buttonIcon = button.querySelector('.bi');
+                    if (icon.classList.contains('bi-chevron-expand')) {
+                        buttonIcon.setAttribute('class', 'bi bi-chevron-expand');
+                        var buttonPath = button.querySelector('.bi path');
+                        buttonPath.setAttribute('d', 'M3.646 9.146a.5.5 0 0 1 .708 0L8 12.793l3.646-3.647a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 0-.708m0-2.292a.5.5 0 0 0 .708 0L8 3.207l3.646 3.647a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 0 0 0 .708');
+                    } else {
+                        buttonIcon.setAttribute('class', 'bi bi-chevron-contract');
+                        var buttonPath = button.querySelector('.bi path');
+                        buttonPath.setAttribute('d', 'M3.646 13.854a.5.5 0 0 0 .708 0L8 10.207l3.646 3.647a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 0 0 0 .708m0-11.708a.5.5 0 0 1 .708 0L8 5.793l3.646-3.647a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 0-.708');
+                    }
+                }
+            }
+        });
+    });
+</script>
+
+<!-- Script for filtering sections -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Show all sections
+        document.getElementById('showAllSections').addEventListener('click', function(e) {
+            e.preventDefault();
+            var sectionRows = document.querySelectorAll('.class-sections-row');
+            sectionRows.forEach(function(row) {
+                row.style.display = 'table-row';
+            });
+        });
+
+        // Show only sections needing graders
+        document.getElementById('showSectionsNeedingGraders').addEventListener('click', function(e) {
+            e.preventDefault();
+            var sectionRows = document.querySelectorAll('.class-sections-row');
+            sectionRows.forEach(function(row) {
+                if (!row.classList.contains('table-danger')) {
+                    row.style.display = 'none';
+
+                    // Hide assignment subtable if section is filtered out
+                    var assignmentRow = row.nextElementSibling;
+                    assignmentRow.style.display = 'none';
+                } else {
+                    row.style.display = 'table-row';
+                }
+            });
+        });
+    });
+</script>
+
 
 {% endblock %}
