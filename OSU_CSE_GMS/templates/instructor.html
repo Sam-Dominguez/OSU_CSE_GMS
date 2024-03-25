@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block style %}
+    <style>
+        /* Center the image horizontally */
+        .bottom-container {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+
+    </style>
+{% endblock %}
+
+{%block content %}
+<header class="bg-light p-3">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center">
+            <h1 class="m-0">Instructor Form</h1>
+        </div>
+    </div>
+</header></br>
+<form action="{% url 'instructor' %}" method="POST" enctype="mutipart/form-data">
+    {% csrf_token %}
+    {% comment %} <div class="form-group"> {% endcomment %}
+        {% comment %} <label for="instr_name">Instructor Name</label>
+        <select class="form-control" id="instr_name" name="instructor">
+            <option value="" selected>Select Instructor</option>
+            {% for instructor in instructors %}
+                <option value="{{ instructor.pk }}">{{ instructor.first_name }} {{ instructor.last_name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <label for="course_assignment">Course</label>
+    <select class="form-control" id="course_assignment" name="instructor">
+        <option value="" selected>Select Course</option>
+        {% for course in courses %}
+            <option value="{{ course.pk }}">{{ course.course_number }}: {{ course.name }}</option>
+        {% endfor %}
+    </select> {% endcomment %}
+    <div class="container">
+        <label for="section_number">Course</label>
+        <select class="dropdown" id="section_number" name="section_number">
+            <option value="" selected>Select Section</option>
+            {% for section in sections %}
+                <option class="dropdown-item" value="{{ section.section_number }}">{{ section.section_number }} - {{ section.course_number }}</option>
+            {% endfor %}
+        </select>
+    </div></br>
+    <div class="container">
+        <label for="student_email">Student</label>
+        <input id="student_email" type="text" name="student_email" placeholder="Student Email">
+    </div></br>
+    <div class="container">
+        <button class="btn btn-primary btn-lg" style="background-color: #BB0000 !important;">Submit Grader Assignment</button>
+    </div>
+    
+</form>
+{% endblock %}

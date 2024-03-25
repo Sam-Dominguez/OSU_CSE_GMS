@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.views.generic.base import TemplateView
-from .views import administrator, course_detail, student, sign_up, student_intake
+from .views import administrator, course_detail, student, sign_up, student_intake, instructor
 from .algo.algo import algoTest
 from django.views.generic import RedirectView
 import logging
@@ -35,6 +35,7 @@ urlpatterns = [
     path('student/', student, name="student"),
     path('application/', student_intake, name="application"),
     path('thanks/', TemplateView.as_view(template_name="thanks.html"), name="thanks"),
+    path('instructor/', instructor, name="instructor")
 ]
 
 logger = logging.getLogger('django')
