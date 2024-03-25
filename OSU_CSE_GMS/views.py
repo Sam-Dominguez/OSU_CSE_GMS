@@ -3,15 +3,22 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.views.defaults import server_error
 from .forms import CourseForm, SectionForm, SignUpForm, ApplicationForm
-from .models import Course, Student, Assignment, Section, UnassignedStudent, Instructor, PreviousClassTaken
+from .models import Course, Student, Assignment, Section, UnassignedStudent, Instructor, PreviousClassTaken,Administrator
 import logging
 from .algo.algo import massAssign
+from django.contrib.auth import authenticate, login
 
 LOGGER = logging.getLogger('django')
 REJECTION_LOGGER = logging.getLogger('rejection_reason_logging')
 
+@login_required
 def administrator(request):
     context = {}
+    userOfReq = request.user
+   
+    if not Administrator.objects.filter(user=userOfReq).exists():
+        return redirect("home")
+    
     course_form = CourseForm()
     if request.method == 'POST':
         if 'add_course' in request.POST:
@@ -64,8 +71,13 @@ def administrator(request):
     
     return render(request, 'administrator.html', context)
 
+@login_required
 def course_detail(request, course_number):
     context = {}
+    userOfReq = request.user
+    if not Administrator.objects.filter(user=userOfReq).exists():
+       return redirect("home")
+    
     section_form = SectionForm()
     if request.method == 'POST':
         if 'add_section' in request.POST:
@@ -73,15 +85,83 @@ def course_detail(request, course_number):
             section_form = SectionForm(request.POST)
             if section_form.is_valid():
                 section_form.save()
+        elif 'update_section' in request.POST:
+            section_number = request.POST['section_number']
+            LOGGER.info(f'Updating Section with section number: {section_number}')
+            section = Section.objects.get(section_number=section_number, course_number=course_number)
+            section_form = SectionForm(request.POST, instance=section)
+            if section_form.is_valid():
+                section_form.save()
+        elif 'delete_section' in request.POST:
+            section_number = request.POST['section_number']
+            LOGGER.info(f'Deleting Section with section number: {section_number}')
+            section = Section.objects.get(section_number=section_number, course_number=course_number)
+            section.delete()
 
     course = Course.objects.get(course_number=course_number)
     sections = Section.objects.filter(course_number=course_number)
+    instructors = Instructor.objects.all()
+    assignments = Assignment.objects.filter(section_number__course_number=course_number)
+    students = Student.objects.filter(assignment__in=assignments)
     context = {
         'section_form': section_form,
         'course': course,
-        'sections': sections
+        'sections': sections,
+        'instructors': instructors,
+        'assignments': assignments,
+        'students': students
     }
     return render(request, 'course_detail.html', context)
+
+
+def dashboard(request):
+    userOfReq = request.user
+    if request.user.is_authenticated:
+        if Administrator.objects.filter(user=userOfReq).exists():
+            return redirect("administrator")
+        elif Student.objects.filter(user=userOfReq).exists():
+            return redirect("student")
+        else:
+            return redirect("home")
+    else:
+        return redirect("home")
+    
+
+#@login_required
+def create_admin(request):
+    # userOfReq = request.user
+    # if not Administrator.objects.filter(user=userOfReq).exists():
+    #    return redirect("home")
+    form = SignUpForm()
+    if request.method == 'POST':
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            LOGGER.info('Create admin Form Valid')
+            form.save()
+
+            first_name = form.cleaned_data.get('first_name')
+            last_name = form.cleaned_data.get('last_name')
+            username = form.cleaned_data.get('username')
+            email = form.cleaned_data.get('email')
+
+            user = User.objects.get(username=username)
+            administrator = Administrator.objects.create(user=user, email=email, first_name = first_name, last_name = last_name)
+            administrator.save()
+            if administrator.pk:
+                LOGGER.info(f'Created Administrator with id: {administrator.pk} associated with auth_user with id: {user.pk}')
+            else:
+                LOGGER.error(f'Failed to create Administrator to associate with user id: {user.pk}')
+
+            return redirect('administrator')
+        else:
+            LOGGER.warning(f'Admin create Form not valid: {form.errors}')
+        
+    context = {
+        'form' : form
+    }
+
+    return render(request, 'registration/admin_create.html', context)
+
 
 def sign_up(request):
     form = SignUpForm()
@@ -117,6 +197,9 @@ def sign_up(request):
 
 @login_required
 def student(request):
+    userOfReq = request.user
+    if not Student.objects.filter(user=userOfReq).exists():
+       return redirect("home")
     if request.method == 'POST' and 'reject_assignment' in request.POST:
         LOGGER.info('Rejecting Assignment...')
         LOGGER.info(request.POST)
@@ -215,6 +298,9 @@ def student(request):
 
 @login_required
 def student_intake(request):
+    userOfReq = request.user
+    if not Student.objects.filter(user=userOfReq).exists():
+       return redirect("home")
     context = {}
     messages = {}
     form = ApplicationForm()
