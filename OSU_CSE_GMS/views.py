@@ -381,3 +381,40 @@ def student_intake(request):
     LOGGER.info(f'Intake Form Context: {context}')
     
     return render(request, 'user_intake/application.html', context)
+
+@login_required
+def instructor(request):
+    user = request.user
+    instructor = Instructor.objects.get(user_id=user)
+    sections = Section.objects.filter(instructor=instructor)
+    # LOGGER.info(f'Sections for this instructor: {sections}')
+    
+    if(request.method == 'POST'):
+            section = Section.objects.filter(section_number = request.POST['section_number'], instructor=instructor)
+            if section.exists():
+                LOGGER.info('Section Found.')
+                section = section[0]
+                status = 'PENDING'
+                email = request.POST['student_email']
+                student = Student.objects.filter(email=email)
+                if student.exists():
+                    LOGGER.info('Student Found.')
+                    student = student[0]
+                    assignment = Assignment(section_number=section, status=status, student_id=student)
+                    assignment.save()
+                    LOGGER.info(f'Assignment for{assignment.section_number.course_number}section {assignment.section_number.section_number} has been saved.')
+                    return redirect('/thanks/')
+                else:
+                    LOGGER.error('Student Not Found.') 
+            else:
+                LOGGER.error('Section Not Found.')
+
+
+    context = {
+        'sections': sections,
+        'instructor': instructor,
+        }
+    
+    LOGGER.info(f'Instructor Context: {context}')
+
+    return render(request, 'instructor.html', context)
