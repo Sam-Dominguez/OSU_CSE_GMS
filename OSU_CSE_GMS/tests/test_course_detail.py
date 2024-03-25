@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from OSU_CSE_GMS.models import Course, Section
+from OSU_CSE_GMS.models import Course, Section, User, Administrator
 
 ADMIN_FORM_URL = '/administrator/courses/{}/'
 
@@ -29,6 +29,9 @@ class AdministratorTests(TestCase):
         url = ADMIN_FORM_URL.format('2431')
 
         # Make POST
+        user = User.objects.create_user(username='testuser', email='test@example.com', password='testpassword')
+        admin = Administrator.objects.create(user=user, email ='test@example.com' )
+        self.client.login(username='testuser', password='testpassword')
         response = self.client.post(url, data=section_data, follow=True)
 
         # Print form errors for debugging
@@ -81,6 +84,9 @@ class AdministratorTests(TestCase):
         }
 
         url = ADMIN_FORM_URL.format('2431')
+        user = User.objects.create_user(username='testuser', email='test@example.com', password='testpassword')
+        admin = Administrator.objects.create(user=user, email ='test@example.com' )
+        self.client.login(username='testuser', password='testpassword')
         response = self.client.post(url, data=section_data, follow=True)
 
         # Verify the section was changed
@@ -118,6 +124,9 @@ class AdministratorTests(TestCase):
         }
 
         url = ADMIN_FORM_URL.format('2431')
+        user = User.objects.create_user(username='testuser', email='test@example.com', password='testpassword')
+        admin = Administrator.objects.create(user=user, email ='test@example.com' )
+        self.client.login(username='testuser', password='testpassword')
         self.client.post(url, data=section_data, follow=True)
 
         # Verify the section was deleted
