@@ -19,15 +19,30 @@ class SectionForm(forms.ModelForm):
         self.fields['instructor'].queryset = Instructor.objects.all()
         self.fields['instructor'].required = False
 
-class SignUpForm(UserCreationForm):
+class SignUpFormStudent(UserCreationForm):
     first_name = forms.CharField(label='First Name', max_length=30)
     last_name = forms.CharField(label='last Name', max_length=30)
 
-    EMAIL_VALIDATION = '^([a-zA-Z]+-?[a-zA-Z]*)\.(\d)+@(osu|buckeyemail\.osu)\.edu$'
+    EMAIL_VALIDATION = '^([a-zA-Z]+-?[a-zA-Z]*)\.(\d)+@buckeyemail\.osu\.edu$'
 
     email = forms.EmailField(label='Email Address', required=True, 
         help_text='name.#@buckeyemail.osu.edu Ex: buckeye.1@buckeyemail.osu.edu', 
         validators=[RegexValidator(EMAIL_VALIDATION, "Email must be of the form [name].#@buckeyemail.osu.edu")])
+    
+    class Meta:
+        model = User
+        fields = ('first_name', 'last_name', 'username', 'email', 'password1', 'password2')
+
+
+class SignUpFormAdmin(UserCreationForm):
+    first_name = forms.CharField(label='First Name', max_length=30)
+    last_name = forms.CharField(label='last Name', max_length=30)
+
+    EMAIL_VALIDATION = '^([a-zA-Z]+-?[a-zA-Z]*)\.(\d)+@osu\.edu$'
+
+    email = forms.EmailField(label='Email Address', required=True, 
+        help_text='name.#@osu.edu Ex: buckeye.1@osu.edu', 
+        validators=[RegexValidator(EMAIL_VALIDATION, "Email must be of the form [name].#@osu.edu")])
     
     class Meta:
         model = User

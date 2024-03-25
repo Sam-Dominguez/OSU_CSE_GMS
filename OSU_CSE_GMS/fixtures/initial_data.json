@@ -3484,6 +3484,29 @@
     }
 },
 {
+    "model": "OSU_CSE_GMS.student",
+    "pk": 269,
+    "fields": {
+        "user": 297,
+        "email": "dominguez.101@buckeyemail.osu.edu",
+        "first_name": "Sam",
+        "last_name": "Dominguez",
+        "in_columbus": null,
+        "previous_grader": null,
+        "graded_last_term": ""
+    }
+},
+{
+    "model": "OSU_CSE_GMS.administrator",
+    "pk": 1,
+    "fields": {
+        "user": 298,
+        "email": "dominguez.101@osu.edu",
+        "first_name": "Samuel",
+        "last_name": "Dominguez"
+    }
+},
+{
     "model": "OSU_CSE_GMS.instructor",
     "pk": 1,
     "fields": {
@@ -13027,7 +13050,7 @@
         "email": "Mu.34",
         "is_staff": false,
         "is_active": true,
-        "date_joined": "2024-03-05T04:34:49.000Z",
+        "date_joined": "2024-03-05T04:34:49Z",
         "groups": [],
         "user_permissions": []
     }
@@ -14846,6 +14869,42 @@
         "is_staff": false,
         "is_active": true,
         "date_joined": "2024-03-05T04:35:06.622Z",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "auth.user",
+    "pk": 297,
+    "fields": {
+        "password": "pbkdf2_sha256$600000$jrD8xsH1vLjYqRWedRm6SC$EIsPpvj+F9bnfvPwZ2pWUtXyZO8I6Cd580MEVTjdFaw=",
+        "last_login": "2024-03-25T22:17:49.455Z",
+        "is_superuser": false,
+        "username": "SamDominguez",
+        "first_name": "Sam",
+        "last_name": "Dominguez",
+        "email": "dominguez.101@buckeyemail.osu.edu",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2024-03-25T22:17:41.587Z",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "auth.user",
+    "pk": 298,
+    "fields": {
+        "password": "pbkdf2_sha256$600000$17ZGP50EChqh6rL98vAb6X$uf2HO7VZR/3IeBjonexMEIvTktPPn/el1a2ChQAmQNo=",
+        "last_login": "2024-03-25T22:18:41.619Z",
+        "is_superuser": false,
+        "username": "SamAdmin",
+        "first_name": "Samuel",
+        "last_name": "Dominguez",
+        "email": "dominguez.101@osu.edu",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2024-03-25T22:18:19.145Z",
         "groups": [],
         "user_permissions": []
     }

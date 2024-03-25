@@ -65,7 +65,7 @@ class SignUpTests(TestCase):
 
     def test_form_rejects_missing_dot_emails(self):
         form_data = VALID_FORM_WITHOUT_EMAIL
-        form_data['email'] = 'brutus1@osu.edu'        
+        form_data['email'] = 'brutus1@buckeyemail.osu.edu'        
         response = self.client.post(SIGNUP_FORM_URL, data=form_data)
 
         self.assertFalse(response.context['form'].is_valid())
@@ -73,7 +73,7 @@ class SignUpTests(TestCase):
 
     def test_form_rejects_missing_dot_number_emails(self):
         form_data = VALID_FORM_WITHOUT_EMAIL
-        form_data['email'] = 'brutus@osu.edu'        
+        form_data['email'] = 'brutus@buckeyemail.osu.edu'        
         response = self.client.post(SIGNUP_FORM_URL, data=form_data)
 
         self.assertFalse(response.context['form'].is_valid())
@@ -81,7 +81,7 @@ class SignUpTests(TestCase):
 
     def test_form_rejects_missing_name_emails(self):
         form_data = VALID_FORM_WITHOUT_EMAIL
-        form_data['email'] = '548@osu.edu'        
+        form_data['email'] = '548@buckeyemail.osu.edu'        
         response = self.client.post(SIGNUP_FORM_URL, data=form_data)
 
         self.assertFalse(response.context['form'].is_valid())
@@ -89,7 +89,7 @@ class SignUpTests(TestCase):
 
     def test_form_rejects_missing_name_emails(self):
         form_data = VALID_FORM_WITHOUT_EMAIL
-        form_data['email'] = '------.1@osu.edu'        
+        form_data['email'] = '------.1@buckeyemail.osu.edu'        
         response = self.client.post(SIGNUP_FORM_URL, data=form_data)
 
         self.assertFalse(response.context['form'].is_valid())
@@ -97,7 +97,7 @@ class SignUpTests(TestCase):
         
     def test_form_accepts_valid_osu_email(self):
         form_data = VALID_FORM_WITHOUT_EMAIL
-        form_data['email'] = 'allen.4567@osu.edu'        
+        form_data['email'] = 'allen.4567@buckeyemail.osu.edu'        
         response = self.client.post(SIGNUP_FORM_URL, data=form_data, follow=True)
 
         # Assert that the form submitted successfully and redirects the user to login before going to the student dash
@@ -113,7 +113,7 @@ class SignUpTests(TestCase):
 
     def test_form_accepts_valid_osu_email_with_hyphens(self):
         form_data = VALID_FORM_WITHOUT_EMAIL
-        form_data['email'] = 'berger-wolf.1@osu.edu'        
+        form_data['email'] = 'berger-wolf.1@buckeyemail.osu.edu'        
         response = self.client.post(SIGNUP_FORM_URL, data=form_data, follow=True)
 
         # Assert that the form submitted successfully and redirects the user to login before going to the student dash
@@ -122,14 +122,14 @@ class SignUpTests(TestCase):
 
     def test_form_accepts_valid_buckeyemail_email_with_hyphens(self):
         form_data = VALID_FORM_WITHOUT_EMAIL
-        form_data['email'] = 'simpson-hunt.15@osu.edu'        
+        form_data['email'] = 'simpson-hunt.15@buckeyemail.osu.edu'        
         response = self.client.post(SIGNUP_FORM_URL, data=form_data, follow=True)
 
         # Assert that the form submitted successfully and redirects the user to login before going to the student dash
         self.assertRedirects(response, REDIRECT_URL)
 
     def test_valid_form_creates_objects(self):
-        form_data = {'first_name' : 'Test FName', 'last_name' : 'Test LName', 'username' : 'MyUsername', 'email' : 'buckeye.2024@osu.edu', 'password1' : 'samplepassword', 'password2' : 'samplepassword'}
+        form_data = {'first_name' : 'Test FName', 'last_name' : 'Test LName', 'username' : 'MyUsername', 'email' : 'buckeye.2024@buckeyemail.osu.edu', 'password1' : 'samplepassword', 'password2' : 'samplepassword'}
 
         num_users_before = User.objects.all().count()
         num_students_before = Student.objects.all().count()
@@ -146,13 +146,13 @@ class SignUpTests(TestCase):
         self.assertEqual(num_students_after, num_students_before + 1)
 
     def test_valid_form_creates_student_and_user(self):
-        form_data = {'first_name' : 'Test FName', 'last_name' : 'Test LName', 'username' : 'MyUsername', 'email' : 'buckeye.2024@osu.edu', 'password1' : 'samplepassword', 'password2' : 'samplepassword'}
+        form_data = {'first_name' : 'Test FName', 'last_name' : 'Test LName', 'username' : 'MyUsername', 'email' : 'buckeye.2024@buckeyemail.osu.edu', 'password1' : 'samplepassword', 'password2' : 'samplepassword'}
         response = self.client.post(SIGNUP_FORM_URL, data=form_data, follow=True)
 
         # Assert that the form submitted successfully and redirects the user to login before going to the student dash
         self.assertRedirects(response, REDIRECT_URL)
 
-        student = Student.objects.get(email='buckeye.2024@osu.edu')
+        student = Student.objects.get(email='buckeye.2024@buckeyemail.osu.edu')
         user = student.user
 
         self.assertNotEqual(user, None)

@@ -2,7 +2,7 @@ from django.shortcuts import redirect, render
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.views.defaults import server_error
-from .forms import CourseForm, SectionForm, SignUpForm, ApplicationForm
+from .forms import CourseForm, SectionForm, SignUpFormAdmin, SignUpFormStudent, ApplicationForm
 from .models import Course, Student, Assignment, Section, UnassignedStudent, Instructor, PreviousClassTaken,Administrator
 import logging
 from .algo.algo import massAssign
@@ -113,7 +113,7 @@ def course_detail(request, course_number):
     }
     return render(request, 'course_detail.html', context)
 
-
+@login_required
 def dashboard(request):
     userOfReq = request.user
     if request.user.is_authenticated:
@@ -132,9 +132,9 @@ def create_admin(request):
     # userOfReq = request.user
     # if not Administrator.objects.filter(user=userOfReq).exists():
     #    return redirect("home")
-    form = SignUpForm()
+    form = SignUpFormAdmin()
     if request.method == 'POST':
-        form = SignUpForm(request.POST)
+        form = SignUpFormAdmin(request.POST)
         if form.is_valid():
             LOGGER.info('Create admin Form Valid')
             form.save()
@@ -164,10 +164,10 @@ def create_admin(request):
 
 
 def sign_up(request):
-    form = SignUpForm()
+    form = SignUpFormStudent()
 
     if request.method == 'POST':
-        form = SignUpForm(request.POST)
+        form = SignUpFormStudent(request.POST)
 
         if form.is_valid():
             LOGGER.info('Sign Up Form Valid')
