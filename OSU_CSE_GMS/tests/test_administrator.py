@@ -1,12 +1,14 @@
 from django.test import TestCase
-
-from OSU_CSE_GMS.models import Course
+from django.contrib.auth.models import User
+from OSU_CSE_GMS.models import Course , Administrator
 
 ADMIN_FORM_URL = '/administrator/courses/'
 
 class AdministratorTests(TestCase):
 
     def test_add_course_creates_course(self):
+        user = User.objects.create_user(username='testuser', email='test@example.com', password='testpassword')
+        admin = Administrator.objects.create(user=user, email ='test@example.com' )
         course_data = {
             'add_course' : ['add_course'],
             'course_number' : ['2221'],
@@ -16,6 +18,7 @@ class AdministratorTests(TestCase):
         # Track number of courses in DB before POST
         num_courses_before = Course.objects.all().count()
 
+        self.client.login(username='testuser', password='testpassword')
         # Make POST
         response = self.client.post(ADMIN_FORM_URL, data=course_data, follow=True)
 
@@ -32,7 +35,9 @@ class AdministratorTests(TestCase):
         self.assertEqual(course.name, 'Software 1: Software Components')
 
     def test_edit_course_modifies_course(self):
-
+        user = User.objects.create_user(username='testuser', email='test@example.com', password='testpassword')
+        admin = Administrator.objects.create(user=user, email ='test@example.com' )
+        self.client.login(username='testuser', password='testpassword')
         # Add Course to the database
         new_course = Course(course_number='2221', name='Name to be changed')
         new_course.save()
@@ -54,7 +59,9 @@ class AdministratorTests(TestCase):
         self.assertEqual(course.name, 'Software 1: Software Components')
 
     def test_delete_course_removes_course(self):
-
+        user = User.objects.create_user(username='testuser', email='test@example.com', password='testpassword')
+        admin = Administrator.objects.create(user=user, email ='test@example.com' )
+        self.client.login(username='testuser', password='testpassword')
         # Add Course to the database
         new_course = Course(course_number='2221', name='Software 1: Software Components')
         new_course.save()

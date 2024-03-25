@@ -1,8 +1,9 @@
 from django.test import TestCase
-from OSU_CSE_GMS.models import Student
-from django.contrib.auth.models import User
+from OSU_CSE_GMS.models import Student, Administrator
+from django.contrib.auth.models import User 
 
 SIGNUP_FORM_URL = '/sign_up/'
+CREATE_ADMIN_FORM_URL = '/administrator/create/'
 REDIRECT_URL = '/accounts/login/?next=/student/'
 
 FIELD_REQUIRED_ERROR = 'This field is required.'
@@ -159,3 +160,43 @@ class SignUpTests(TestCase):
         self.assertEqual(student.first_name, user.first_name)
         self.assertEqual(student.last_name, user.last_name)
 
+
+
+
+
+#### Testing creating admin by admin ####
+    def test_valid_form_creates_objects_admin(self):
+        # log in does nothing now, future proofing so only admin logged in can create another admin
+        user = User.objects.create_user(username='testuser', email='test@example.com', password='testpassword')
+        admin = Administrator.objects.create(user=user, email ='test@example.com' )
+        self.client.login(username='testuser', password='testpassword')
+
+        form_data = {'first_name' : 'Test FName', 'last_name' : 'Test LName', 'username' : 'MyUsername', 'email' : 'buckeye.2024@osu.edu', 'password1' : 'samplepassword', 'password2' : 'samplepassword'}
+
+        num_users_before = User.objects.all().count()
+        num_admin_before = Administrator.objects.all().count()
+
+        response = self.client.post(CREATE_ADMIN_FORM_URL, data=form_data, follow=True)
+
+        num_users_after = User.objects.all().count()
+        num_admin_after = Administrator.objects.all().count()
+
+        self.assertEqual(num_users_after, num_users_before + 1)
+        self.assertEqual(num_admin_after, num_admin_before + 1)
+
+    def test_valid_form_creates_admin_and_user(self):
+        # log in does nothing now, future proofing so only admin logged in can create another admin
+        user = User.objects.create_user(username='testuser', email='test@example.com', password='testpassword')
+        admin = Administrator.objects.create(user=user, email ='test@example.com' )
+        self.client.login(username='testuser', password='testpassword')
+        form_data = {'first_name' : 'Test FName', 'last_name' : 'Test LName', 'username' : 'MyUsername', 'email' : 'buckeye.2024@osu.edu', 'password1' : 'samplepassword', 'password2' : 'samplepassword'}
+        response = self.client.post(CREATE_ADMIN_FORM_URL, data=form_data, follow=True)
+
+  
+        admin = Administrator.objects.get(email='buckeye.2024@osu.edu')
+        user = admin.user
+
+        self.assertNotEqual(user, None)
+        self.assertEqual(admin.email, user.email)
+        self.assertEqual(admin.first_name, user.first_name)
+        self.assertEqual(admin.last_name, user.last_name)
