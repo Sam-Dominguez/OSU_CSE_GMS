@@ -3507,6 +3507,16 @@
     }
 },
 {
+    "model": "OSU_CSE_GMS.administrator",
+    "pk": 2,
+    "fields": {
+        "user": 299,
+        "email": "testadmin.1@osu.edu",
+        "first_name": "Test",
+        "last_name": "Admin"
+    }
+},
+{
     "model": "OSU_CSE_GMS.instructor",
     "pk": 1,
     "fields": {
@@ -14896,7 +14906,7 @@
     "pk": 298,
     "fields": {
         "password": "pbkdf2_sha256$600000$17ZGP50EChqh6rL98vAb6X$uf2HO7VZR/3IeBjonexMEIvTktPPn/el1a2ChQAmQNo=",
-        "last_login": "2024-03-25T22:18:41.619Z",
+        "last_login": "2024-03-25T22:26:30.131Z",
         "is_superuser": false,
         "username": "SamAdmin",
         "first_name": "Samuel",
@@ -14905,6 +14915,24 @@
         "is_staff": false,
         "is_active": true,
         "date_joined": "2024-03-25T22:18:19.145Z",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "auth.user",
+    "pk": 299,
+    "fields": {
+        "password": "pbkdf2_sha256$600000$NPhj8TaGmucEmXmhKdUath$3qFfwg/BRpVGi+f1GDxw0ibXawqLEKwhGulgAKXbKvI=",
+        "last_login": "2024-03-25T22:27:31.431Z",
+        "is_superuser": false,
+        "username": "TestAdmin",
+        "first_name": "Test",
+        "last_name": "Admin",
+        "email": "testadmin.1@osu.edu",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2024-03-25T22:27:17.359Z",
         "groups": [],
         "user_permissions": []
     }
