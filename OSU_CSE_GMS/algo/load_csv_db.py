@@ -94,7 +94,7 @@ def loadStudentInput(filePath):
             lId = (lN+"."+ em)
             stExist = User.objects.filter(username = lId).first()
             if not stExist:
-                u = User.objects.create_user(username=lId, email=lId, password='password123')
+                u = User.objects.create_user(username=lId, email=lId, password='password123', last_login=datetime.now(timezone.utc))
                 s = Student.objects.create(user = u,email=lId,first_name = fN,last_name = lN, in_columbus = loc,
                     previous_grader = pGrader, graded_last_term = pCourses )
                 us = UnassignedStudent.objects.create(student_id = s)

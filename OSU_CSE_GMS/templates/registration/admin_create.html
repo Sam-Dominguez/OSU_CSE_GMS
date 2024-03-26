@@ -1,4 +1,4 @@
-{% extends "admin_base.html" %}
+{% extends "base.html" %}
 
 {% block title %}Create a new administrator{% endblock %}
 
@@ -9,6 +9,6 @@
   {% csrf_token %}
   {{ form.as_p }}
   <div></div>
-  <button type="submit" class="btn btn-dark" style="background-color: #BB0000 !important;">Create administrator</button>
+  <button type="submit" class="btn btn-dark" style="background-color: #BB0000 !important;">Create Administrator</button>
 </form>
 {% endblock %}
