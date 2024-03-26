@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from django.core.validators import RegexValidator
-from .models import Course, Section, Instructor, Assignment
+from .models import Course, Section, Instructor, Assignment, Student
 
 class CourseForm(forms.ModelForm):
     class Meta:
@@ -58,3 +58,8 @@ class ApplicationForm(forms.Form):
     preferred_class_instr_2 = forms.CharField(max_length=40, required=False)
     preferred_class_3 = forms.CharField(max_length=15, required=False)
     preferred_class_instr_3 = forms.CharField(max_length=40, required=False)
+    
+    # def __init__(self, student):
+    #     super(ApplicationForm, self).__init__()
+    #     self.fields['in_columbus'].queryset = Student.objects.filter()
+    #     self.fields['instructor'].required = False

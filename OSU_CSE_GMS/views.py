@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from django.shortcuts import redirect, render
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -15,7 +16,7 @@ REJECTION_LOGGER = logging.getLogger('rejection_reason_logging')
 def administrator(request):
     context = {}
     userOfReq = request.user
-   
+
     if not Administrator.objects.filter(user=userOfReq).exists():
         return redirect("home")
     
@@ -76,7 +77,7 @@ def course_detail(request, course_number):
     context = {}
     userOfReq = request.user
     if not Administrator.objects.filter(user=userOfReq).exists():
-       return redirect("home")
+        return redirect("home")
     
     section_form = SectionForm()
     if request.method == 'POST':
@@ -199,7 +200,7 @@ def sign_up(request):
 def student(request):
     userOfReq = request.user
     if not Student.objects.filter(user=userOfReq).exists():
-       return redirect("home")
+        return redirect("home")
     if request.method == 'POST' and 'reject_assignment' in request.POST:
         LOGGER.info('Rejecting Assignment...')
         LOGGER.info(request.POST)
@@ -300,8 +301,31 @@ def student(request):
 def student_intake(request):
     userOfReq = request.user
     if not Student.objects.filter(user=userOfReq).exists():
-       return redirect("home")
-    context = {}
+        return redirect("home")
+    applicant = Student.objects.get(user=userOfReq)
+    prevCourses = PreviousClassTaken.objects.filter(student_id=applicant)
+    prev_course_1 = PreviousClassTaken()
+    prev_course_2 = PreviousClassTaken()
+    prev_course_3 = PreviousClassTaken()
+    applied = UnassignedStudent.objects.filter(student_id=applicant).exists()
+    
+    if prevCourses.count() == 3:
+            prev_course_1 = prevCourses[0]
+            prev_course_2 = prevCourses[1]
+            prev_course_3 = prevCourses[2]
+    elif prevCourses.count() == 2:
+            prev_course_1 = prevCourses[0]
+            prev_course_2 = prevCourses[1]
+    elif prevCourses.count() == 1:
+            prev_course_1 = prevCourses[0]
+            
+    context = { 
+            'student': applicant,
+            'course1': prev_course_1,
+            'course2': prev_course_2,
+            'course3': prev_course_3,
+            'applied' : applied
+            }
     messages = {}
     form = ApplicationForm()
     
@@ -332,8 +356,15 @@ def student_intake(request):
                 
                 if course1.exists():
                     course1 = course1[0]
-                    course_1_record = PreviousClassTaken(student_id=student, course_number=course1, instructor=course_instr_1, pref_num=1)
-                    course_1_record.save()
+                    course_1_record = PreviousClassTaken.objects.filter(student_id=student, pref_num=1)
+                    if course_1_record.exists():
+                        course_1_record = course_1_record[0]
+                        course_1_record.course_number = course1
+                        course_1_record.instructor = course_instr_1
+                        course_1_record.save(update_fields=['course_number', 'instructor'])
+                    else:
+                        course_1_record = PreviousClassTaken(student_id=student, course_number=course1, instructor=course_instr_1, pref_num=1)
+                        course_1_record.save()
                 
                 course_num_2 = form.cleaned_data.get('preferred_class_2')
                 course_instr_2 = form.cleaned_data.get('preferred_class_instr_2')
@@ -341,22 +372,39 @@ def student_intake(request):
                 
                 if course2.exists():
                     course2 = course2[0]
-                    course_2 = PreviousClassTaken(student_id=student, course_number=course2, instructor=course_instr_2, pref_num=2)
-                    course_2.save()
+                    course_2_record = PreviousClassTaken.objects.filter(student_id=student, pref_num=2)
+                    if course_2_record.exists():
+                        course_2_record = course_2_record[0]
+                        course_2_record.course_number = course2
+                        course_2_record.instructor = course_instr_2
+                        course_2_record.save(update_fields=['course_number', 'instructor'])
+                    else:
+                        course_2_record = PreviousClassTaken(student_id=student, course_number=course2, instructor=course_instr_2, pref_num=2)
+                        course_2_record.save()
                 
                 course_num_3 = form.cleaned_data.get('preferred_class_3')
                 course_instr_3 = form.cleaned_data.get('preferred_class_instr_3')
                 course3 = Course.objects.filter(course_number=course_num_3)
                 if course3.exists():
                     course3 = course3[0]
-                    course_3 = PreviousClassTaken(student_id=student, course_number=course3, instructor=course_instr_3, pref_num=3)
-                    course_3.save() 
+                    course_3_record = PreviousClassTaken.objects.filter(student_id=student, pref_num=3)
+                    if course_3_record.exists():
+                        course_3_record = course_3_record[0]
+                        course_3_record.course_number = course3
+                        course_3_record.instructor = course_instr_3
+                        course_3_record.save(update_fields=['course_number', 'instructor'])
+                    else:
+                        course_3_record = PreviousClassTaken(student_id=student, course_number=course3, instructor=course_instr_3, pref_num=3)
+                        course_3_record.save()
             else:
                 LOGGER.error('Student does not exist in the database.')
             
             # Add student to unassigned students
-            unassigned_student = UnassignedStudent(student_id=student)
-            unassigned_student.save()
+            if not applied:
+                unassigned_student = UnassignedStudent(student_id=student)
+                unassigned_student.save()
+            else:
+                unassigned_student = UnassignedStudent(student_id=student, submission_time=datetime.now(timezone.utc))
             
             massAssign('SP2024')
             
@@ -372,11 +420,12 @@ def student_intake(request):
             }
     else:
         student = Student.objects.get(user_id=request.user.id)
-        try:
-            unassigned_student = UnassignedStudent.objects.get(student_id=student.id)
-            return redirect('/student/')
-        except:
-            form = ApplicationForm()
+        # form = ApplicationForm(request.GET)
+        # try:
+        #     unassigned_student = UnassignedStudent.objects.get(student_id=student.id)
+        #     return redirect('/student/')
+        # except:
+        form = ApplicationForm(student.id)
 
     LOGGER.info(f'Intake Form Context: {context}')
     

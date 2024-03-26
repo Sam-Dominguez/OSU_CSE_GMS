@@ -20,7 +20,12 @@
 <header class="bg-light p-3">
     <div class="container">
         <div class="d-flex justify-content-between align-items-center">
+            {% if not applied %}
             <h1 class="m-0">Grader Application Form</h1>
+            {% endif %}
+            {% if applied %}
+            <h1 class="m-0">Update Application</h1>
+            {% endif %}
         </div>
     </div>
 </header>
@@ -31,7 +36,7 @@
             <!-- display error message -->
             {% for message in messages %}
                 <p class="text-center text-danger font-weight-bold"> {{ message }} </p>
-            {% endfor%}
+            {% endfor %}
             <div class="container mt-4">
 
                 {% comment %} <div class="first-name">
@@ -52,15 +57,16 @@
                 <div>
                     <div>
                         <div>
-                            <h6> What is your location for this term?</h6>
+                            <h6> What is your location for this term?**</h6>
                         </div>
-                        <input class="location-input" type="radio" name="in_columbus" id="locationColumbus" value=1>
+                        <input class="location-input" type="radio" name="in_columbus" id="locationColumbus" value=1 {% if student.in_columbus == 1 %} checked {% endif %}>
                         <label class="location-label" for="locationColumbus">
                             Columbus, OH
                         </label>
                     </div>
+                    
                     <div>
-                        <input class="location-input" type="radio" name="in_columbus" id="locationUS" value=0>
+                        <input class="location-input" type="radio" name="in_columbus" id="locationUS" value=0 {% if student.in_columbus == 0 %} checked {% endif %}>
                         <label class="location-label" for="locationUS">
                             In the US, but not in Columbus, OH 
                         </label>
@@ -74,39 +80,39 @@
                 </div> <br/>
 
                 <div id="previous-grader">
-                        <h6> Have you been hired as a CSE grader before?</h6>
+                        <h6> Have you been hired as a CSE grader before?**</h6>
                     <div>
-                        <input class="grader-input" type="radio" name="previous_grader" id="graderYes" value=1>
+                        <input class="grader-input" type="radio" name="previous_grader" id="graderYes" value=1 {% if student.graded_last_term != ''%}{% if applied %} checked {% endif %}{% endif %} >
                         <label class="grader-label" for="graderYes">
                             Yes 
                         </label>
                     </div>
                     <div>
-                        <input class="grader-input" type="radio" name="previous_grader" id="graderNo" value=0>
+                        <input class="grader-input" type="radio" name="previous_grader" id="graderNo" value=0 {% if student.graded_last_term == ''%}{% if applied %} checked {% endif %}{% endif %} >
                         <label class="grader-label" for="graderNo">
                             No 
                         </label>
                 </div> <br/>
 
                 <div id="recent-term-grader">
-                    <h6> Were you a CSE Grader last term? </h6>
+                    <h6> Were you a CSE Grader last term?**</h6>
                 <div>
-                    <input class="grader-input" type="radio" name="recent_term_grader" id="graderYes" value=1>
+                    <input class="grader-input" type="radio" name="recent_term_grader" id="graderYes" value=1 {% if student.graded_last_term != ''%}{% if applied %} checked {% endif %}{% endif %}  >
                     <label class="grader-label" for="graderYes">
                         Yes 
                     </label>
                 </div>
                 <div>
-                    <input class="grader-input" type="radio" name="recent_term_grader" id="graderNo" value=0>
+                    <input class="grader-input" type="radio" name="recent_term_grader" id="graderNo" value=0 {% if student.graded_last_term == ''%}{% if applied %} checked {% endif %}{% endif %}  >
                     <label class="grader-label" for="graderNo">
                         No 
                     </label>
             </div> <br/>
 
-                <div id="prev-class">
+                <div>
                     <h6>If yes: </h6>
                     <label for="prev-class"> Enter the course number of the class you graded. If there is more than one, enter the <em>ONE</em> that you would prefer to grade for : </label>
-                    <input id="prev-class" type="text" name="prev_class">
+                    <input id="prev-class" type="text" name="prev_class" value={{ student.graded_last_term }}>
                 </div> <br/>
 
                 <div id="requested-classes">
@@ -114,29 +120,25 @@
                         Just put the 4 digit number.<br/>
                         Remember that you should have earned an A/A- equivalent grade to be a grader for each course you list. <br/>
                     </label>
-                    <h6>NOTE: If you are interested in being a grader for 2221 or 2231, please contact your instructor for a recommendation. :<h6/>
+                    <h6>NOTE: If you are interested in being a grader for 2221 or 2231, please contact your instructor for a recommendation.<h6/>
+                    <h6>NOTE: Only one course required, but you may enter up to three. Instructor info not required unless you are requesting a specific instructor. :<h6/>
                     <div class="input-group container mt-4">
-                            <input id="preferred-class" type="text" name="preferred_class_1" placeholder="Course Number">
-                            <span class="input-group-space"/>
-                            <input id="preferred-class-instr" type="text" name="preferred_class_instr_1" placeholder="Instructor Name.#">
+                        <input id="preferred-class" type="text" name="preferred_class_1" placeholder="Course Number" value={{ course1.course_number.course_number }}>
+                        <span class="input-group-space"/>
+                        <input id="preferred-class-instr" type="text" name="preferred_class_instr_1" placeholder="Instructor Name.#" value={{ course1.instructor }}>
                     </div>
                     <div class="input-group container mt-1">
-                        <input id="preferred-class" type="text" name="preferred_class_2" placeholder="Course Number">
+                        <input id="preferred-class" type="text" name="preferred_class_2" placeholder="Course Number" value={{ course2.course_number.course_number }}>
                         <span class="input-group-space"/>
-                        <input id="preferred-class-instr" type="text" name="preferred_class_instr_2" placeholder="Instructor Name.#">
-                </div>
-                <div class="input-group container mt-1">
-                    <input id="preferred-class" type="text" name="preferred_class_3" placeholder="Course Number">
-                    <span class="input-group-space"/>
-                    <input id="preferred-class-instr" type="text" name="preferred_class_instr_3" placeholder="Instructor Name.#">
-            </div>
-                </div> <br/>
+                        <input id="preferred-class-instr" type="text" name="preferred_class_instr_2" placeholder="Instructor Name.#" value={{ course2.instructor }}>
+                    </div>
+                    <div class="input-group container mt-1">
+                        <input id="preferred-class" type="text" name="preferred_class_3" placeholder="Course Number" value={{ course3.course_number.course_number }}>
+                        <span class="input-group-space"/>
+                        <input id="preferred-class-instr" type="text" name="preferred_class_instr_3" placeholder="Instructor Name.#" value={{ course3.instructor }}>
+                    </div></br>
                     <input class="btn btn-primary btn-lg" style="background-color: #BB0000 !important;" type="submit" value="Submit Application" >
-            </div>
+                </div>
         </form>
-        {% load static %}
-        <div class="bottom-container">
-            <img src="{% static 'osu_coe.png' %}" alt="" width="226.8" height="32.5" class="bottom-image">
-        </div>
 
 {% endblock %}
