@@ -1,32 +1,29 @@
-# Set UP
+# Set Up Steps
 
-## Create Virtual Envrionment
-Windows
-`py -m venv OSU_CSE_GMS`
+1. Create Virtual Envrionment
 
-Mac
-`python -m venv OSU_CSE_GMS`
+    a. Windows: `py -m venv OSU_CSE_GMS`
+
+    b. Mac: `python -m venv OSU_CSE_GMS`
 
 
-## Activate VENV
-Windows
-`OSU_CSE_GMS\Scripts\activate.bat`
+2. Activate VENV
 
-Mac
-`source OSU_CSE_GMS/bin/activate`
+    a. Windows: `OSU_CSE_GMS\Scripts\activate.bat`
 
-## Clone the Project
-`git clone https://github.com/Sam-Dominguez/OSU-CSE-GMS.git`
+    b. Mac: `source OSU_CSE_GMS/bin/activate`
 
-## Install the requirements
-Windows
-`python -m pip install -r requirements.txt`
+3. Install the requirements
 
-Mac
-`pip install -r requirements.txt`
+    a. Windows: `python -m pip install -r requirements.txt`
 
-## Run the Migrations
-`python manage.py migrate && python manage.py migrate OSU_CSE_GMS`
+    b. Mac: `pip install -r requirements.txt`
+
+4. Run the migrations: `python manage.py migrate && python manage.py migrate OSU_CSE_GMS`
+
+5. Run the tests: `python manage.py test`
+
+6. Start the server: `python manage.py runserver`
 
 # Post Set Up
 Each time you revist the project:
@@ -44,4 +41,4 @@ Each time you revist the project:
 `python manage.py makemigrations OSU_CSE_GMS`
 
 ## Run the Migrations
-`python manage.py migrate OSU_CSE_GMS`
+`python manage.py migrate && python manage.py migrate OSU_CSE_GMS`
