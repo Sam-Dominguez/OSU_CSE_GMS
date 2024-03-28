@@ -19,6 +19,11 @@ class SectionForm(forms.ModelForm):
         self.fields['instructor'].queryset = Instructor.objects.all()
         self.fields['instructor'].required = False
 
+class AssignmentForm(forms.ModelForm):
+    class Meta:
+        model = Assignment
+        fields = ['student_id', 'section_number', 'status']
+
 class SignUpFormStudent(UserCreationForm):
     first_name = forms.CharField(label='First Name', max_length=30)
     last_name = forms.CharField(label='last Name', max_length=30)

@@ -97,6 +97,12 @@ def course_detail(request, course_number):
             LOGGER.info(f'Deleting Section with section number: {section_number}')
             section = Section.objects.get(section_number=section_number, course_number=course_number)
             section.delete()
+        elif 'delete_assignment' in request.POST:
+            print(request.POST)
+            assignment_id = request.POST['assignment_id']
+            LOGGER.info(f'Deleting Assignment with id: {assignment_id}')
+            assignment = Assignment.objects.get(id=assignment_id)
+            assignment.delete()
 
     course = Course.objects.get(course_number=course_number)
     sections = Section.objects.filter(course_number=course_number)
