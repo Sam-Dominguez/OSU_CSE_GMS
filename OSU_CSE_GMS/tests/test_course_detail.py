@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from OSU_CSE_GMS.models import Course, Section, User, Administrator
+from OSU_CSE_GMS.models import Course, Section, User, Administrator, Student, Assignment
 
 ADMIN_FORM_URL = '/administrator/courses/{}/'
 
@@ -132,4 +132,93 @@ class AdministratorTests(TestCase):
         # Verify the section was deleted
         section = Section.objects.filter(course_number=self.course, section_number='1', semester='SP2024')
         self.assertFalse(section.exists())
-            
+
+    def test_add_assignment_creates_assignment(self):
+        # Add Section to the database
+        section = Section.objects.create(
+            course_number=self.course,
+            section_number='1',
+            semester='SP2024',
+            instruction_mode='SYNCHRONOUS',
+            time='10:20-11:15',
+            days_of_week='MWF',
+            classroom='Dreese Lab 100',
+            num_graders_needed=2
+        )
+
+        # Add Student to the database
+        student_user = User.objects.create_user(username='student', email='teststudent@example.com', password='testpassword')
+        student = Student.objects.create(
+            user=student_user,
+            email = 'teststudent@example.com',
+            first_name='Test',
+            last_name='Student',
+            in_columbus='1',
+            previous_grader='0',
+        )
+
+        # Make POST request to add an assignment
+        assignment_data = {
+            'add_assignment' : ['add_assignment'],
+            'section_id' : str(section.id),
+            'student_email' : student.email,
+        }
+
+        url = ADMIN_FORM_URL.format('2431')
+        user = User.objects.create_user(username='testuser', email='test@example.com', password='testpassword')
+        admin = Administrator.objects.create(user=user, email ='test@example.com' )
+        self.client.login(username='testuser', password='testpassword')
+        self.client.post(url, data=assignment_data, follow=True)
+
+        # Verify the assignment was created
+        assignment = Assignment.objects.get(student_id=student.pk)
+        self.assertEqual(assignment.student_id, student)
+        self.assertEqual(assignment.section_number, section)
+
+    def test_delete_assignment_removes_assignment(self):
+        # Add Section to the database
+        section = Section.objects.create(
+            course_number=self.course,
+            section_number='1',
+            semester='SP2024',
+            instruction_mode='SYNCHRONOUS',
+            time='10:20-11:15',
+            days_of_week='MWF',
+            classroom='Dreese Lab 100',
+            num_graders_needed=2
+        )
+
+        # Add Student to the database
+        student_user = User.objects.create_user(username='student', email='test@example.com', password='testpassword')
+        student = Student.objects.create(
+            user=student_user,
+            email = 'teststudent@example.com',
+            first_name='Test',
+            last_name='Student',
+            in_columbus='1',
+            previous_grader='0',
+        )
+
+        # Create an assignment
+        assignment = Assignment.objects.create(
+            section_number=section,
+            student_id=student,
+            status='PENDING'
+        )
+
+        # Make a POST request to delete the assignment
+        assignment_data = {
+            'delete_assignment': 'delete_assignment',
+            'assignment_id': assignment.id
+        }
+
+        url = ADMIN_FORM_URL.format('2431')
+        user = User.objects.create_user(username='testuser', email='test@example.com', password='testpassword')
+        admin = Administrator.objects.create(user=user, email='test@example.com')
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.post(url, data=assignment_data, follow=True)
+
+        # Verify that the assignment was deleted
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(Assignment.objects.filter(id=assignment.id).exists())
+        
