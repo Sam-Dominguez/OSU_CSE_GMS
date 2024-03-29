@@ -1,6 +1,11 @@
+import logging
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.dispatch import receiver
+from .services import permissions
+
+LOGGER = logging.getLogger('django')
 
 class Student(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE) # tie Django 'User' to OSU CSE 'user'
@@ -93,3 +98,31 @@ class PreviousClassTaken(models.Model):
 
     class Meta:
         unique_together = [['student_id', 'course_number']]
+
+
+# Assign the user that is tied to a model to a group on save
+'''
+Raw flag is true if the data is coming from a fixture, we do not want to modify fixture data here
+so it remains consistent with the json file data (Also not all db tables may be instantiated at the time of editing)
+'''
+@receiver(models.signals.post_save, sender=Student)
+def assign_student_group(sender, instance, created, *args, **kwargs):
+    # Order is important in the if statement, using short circuit evaluation
+    if not kwargs.get('raw', False) and instance.user:
+        student_group = Group.objects.get_or_create(name=permissions.STUDENT_GROUP)
+        instance.user.groups.add(student_group[0])
+        LOGGER.info(f'User {instance.user.username} added to student group')
+
+@receiver(models.signals.post_save, sender=Administrator)
+def assign_administrator_group(sender, instance, created, *args, **kwargs):
+    if not kwargs.get('raw', False) and instance.user:
+        administrator_group = Group.objects.get_or_create(name=permissions.ADMINISTRATOR_GROUP)
+        instance.user.groups.add(administrator_group[0])
+        LOGGER.info(f'User {instance.user.username} added to administrator group')
+
+@receiver(models.signals.post_save, sender=Instructor)
+def assign_instructor_group(sender, instance, created, *args, **kwargs):
+    if not kwargs.get('raw', False) and instance.user:
+        instructor_group = Group.objects.get_or_create(name=permissions.INSTRUCTOR_GROUP)
+        instance.user.groups.add(instructor_group[0])
+        LOGGER.info(f'User {instance.user.username} added to instructor group')

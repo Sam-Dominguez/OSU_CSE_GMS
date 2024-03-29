@@ -1,21 +1,47 @@
 from django.shortcuts import redirect, render
+from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.views.defaults import server_error
 from .forms import CourseForm, SectionForm, SignUpFormAdmin, SignUpFormStudent, ApplicationForm
-from .models import Course, Student, Assignment, Section, UnassignedStudent, Instructor, PreviousClassTaken,Administrator
+from .models import Course, Student, Assignment, Section, UnassignedStudent, Instructor, PreviousClassTaken, Administrator
 import logging
 from .algo.algo import massAssign
 from django.contrib.auth import authenticate, login
 from django.contrib import messages
+from .services import permissions
 
 LOGGER = logging.getLogger('django')
 REJECTION_LOGGER = logging.getLogger('rejection_reason_logging')
+
+def is_student(user):
+    has_permission = permissions.has_group(user, permissions.STUDENT_GROUP)
+    log_permission_result(has_permission, permissions.STUDENT_GROUP)
+    return has_permission
+
+def is_administrator(user):
+    has_permission = permissions.has_group(user, permissions.ADMINISTRATOR_GROUP)
+    log_permission_result(has_permission, permissions.ADMINISTRATOR_GROUP)
+    return has_permission
+
+def is_instructor(user):
+    has_permission = permissions.has_group(user, permissions.INSTRUCTOR_GROUP)
+    log_permission_result(has_permission, permissions.INSTRUCTOR_GROUP)
+    return has_permission
+
+def log_permission_result(has_permission, permission_name):
+    if has_permission:
+        LOGGER.info(f'User has {permission_name} permissions')
+    else:
+        LOGGER.warning(f'User does not have {permission_name} permissions')
 
 @login_required
 def administrator(request):
     context = {}
     userOfReq = request.user
+
+    if not is_administrator(userOfReq):
+        raise PermissionDenied
    
     if not Administrator.objects.filter(user=userOfReq).exists():
         return redirect("home")
@@ -76,6 +102,10 @@ def administrator(request):
 def course_detail(request, course_number):
     context = {}
     userOfReq = request.user
+
+    if not is_administrator(userOfReq):
+        raise PermissionDenied
+
     if not Administrator.objects.filter(user=userOfReq).exists():
        return redirect("home")
     
@@ -134,9 +164,9 @@ def course_detail(request, course_number):
 def dashboard(request):
     userOfReq = request.user
     if request.user.is_authenticated:
-        if Administrator.objects.filter(user=userOfReq).exists():
+        if permissions.has_group(userOfReq, permissions.ADMINISTRATOR_GROUP):
             return redirect("administrator")
-        elif Student.objects.filter(user=userOfReq).exists():
+        elif permissions.has_group(userOfReq, permissions.STUDENT_GROUP):
             return redirect("student")
         else:
             return redirect("home")
@@ -144,9 +174,13 @@ def dashboard(request):
         return redirect("home")
     
 
-#@login_required
+@login_required
 def create_admin(request):
-    # userOfReq = request.user
+    userOfReq = request.user
+
+    if not is_administrator(userOfReq):
+        raise PermissionDenied
+
     # if not Administrator.objects.filter(user=userOfReq).exists():
     #    return redirect("home")
     form = SignUpFormAdmin()
@@ -215,6 +249,10 @@ def sign_up(request):
 @login_required
 def student(request):
     userOfReq = request.user
+
+    if not is_student(userOfReq):
+        raise PermissionDenied
+
     if not Student.objects.filter(user=userOfReq).exists():
        return redirect("home")
     if request.method == 'POST' and 'reject_assignment' in request.POST:
@@ -316,8 +354,13 @@ def student(request):
 @login_required
 def student_intake(request):
     userOfReq = request.user
+
+    if not is_student(userOfReq):
+        raise PermissionDenied
+
     if not Student.objects.filter(user=userOfReq).exists():
        return redirect("home")
+    
     context = {}
     messages = {}
     form = ApplicationForm()
@@ -402,7 +445,18 @@ def student_intake(request):
 @login_required
 def instructor(request):
     user = request.user
-    instructor = Instructor.objects.get(user_id=user)
+
+    if not is_instructor(user):
+        raise PermissionDenied
+    
+    instructor = Instructor.objects.filter(user_id=user)
+
+    if not instructor.exists():
+        LOGGER.error(f'Instructor associated with user {user.username} does not exist, redirecting home')
+        return redirect("home")
+    
+    instructor = instructor[0]
+
     sections = Section.objects.filter(instructor=instructor)
     # LOGGER.info(f'Sections for this instructor: {sections}')
     

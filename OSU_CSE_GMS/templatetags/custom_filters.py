@@ -1,5 +1,6 @@
 from django.template.defaulttags import register
 from OSU_CSE_GMS.models import Course
+from ..services import permissions
 
 @register.filter
 def get_total_graders_needed(course_number):
@@ -9,3 +10,7 @@ def get_total_graders_needed(course_number):
     except Course.DoesNotExist:
         total_graders_needed = 0
     return total_graders_needed
+
+@register.filter(name='has_group') 
+def has_group(user, group_name):
+    return permissions.has_group(user, group_name)
