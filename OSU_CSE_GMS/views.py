@@ -7,6 +7,8 @@ from .forms import CourseForm, SectionForm, SignUpFormAdmin, SignUpFormStudent, 
 from .models import Course, Student, Assignment, Section, UnassignedStudent, Instructor, PreviousClassTaken, Administrator
 import logging
 from .algo.algo import massAssign
+from django.contrib.auth import authenticate, login
+from django.contrib import messages
 from .services import permissions
 
 LOGGER = logging.getLogger('django')
@@ -126,6 +128,22 @@ def course_detail(request, course_number):
             LOGGER.info(f'Deleting Section with section number: {section_number}')
             section = Section.objects.get(section_number=section_number, course_number=course_number)
             section.delete()
+        elif 'add_assignment' in request.POST:
+            section_number = request.POST['section_id']
+            student_email = request.POST['student_email']
+            LOGGER.info(f'Adding Assignment to Section with section number: {section_number}')
+            try:
+                section = Section.objects.get(pk=section_number)
+                student = Student.objects.get(email=student_email)
+                assignment = Assignment(section_number=section, student_id=student, status='PENDING')
+                assignment.save()
+            except Student.DoesNotExist:
+                messages.error(request, 'Student with email does not exist.')
+        elif 'delete_assignment' in request.POST:
+            assignment_id = request.POST['assignment_id']
+            LOGGER.info(f'Deleting Assignment with id: {assignment_id}')
+            assignment = Assignment.objects.get(id=assignment_id)
+            assignment.delete()
 
     course = Course.objects.get(course_number=course_number)
     sections = Section.objects.filter(course_number=course_number)
