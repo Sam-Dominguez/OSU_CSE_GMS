@@ -137,13 +137,20 @@ def course_detail(request, course_number):
                 student = Student.objects.get(email=student_email)
                 assignment = Assignment(section_number=section, student_id=student, status='PENDING')
                 assignment.save()
+                section.num_graders_needed -= 1
+                section.save(update_fields=['num_graders_needed'])
             except Student.DoesNotExist:
                 messages.error(request, 'Student with email does not exist.')
         elif 'delete_assignment' in request.POST:
             assignment_id = request.POST['assignment_id']
             LOGGER.info(f'Deleting Assignment with id: {assignment_id}')
             assignment = Assignment.objects.get(id=assignment_id)
+            section = assignment.section_number
+            section.num_graders_needed += 1
+            section.save(update_fields=['num_graders_needed'])
             assignment.delete()
+            
+            
 
     course = Course.objects.get(course_number=course_number)
     sections = Section.objects.filter(course_number=course_number)
