@@ -129,16 +129,7 @@ def course_detail(request, course_number):
             section = Section.objects.get(section_number=section_number, course_number=course_number)
             section.delete()
         elif 'add_assignment' in request.POST:
-            section_number = request.POST['section_id']
-            student_email = request.POST['student_email']
-            LOGGER.info(f'Adding Assignment to Section with section number: {section_number}')
-            try:
-                section = Section.objects.get(pk=section_number)
-                student = Student.objects.get(email=student_email)
-                assignment = Assignment(section_number=section, student_id=student, status='PENDING')
-                assignment.save()
-            except Student.DoesNotExist:
-                messages.error(request, 'Student with email does not exist.')
+            add_assignment(request=request)
         elif 'delete_assignment' in request.POST:
             assignment_id = request.POST['assignment_id']
             LOGGER.info(f'Deleting Assignment with id: {assignment_id}')
@@ -159,6 +150,19 @@ def course_detail(request, course_number):
         'students': students
     }
     return render(request, 'course_detail.html', context)
+
+def add_assignment(request):
+    section_number = request.POST['section_id']
+    student_email = request.POST['student_email']
+    LOGGER.info(f'Adding Assignment to Section with section number: {section_number}')
+    try:
+        section = Section.objects.get(pk=section_number)
+        student = Student.objects.get(email=student_email)
+        assignment = Assignment(section_number=section, student_id=student, status='PENDING')
+        assignment.save()
+    except Student.DoesNotExist:
+        messages.error(request, 'Student with email does not exist.')
+
 
 @login_required
 def dashboard(request):
@@ -540,8 +544,9 @@ def instructor_course_detail(request, course_number):
     instructor = Instructor.objects.filter(user=userOfReq)
     if instructor.count() <1:
        return redirect("home")
-   
-
+    if request.method == 'POST':
+        if 'add_assignment' in request.POST:
+            add_assignment(request=request)
     course = Course.objects.get(course_number=course_number)
     sections = Section.objects.filter(course_number=course_number,instructor = instructor[0])
     assignments = Assignment.objects.filter(section_number__course_number=course_number)
