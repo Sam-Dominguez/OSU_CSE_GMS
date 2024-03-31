@@ -20,6 +20,8 @@ class ApplicationTests(TestCase):
         Course.objects.create(course_number='2221', name='Software 1: Software Components')
         Course.objects.create(course_number='3901', name='Project: Design, Development, and Documentation of Web Applications')
         Course.objects.create(course_number='1222', name='Introduction to Computer Programming in C++ for Engineers and Scientists')
+        Course.objects.create(course_number='1110', name='Introduction to Computing Technology ')
+        Course.objects.create(course_number='3902', name='Project: Design, Development, and Documentation of Interactive Systems')
 
         section = Section(section_number='10021', instruction_mode='SYNCHRONOUS', semester='AU24', time='11:30-12:25', 
                 days_of_week='MWF', classroom='Dreese Lab 300', course_number_id='2221', instructor_id=instructor.id)
@@ -162,3 +164,51 @@ class ApplicationTests(TestCase):
         self.assertEquals(previousClass1.instructor, 'Jones.1')
         self.assertEquals(previousClass2.instructor, 'Smith.201')
         self.assertEquals(previousClass3.instructor, '')
+        
+    def test_edit_submission(self):
+        previous_application_data = {
+            'in_columbus' : [1],
+            'previous_grader' : [1],
+            'prev_class': ['2221'],
+            'preferred_class_1' : ['2221'],
+            'preferred_class_instr_1' : ['Jones.1'],
+            'preferred_class_2' : ['3901'],
+            'preferred_class_instr_2' : ['Smith.201'],
+            'preferred_class_3' : ['1222'],
+        }
+        edited_application_data = {
+            'in_columbus' : [0],
+            'previous_grader' : [0],
+            'prev_class': ['1110'],
+            'preferred_class_1' : ['1110'],
+            'preferred_class_instr_1' : ['Jackson.2'],
+            'preferred_class_2' : ['3902'],
+        }
+
+        # Login to access page
+        self.client.login(username='testStudent', password='12345')
+        
+        # Save previous application
+        self.client.post(APPLICATION_FORM_URL, data=previous_application_data, follow=True)
+        
+        # Login to access page
+        self.client.login(username='testStudent', password='12345')
+        
+        # Make POST to edit student data
+        self.client.post(APPLICATION_FORM_URL, data=edited_application_data, follow=True)
+        
+        # Validate record is created as intended
+        previousClass1 = PreviousClassTaken.objects.get(course_number='1110')
+        previousClass2 = PreviousClassTaken.objects.get(course_number='3902')
+        
+        # Validate instructors
+        self.assertEquals(previousClass1.instructor, 'Jackson.2')
+        self.assertEquals(previousClass2.instructor, '')
+
+        # Get student object from DB
+        student = Student.objects.get(email='testStudent.500@buckeyemail.osu.edu')
+        
+        # Validate student data was updated
+        self.assertEquals(student.in_columbus, 0)
+        self.assertEquals(student.previous_grader, 0)
+        self.assertEquals(student.graded_last_term, '1110')

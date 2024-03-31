@@ -420,11 +420,6 @@ def student_intake(request):
             }
     else:
         student = Student.objects.get(user_id=request.user.id)
-        # form = ApplicationForm(request.GET)
-        # try:
-        #     unassigned_student = UnassignedStudent.objects.get(student_id=student.id)
-        #     return redirect('/student/')
-        # except:
         form = ApplicationForm(student.id)
 
     LOGGER.info(f'Intake Form Context: {context}')
@@ -436,7 +431,7 @@ def instructor(request):
     user = request.user
     instructor = Instructor.objects.get(user_id=user)
     sections = Section.objects.filter(instructor=instructor)
-    # LOGGER.info(f'Sections for this instructor: {sections}')
+    LOGGER.info(f'Sections for this instructor: {sections}')
     
     if(request.method == 'POST'):
             section = Section.objects.filter(section_number = request.POST['section_number'], instructor=instructor)
