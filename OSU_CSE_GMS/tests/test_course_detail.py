@@ -134,6 +134,8 @@ class AdministratorTests(TestCase):
         self.assertFalse(section.exists())
 
     def test_add_assignment_creates_assignment(self):
+        num_graders_needed = 2
+
         # Add Section to the database
         section = Section.objects.create(
             course_number=self.course,
@@ -143,7 +145,7 @@ class AdministratorTests(TestCase):
             time='10:20-11:15',
             days_of_week='MWF',
             classroom='Dreese Lab 100',
-            num_graders_needed=2
+            num_graders_needed=num_graders_needed
         )
 
         # Add Student to the database
@@ -170,12 +172,17 @@ class AdministratorTests(TestCase):
         self.client.login(username='testuser', password='testpassword')
         self.client.post(url, data=assignment_data, follow=True)
 
+        section = Section.objects.get(course_number=self.course, section_number='1', semester='SP2024')
+
         # Verify the assignment was created
         assignment = Assignment.objects.get(student_id=student.pk)
         self.assertEqual(assignment.student_id, student)
         self.assertEqual(assignment.section_number, section)
+        self.assertEqual(num_graders_needed - 1, section.num_graders_needed)
 
     def test_delete_assignment_removes_assignment(self):
+        num_graders_needed = 1
+
         # Add Section to the database
         section = Section.objects.create(
             course_number=self.course,
@@ -185,7 +192,7 @@ class AdministratorTests(TestCase):
             time='10:20-11:15',
             days_of_week='MWF',
             classroom='Dreese Lab 100',
-            num_graders_needed=2
+            num_graders_needed=num_graders_needed
         )
 
         # Add Student to the database
@@ -218,7 +225,10 @@ class AdministratorTests(TestCase):
         self.client.login(username='testuser', password='testpassword')
         response = self.client.post(url, data=assignment_data, follow=True)
 
+        section = Section.objects.get(course_number=self.course, section_number='1', semester='SP2024')
+
         # Verify that the assignment was deleted
         self.assertEqual(response.status_code, 200)
         self.assertFalse(Assignment.objects.filter(id=assignment.id).exists())
+        self.assertEqual(num_graders_needed + 1, section.num_graders_needed)
         
