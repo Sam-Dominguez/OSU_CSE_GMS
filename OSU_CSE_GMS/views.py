@@ -177,6 +177,8 @@ def add_assignment(request):
         student = Student.objects.get(email=student_email)
         assignment = Assignment(section_number=section, student_id=student, status='PENDING')
         assignment.save()
+        section.num_graders_needed -= 1
+        section.save(update_fields=['num_graders_needed'])
     except Student.DoesNotExist:
         messages.error(request, 'Student with email does not exist.')
 
