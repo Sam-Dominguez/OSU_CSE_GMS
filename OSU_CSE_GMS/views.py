@@ -130,18 +130,7 @@ def course_detail(request, course_number):
             section = Section.objects.get(section_number=section_number, course_number=course_number)
             section.delete()
         elif 'add_assignment' in request.POST:
-            section_number = request.POST['section_id']
-            student_email = request.POST['student_email']
-            LOGGER.info(f'Adding Assignment to Section with section number: {section_number}')
-            try:
-                section = Section.objects.get(pk=section_number)
-                student = Student.objects.get(email=student_email)
-                assignment = Assignment(section_number=section, student_id=student, status='PENDING')
-                assignment.save()
-                section.num_graders_needed -= 1
-                section.save(update_fields=['num_graders_needed'])
-            except Student.DoesNotExist:
-                messages.error(request, 'Student with email does not exist.')
+            add_assignment(request=request)
         elif 'delete_assignment' in request.POST:
             assignment_id = request.POST['assignment_id']
             LOGGER.info(f'Deleting Assignment with id: {assignment_id}')
