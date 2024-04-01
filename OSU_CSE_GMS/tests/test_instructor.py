@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 from OSU_CSE_GMS.models import Student, Course, Assignment, Instructor, Section
 
-INSTRUCTOR_FORM_URL = '/instructor/'
+INSTRUCTOR_FORM_URL = '/instructor/grader_request/'
 THANKS_PAGE_URL = '/thanks/'
 
 class InstructorTests(TestCase):

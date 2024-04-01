@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 from OSU_CSE_GMS.models import Course , Administrator
 
-ADMIN_FORM_URL = '/administrator/courses/'
+ADMIN_FORM_URL = '/administrator/dashboard/'
 
 class AdministratorTests(TestCase):
 

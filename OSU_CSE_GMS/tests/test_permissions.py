@@ -3,11 +3,12 @@ from django.contrib.auth.models import User
 from OSU_CSE_GMS.models import Student, Instructor, Administrator
 from ..services import permissions
 
-APPLICATION_FORM_URL = '/application/'
-STUDENT_DASH_URL = '/student/'
-ADMINISTRATOR_DASH_URL = '/administrator/courses/'
+APPLICATION_FORM_URL = '/student/application/'
+STUDENT_DASH_URL = '/student/dashboard/'
+ADMINISTRATOR_DASH_URL = '/administrator/dashboard/'
 ADMINISTRATOR_CREATE_URL = '/administrator/create/'
-INSTRUCTOR_GRADER_REQUEST_URL = '/instructor/'
+INSTRUCTOR_DASH_URL = '/instructor/dashboard/'
+INSTRUCTOR_GRADER_REQUEST_URL = '/instructor/grader_request/'
 OKAY_RESPONSE_CODE = 200
 REDIRECT_RESPONSE_CODE = 302
 FORBIDDEN_RESPONSE_CODE = 403
@@ -88,7 +89,7 @@ class PermissionTests(TestCase):
         self.assertEqual(response.status_code, OKAY_RESPONSE_CODE)
 
     def test_administrator_cannot_view_application(self):
-        # Login as a student
+        # Login as an admin
         self.client.login(username='testAdmin', password='12345')
 
         # Try to view application page
@@ -98,7 +99,7 @@ class PermissionTests(TestCase):
         self.assertEqual(response.status_code, FORBIDDEN_RESPONSE_CODE)
 
     def test_instructor_cannot_view_application(self):
-        # Login as a student
+        # Login as an instructor
         self.client.login(username='testInstructor', password='12345')
 
         # Try to view application page
@@ -121,7 +122,7 @@ class PermissionTests(TestCase):
         self.assertEqual(response.status_code, OKAY_RESPONSE_CODE)
 
     def test_administrator_cannot_view_student_dashboard(self):
-        # Login as a student
+        # Login as an admin
         self.client.login(username='testAdmin', password='12345')
 
         # Try to view application page
@@ -131,7 +132,7 @@ class PermissionTests(TestCase):
         self.assertEqual(response.status_code, FORBIDDEN_RESPONSE_CODE)
 
     def test_instructor_cannot_view_student_dashboard(self):
-        # Login as a student
+        # Login as an instructor
         self.client.login(username='testInstructor', password='12345')
 
         # Try to view application page
@@ -144,7 +145,7 @@ class PermissionTests(TestCase):
     # Admin Dashboard
 
     def test_administrator_can_view_admin_dashboard(self):
-        # Login as a student
+        # Login as an admin
         self.client.login(username='testAdmin', password='12345')
 
         # Try to view application page
@@ -164,7 +165,7 @@ class PermissionTests(TestCase):
         self.assertEqual(response.status_code, FORBIDDEN_RESPONSE_CODE)
 
     def test_instructor_cannot_view_admin_dashboard(self):
-        # Login as a student
+        # Login as an instructor
         self.client.login(username='testInstructor', password='12345')
 
         # Try to view application page
@@ -177,7 +178,7 @@ class PermissionTests(TestCase):
     # Create Admin
 
     def test_administrator_can_view_create_admin(self):
-        # Login as a student
+        # Login as an admin
         self.client.login(username='testAdmin', password='12345')
 
         # Try to view application page
@@ -197,7 +198,7 @@ class PermissionTests(TestCase):
         self.assertEqual(response.status_code, FORBIDDEN_RESPONSE_CODE)
 
     def test_instructor_cannot_view_create_admin(self):
-        # Login as a student
+        # Login as an instructor
         self.client.login(username='testInstructor', password='12345')
 
         # Try to view application page
@@ -206,7 +207,40 @@ class PermissionTests(TestCase):
         # Assert 200 status code
         self.assertEqual(response.status_code, FORBIDDEN_RESPONSE_CODE)
 
+
+    # Instructor Dashboard
+        
+    def test_instructor_can_view_instructor_dash(self):
+        # Login as a student
+        self.client.login(username='testInstructor', password='12345')
+
+        # Try to view application page
+        response = self.client.get(INSTRUCTOR_DASH_URL)
+
+        # Assert 200 status code
+        self.assertEqual(response.status_code, OKAY_RESPONSE_CODE)
     
+    def test_student_cannot_view_instructor_dash(self):
+        # Login as a student
+        self.client.login(username='testStudent', password='12345')
+
+        # Try to view application page
+        response = self.client.get(INSTRUCTOR_DASH_URL)
+
+        # Assert 200 status code
+        self.assertEqual(response.status_code, FORBIDDEN_RESPONSE_CODE)
+        
+    def test_administrator_cannot_view_instructor_dash(self):
+        # Login as an admin
+        self.client.login(username='testAdmin', password='12345')
+
+        # Try to view application page
+        response = self.client.get(INSTRUCTOR_DASH_URL)
+
+        # Assert 200 status code
+        self.assertEqual(response.status_code, FORBIDDEN_RESPONSE_CODE)
+    
+
     # Grader Request Form
         
     def test_instructor_can_view_grader_request(self):
@@ -230,7 +264,7 @@ class PermissionTests(TestCase):
         self.assertEqual(response.status_code, FORBIDDEN_RESPONSE_CODE)
         
     def test_administrator_cannot_view_grader_request(self):
-        # Login as a student
+        # Login as an admin
         self.client.login(username='testAdmin', password='12345')
 
         # Try to view application page
