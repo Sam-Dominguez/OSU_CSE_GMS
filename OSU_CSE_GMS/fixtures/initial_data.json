@@ -5944,7 +5944,7 @@
     "pk": 298,
     "fields": {
         "password": "pbkdf2_sha256$600000$SMk2KvguiQj0n3qzjtNEvF$zDDXqcSXSPQLcxvZiggCXeanRLF9unmleWAqkYxHrak=",
-        "last_login": "2024-03-26T14:29:28.145Z",
+        "last_login": "2024-04-01T14:49:01.222Z",
         "is_superuser": false,
         "username": "TestAdmin",
         "first_name": "Test",
@@ -5955,6 +5955,26 @@
         "date_joined": "2024-03-26T14:26:33.893Z",
         "groups": [
             3
+        ],
+        "user_permissions": []
+    }
+},
+{
+    "model": "auth.user",
+    "pk": 299,
+    "fields": {
+        "password": "pbkdf2_sha256$600000$vWw6oogcI0azSE5uAhzyyA$qfxMv41DGEGttrpNAjlXV8vibqe/+JF83dIwafRcTPo=",
+        "last_login": "2024-04-01T14:50:30.378Z",
+        "is_superuser": false,
+        "username": "TestInstructor",
+        "first_name": "",
+        "last_name": "",
+        "email": "testInstructor.1@osu.edu",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2024-04-01T14:45:06.361Z",
+        "groups": [
+            1
         ],
         "user_permissions": []
     }
@@ -9771,6 +9791,16 @@
     }
 },
 {
+    "model": "OSU_CSE_GMS.instructor",
+    "pk": 29,
+    "fields": {
+        "user": 299,
+        "email": "testInstructor.1@osu.edu",
+        "first_name": "Test",
+        "last_name": "Instructor"
+    }
+},
+{
     "model": "OSU_CSE_GMS.course",
     "pk": "1110",
     "fields": {
@@ -10402,6 +10432,13 @@
 },
 {
     "model": "OSU_CSE_GMS.course",
+    "pk": "9999",
+    "fields": {
+        "name": "TestCourse: Used For Testing"
+    }
+},
+{
+    "model": "OSU_CSE_GMS.course",
     "pk": "GRADTDA 5620",
     "fields": {
         "name": "Practical Learning and Mining for Big Data"
@@ -10951,6 +10988,36 @@
         "days_of_week": "",
         "classroom": "",
         "num_graders_needed": 2
+    }
+},
+{
+    "model": "OSU_CSE_GMS.section",
+    "pk": 36,
+    "fields": {
+        "course_number": "9999",
+        "section_number": "10010",
+        "semester": "SP2024",
+        "instructor": 29,
+        "instruction_mode": "SYNCHRONOUS",
+        "time": "",
+        "days_of_week": "",
+        "classroom": "",
+        "num_graders_needed": 2
+    }
+},
+{
+    "model": "OSU_CSE_GMS.section",
+    "pk": 37,
+    "fields": {
+        "course_number": "9999",
+        "section_number": "10011",
+        "semester": "SP2024",
+        "instructor": 29,
+        "instruction_mode": "SYNCHRONOUS",
+        "time": "",
+        "days_of_week": "",
+        "classroom": "",
+        "num_graders_needed": 1
     }
 },
 {
