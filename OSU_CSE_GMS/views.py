@@ -130,18 +130,7 @@ def course_detail(request, course_number):
             section = Section.objects.get(section_number=section_number, course_number=course_number)
             section.delete()
         elif 'add_assignment' in request.POST:
-            section_number = request.POST['section_id']
-            student_email = request.POST['student_email']
-            LOGGER.info(f'Adding Assignment to Section with section number: {section_number}')
-            try:
-                section = Section.objects.get(pk=section_number)
-                student = Student.objects.get(email=student_email)
-                assignment = Assignment(section_number=section, student_id=student, status='PENDING')
-                assignment.save()
-                section.num_graders_needed -= 1
-                section.save(update_fields=['num_graders_needed'])
-            except Student.DoesNotExist:
-                messages.error(request, 'Student with email does not exist.')
+            add_assignment(request=request)
         elif 'delete_assignment' in request.POST:
             assignment_id = request.POST['assignment_id']
             LOGGER.info(f'Deleting Assignment with id: {assignment_id}')
@@ -168,6 +157,21 @@ def course_detail(request, course_number):
     }
     return render(request, 'course_detail.html', context)
 
+def add_assignment(request):
+    section_number = request.POST['section_id']
+    student_email = request.POST['student_email']
+    LOGGER.info(f'Adding Assignment to Section with section number: {section_number}')
+    try:
+        section = Section.objects.get(pk=section_number)
+        student = Student.objects.get(email=student_email)
+        assignment = Assignment(section_number=section, student_id=student, status='PENDING')
+        assignment.save()
+        section.num_graders_needed -= 1
+        section.save(update_fields=['num_graders_needed'])
+    except Student.DoesNotExist:
+        messages.error(request, 'Student with email does not exist.')
+
+
 @login_required
 def dashboard(request):
     userOfReq = request.user
@@ -176,6 +180,8 @@ def dashboard(request):
             return redirect("administrator")
         elif permissions.has_group(userOfReq, permissions.STUDENT_GROUP):
             return redirect("student")
+        elif permissions.has_group(userOfReq, permissions.INSTRUCTOR_GROUP):
+            return redirect("instructor_dashboard")
         else:
             return redirect("home")
     else:
@@ -189,8 +195,8 @@ def create_admin(request):
     if not is_administrator(userOfReq):
         raise PermissionDenied
 
-    # if not Administrator.objects.filter(user=userOfReq).exists():
-    #    return redirect("home")
+    if not Administrator.objects.filter(user=userOfReq).exists():
+        return redirect("home")
     form = SignUpFormAdmin()
     if request.method == 'POST':
         form = SignUpFormAdmin(request.POST)
@@ -539,3 +545,67 @@ def instructor(request):
     LOGGER.info(f'Instructor Context: {context}')
 
     return render(request, 'instructor.html', context)
+
+
+@login_required
+def instructor_dashboard(request):
+    user = request.user
+    if not is_instructor(user):
+        raise PermissionDenied
+    instructor = Instructor.objects.filter(user_id=user)
+    if not instructor.exists():
+        LOGGER.error(f'Instructor associated with user {user.username} does not exist, redirecting home')
+        return redirect("home")
+    
+    instructor = instructor[0]
+    sections = Section.objects.filter(instructor=instructor)
+    course_numbers = sections.values_list('course_number', flat=True).distinct()
+    courses = Course.objects.filter(course_number__in=course_numbers)
+
+    LOGGER.info(f'Retrieved {courses.count()} courses, {sections.count()} sections, for  instructor {instructor.email} dashboard')
+
+    # Sort the courses by course_number
+    sort_direction = 'asc'
+    if 'sort' in request.GET:
+        sort_direction = request.GET['sort']
+        sort_direction = 'asc' if sort_direction == 'desc' else 'desc'
+
+    if sort_direction == 'asc':
+        courses = courses.order_by('course_number')
+    else:
+        courses = courses.order_by('-course_number')
+
+    context = {
+        'courses': courses,
+        'sections': sections,
+       
+        'sort_direction': sort_direction,
+    }
+    
+    return render(request, 'administrator.html', context)
+
+@login_required
+def instructor_course_detail(request, course_number):
+    context = {}
+    userOfReq = request.user
+    if not is_instructor(userOfReq):
+        raise PermissionDenied
+
+    instructor = Instructor.objects.filter(user=userOfReq)
+    if instructor.count() <1:
+       return redirect("home")
+    if request.method == 'POST':
+        if 'add_assignment' in request.POST:
+            add_assignment(request=request)
+    course = Course.objects.get(course_number=course_number)
+    sections = Section.objects.filter(course_number=course_number,instructor = instructor[0])
+    assignments = Assignment.objects.filter(section_number__course_number=course_number)
+    students = Student.objects.filter(assignment__in=assignments)
+    context = {
+        'course': course,
+        'sections': sections,
+        'instructors': instructor,
+        'assignments': assignments,
+        'students': students
+    }
+    return render(request, 'course_detail.html', context)

@@ -19,6 +19,7 @@
         </div>
     </div>
 </header>
+{% if user.is_authenticated and user|has_group:'administrators' %}
 <header class="bg-light p-3">
     <div class="container">
         <div class="d-flex justify-content-between align-items-center">
@@ -27,6 +28,7 @@
         </div>
     </div>
 </header>
+{% endif %}
 
 <div class="container mt-4 d-flex">
     <div class="dropdown">
@@ -105,6 +107,7 @@
                                     </svg>
                                 </button>
                                 <!-- Manage section button -->
+                                {% if user.is_authenticated and user|has_group:'administrators' %}
                                 <button class="btn btn-sm btn-outline-secondary manage-section-btn"
                                     data-section-number="{{ section.section_number }}" data-semester="{{ section.semester }}" data-instructor="{{ section.instructor.pk }}"
                                     data-instruction_mode="{{ section.instruction_mode }}" data-time="{{ section.time }}" data-days_of_week="{{ section.days_of_week }}"
@@ -117,6 +120,7 @@
                                             d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115z" />
                                     </svg>
                                 </button>
+                                {% endif %}
                             </div>
                         </td>
                     </tr>
@@ -145,6 +149,7 @@
                                                         <td>{% if student.previous_grader == 1 %}Yes{% else %}No{% endif %}</td>
                                                         <td>{% if student.graded_last_term != '' %}{{ student.graded_last_term }}{% else %}N/A{% endif %}</td>
                                                         <td>
+                                                            {% if user.is_authenticated and user|has_group:'administrators' %}
                                                             <!-- Delete assignment button -->
                                                             <button class="btn btn-sm btn-outline-secondary delete-assignment-btn" 
                                                                     data-assignment-id="{{ assignment.id }}" 
@@ -155,6 +160,7 @@
                                                                     <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
                                                                 </svg>
                                                             </button>
+                                                            {% endif %}
                                                         </td>
                                                     </tr>
                                                 {% endwith %}
@@ -403,6 +409,8 @@
 </div>
 
 <!-- Script to show the modals -->
+<!-- Only for admins -->
+{% if user.is_authenticated and user|has_group:'administrators' %}
 <script>
     // Ensure DOM is fully loaded before executing the script
     document.addEventListener('DOMContentLoaded', function () {
@@ -444,6 +452,31 @@
             });
         });
     });
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.delete-assignment-btn').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var assignmentId = btn.getAttribute('data-assignment-id');
+                document.getElementById('delete-assignment-id').value = assignmentId;
+                var deleteAssignmentModal = new bootstrap.Modal(document.getElementById('deleteAssignmentModal'));
+                deleteAssignmentModal.show();
+            });
+        });
+    });
+    function setSelectedInstructor(instructor) {
+        var select = document.getElementById('id_edit_instructor');
+        for (var i = 0; i < select.options.length; i++) {
+            if (select.options[i].value == instructor) {
+                select.options[i].selected = true;
+                break;
+            }
+        }
+    }
+</script>
+{% endif %}
+
+<!-- For instructors also -->
+<script>
+    // Ensure DOM is fully loaded before executing the script
 
     document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll('.add-assignment-btn').forEach(function (btn) {
@@ -456,26 +489,6 @@
         });
     });
 
-    document.addEventListener('DOMContentLoaded', function () {
-        document.querySelectorAll('.delete-assignment-btn').forEach(function (btn) {
-            btn.addEventListener('click', function () {
-                var assignmentId = btn.getAttribute('data-assignment-id');
-                document.getElementById('delete-assignment-id').value = assignmentId;
-                var deleteAssignmentModal = new bootstrap.Modal(document.getElementById('deleteAssignmentModal'));
-                deleteAssignmentModal.show();
-            });
-        });
-    });
-
-    function setSelectedInstructor(instructor) {
-        var select = document.getElementById('id_edit_instructor');
-        for (var i = 0; i < select.options.length; i++) {
-            if (select.options[i].value == instructor) {
-                select.options[i].selected = true;
-                break;
-            }
-        }
-    }
 </script>
 
 <!-- Script for expanding individual sections -->
