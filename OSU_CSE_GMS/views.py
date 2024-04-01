@@ -187,8 +187,8 @@ def create_admin(request):
     if not is_administrator(userOfReq):
         raise PermissionDenied
 
-    # if not Administrator.objects.filter(user=userOfReq).exists():
-    #    return redirect("home")
+    if not Administrator.objects.filter(user=userOfReq).exists():
+        return redirect("home")
     form = SignUpFormAdmin()
     if request.method == 'POST':
         form = SignUpFormAdmin(request.POST)
