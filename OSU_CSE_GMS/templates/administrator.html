@@ -87,9 +87,9 @@
                         <a href="{% url 'instructor_course_detail' course.course_number %}" class="course-link">{{ course }}</a><br>
                         {% endif %}
                         {% if user.is_authenticated and user|has_group:'administrators' %}
-                        <a href="{% url 'course_detail' course.course_number %}" class="course-link">{{ course }}</a><br>
+                        <a href="{% url 'course_detail' course.course_number %}?semester={{ selected_semester }}" class="course-link">{{ course }}</a><br>
                         {% endif %}
-                        <small><span class="graders-needed"><i>Graders Needed: {{ course.course_number|get_total_graders_needed }}</i></span></small>
+                        <small><span class="graders-needed"><i>Graders Needed: {{ course.course_number|get_total_graders_needed:selected_semester }}</i></span></small>
                     </td>
                     <td>
                         <div class="btn-group">
@@ -430,6 +430,25 @@
     var selectedSemester = localStorage.getItem('selectedSemester');
     if (selectedSemester) {
         document.getElementById('selected-semester').textContent = selectedSemester;
+
+        // Update the URL with the selected semester if not already in the URL
+        var url = new URL(window.location.href);
+        if (!url.searchParams.has('semester')) {
+            url.searchParams.set('semester', selectedSemester);
+            window.history.replaceState({}, '', url);
+            window.location.reload();
+        }
+    } else {
+        // Set the default semester as the first semester in the dropdown
+        var defaultSemester = document.querySelector('.dropdown-item.semester').textContent;
+        document.getElementById('selected-semester').textContent = defaultSemester;
+        localStorage.setItem('selectedSemester', defaultSemester);
+
+        // Update the URL with the default semester
+        var url = new URL(window.location.href);
+        url.searchParams.set('semester', defaultSemester);
+        window.history.replaceState({}, '', url);
+        window.location.reload();
     }
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -438,6 +457,12 @@
                 var selectedSemester = item.textContent;
                 document.getElementById('selected-semester').textContent = selectedSemester;
                 localStorage.setItem('selectedSemester', selectedSemester);
+
+                // Update the URL with the selected semester
+                var url = new URL(window.location.href);
+                url.searchParams.set('semester', selectedSemester);
+                window.history.replaceState({}, '', url);
+                window.location.reload();
             });
         });
     });

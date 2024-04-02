@@ -97,6 +97,10 @@ def administrator(request):
     
     semesters = sorted(semesters, key=sort_semesters)
 
+    selected_semester = request.GET.get('semester')
+    if selected_semester:
+        sections = sections.filter(semester=selected_semester)
+
     context = {
         'course_form': course_form,
         'courses': courses,
@@ -105,6 +109,7 @@ def administrator(request):
         'instructors': instructors,
         'courses_needing_graders': courses_needing_graders,
         'sort_direction': sort_direction,
+        'selected_semester': selected_semester
     }
     
     return render(request, 'administrator.html', context)
@@ -145,9 +150,14 @@ def course_detail(request, course_number):
             delete_assignment(request=request)         
 
     course = Course.objects.get(course_number=course_number)
+    selected_semester = request.GET.get('semester')
     sections = Section.objects.filter(course_number=course_number)
+    if selected_semester:
+        sections = sections.filter(semester=selected_semester)
     instructors = Instructor.objects.all()
     assignments = Assignment.objects.filter(section_number__course_number=course_number)
+    if selected_semester:
+        assignments = assignments.filter(section_number__semester=selected_semester)
     students = Student.objects.filter(assignment__in=assignments)
     context = {
         'section_form': section_form,
