@@ -2,8 +2,8 @@ from django.test import TestCase
 
 from OSU_CSE_GMS.models import Student, UnassignedStudent, Assignment, Course, Section, User, Instructor
 
-STUDENT_URL = '/student/'
-REDIRECT_URL = '/accounts/login/?next=/student/'
+STUDENT_URL = '/student/dashboard/'
+REDIRECT_URL = '/accounts/login/?next=' + STUDENT_URL
 
 class StudentDashboard(TestCase):
 
@@ -23,7 +23,7 @@ class StudentDashboard(TestCase):
                 days_of_week='MWF', classroom='Dreese Lab 300', course_number_id='2221', instructor_id=instructor.id)
         section.save()
 
-        Assignment.objects.create(section_number_id=section.id, student_id_id=student.id)
+        self.assignment = Assignment.objects.create(section_number_id=section.id, student_id_id=student.id)
 
     # Test not logged in users are redirected to login
     def test_not_logged_in_users_redirected_to_login(self):

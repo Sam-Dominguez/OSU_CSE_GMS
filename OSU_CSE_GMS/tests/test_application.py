@@ -1,8 +1,8 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
-from OSU_CSE_GMS.models import Student, UnassignedStudent, PreviousClassTaken, Course, Assignment, Instructor, Section
+from OSU_CSE_GMS.models import Student, PreviousClassTaken, Course, Instructor, Section
 
-APPLICATION_FORM_URL = '/application/'
+APPLICATION_FORM_URL = '/student/application/'
 THANKS_PAGE_URL = '/thanks/'
 
 class ApplicationTests(TestCase):

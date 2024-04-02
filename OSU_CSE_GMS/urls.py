@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.views.generic.base import TemplateView
-from .views import administrator, course_detail, student, sign_up, student_intake, create_admin, dashboard, instructor,instructor_dashboard,instructor_course_detail
+from .views import administrator, course_detail, student_dashboard, sign_up, student_intake, create_admin, dashboard, instructor_grader_request, instructor_dashboard,instructor_course_detail
 from .algo.algo import algoTest
 from django.views.generic import RedirectView
 import logging
@@ -26,20 +26,29 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('django.contrib.auth.urls')),
     path("", TemplateView.as_view(template_name="home.html"), name="home"),
-    path('administrator/', RedirectView.as_view(url='/administrator/courses/')),
-    path('administrator/courses/', administrator, name='administrator'),
-    path('administrator/courses/<str:course_number>/', course_detail, name='course_detail'),
-    path('administrator/create/', create_admin, name='create_admin'),
-    path('sign_up/', sign_up, name='signup'),
-    path('student/', student, name="student"),
+
     path('algo/', algoTest, name="algoTest"),
-    path('student/', student, name="student"),
-    path('application/', student_intake, name="application"),
+
     path('thanks/', TemplateView.as_view(template_name="thanks.html"), name="thanks"),
     path('dashboard/',dashboard , name="dashboard"),
-    path('instructor/', instructor, name="instructor"),
-    path('instructor/dashboard', instructor_dashboard, name="instructor_dashboard"),
+
+    path('sign_up/', sign_up, name='signup'),
+
+    path('administrator/', RedirectView.as_view(url='/administrator/courses/'), name='administrator'),
+    path('administrator/courses/', RedirectView.as_view(url='/administrator/dashboard/')),
+    path('administrator/dashboard/', administrator, name='administrator_dashboard'),
+    path('administrator/courses/<str:course_number>/', course_detail, name='course_detail'),
+    path('administrator/create/', create_admin, name='create_admin'),
+
+    path('student/', RedirectView.as_view(url='/student/dashboard/'), name='student'),
+    path('student/dashboard/', student_dashboard, name="student_dashboard"),
+    path('student/application/', student_intake, name="application"),
+
+    path('instructor/', RedirectView.as_view(url='/instructor/dashboard/'), name='instructor'),
+    path('instructor/courses/', RedirectView.as_view(url='/instructor/dashboard/')),
+    path('instructor/dashboard/', instructor_dashboard, name='instructor_dashboard'),
     path('instructor/courses/<str:course_number>/', instructor_course_detail , name='instructor_course_detail'),
+    path('instructor/grader_request/', instructor_grader_request, name='instructor_grader_request')
 ]   
 
 logger = logging.getLogger('django')

@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 
 SIGNUP_FORM_URL = '/sign_up/'
 CREATE_ADMIN_FORM_URL = '/administrator/create/'
-REDIRECT_URL = '/accounts/login/?next=/student/'
+REDIRECT_URL = '/accounts/login/?next=/student/dashboard/'
 
 FIELD_REQUIRED_ERROR = 'This field is required.'
 PASSWORD_MATCH_ERROR = 'The two password fields didn’t match.'

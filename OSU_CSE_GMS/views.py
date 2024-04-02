@@ -2,13 +2,12 @@ from datetime import datetime, timezone
 from django.shortcuts import redirect, render
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import User
 from django.views.defaults import server_error
 from .forms import CourseForm, SectionForm, SignUpFormAdmin, SignUpFormStudent, ApplicationForm
 from .models import Course, Student, Assignment, Section, UnassignedStudent, Instructor, PreviousClassTaken, Administrator
 import logging
 from .algo.algo import massAssign
-from django.contrib.auth import authenticate, login
 from django.contrib import messages
 from .services import permissions
 
@@ -132,15 +131,7 @@ def course_detail(request, course_number):
         elif 'add_assignment' in request.POST:
             add_assignment(request=request)
         elif 'delete_assignment' in request.POST:
-            assignment_id = request.POST['assignment_id']
-            LOGGER.info(f'Deleting Assignment with id: {assignment_id}')
-            assignment = Assignment.objects.get(id=assignment_id)
-            section = assignment.section_number
-            section.num_graders_needed += 1
-            section.save(update_fields=['num_graders_needed'])
-            assignment.delete()
-            
-            
+            delete_assignment(request=request)         
 
     course = Course.objects.get(course_number=course_number)
     sections = Section.objects.filter(course_number=course_number)
@@ -157,29 +148,14 @@ def course_detail(request, course_number):
     }
     return render(request, 'course_detail.html', context)
 
-def add_assignment(request):
-    section_number = request.POST['section_id']
-    student_email = request.POST['student_email']
-    LOGGER.info(f'Adding Assignment to Section with section number: {section_number}')
-    try:
-        section = Section.objects.get(pk=section_number)
-        student = Student.objects.get(email=student_email)
-        assignment = Assignment(section_number=section, student_id=student, status='PENDING')
-        assignment.save()
-        section.num_graders_needed -= 1
-        section.save(update_fields=['num_graders_needed'])
-    except Student.DoesNotExist:
-        messages.error(request, 'Student with email does not exist.')
-
-
 @login_required
 def dashboard(request):
     userOfReq = request.user
     if request.user.is_authenticated:
         if permissions.has_group(userOfReq, permissions.ADMINISTRATOR_GROUP):
-            return redirect("administrator")
+            return redirect("administrator_dashboard")
         elif permissions.has_group(userOfReq, permissions.STUDENT_GROUP):
-            return redirect("student")
+            return redirect("student_dashboard")
         elif permissions.has_group(userOfReq, permissions.INSTRUCTOR_GROUP):
             return redirect("instructor_dashboard")
         else:
@@ -261,7 +237,7 @@ def sign_up(request):
     return render(request, 'registration/signup.html', context)
 
 @login_required
-def student(request):
+def student_dashboard(request):
     userOfReq = request.user
 
     if not is_student(userOfReq):
@@ -275,22 +251,14 @@ def student(request):
 
         # Process rejection reason
         reason = request.POST['rejection_reason']
-        
-        # Increment num_graders_needed for the section
+
         assignment_id = request.POST['assignment_id']
         assignment = Assignment.objects.get(id=assignment_id)
         section = Section.objects.get(id=assignment.section_number_id)
-        section.num_graders_needed += 1
-        section.save(update_fields=['num_graders_needed'])
-        LOGGER.info(f'Incremented num_graders_needed for section with id: {section.id}')
 
         # Delete the assignment
-        status_code = Assignment.objects.filter(id=assignment_id).delete()[0]
-        if status_code == 0:
-            LOGGER.error(f'Failed to delete assignment with id: {assignment_id}')
-        else:
-            LOGGER.info(f'Successfully deleted assignment with id: {assignment_id}')
-
+        delete_assignment(request)
+        
         student_id = request.POST['student_id']
         if reason != 'dont-reassign':
             rejection_reason = request.POST['other_reason']
@@ -499,7 +467,7 @@ def student_intake(request):
     return render(request, 'user_intake/application.html', context)
 
 @login_required
-def instructor(request):
+def instructor_grader_request(request):
     user = request.user
 
     if not is_instructor(user):
@@ -609,3 +577,31 @@ def instructor_course_detail(request, course_number):
         'students': students
     }
     return render(request, 'course_detail.html', context)
+
+def add_assignment(request):
+    section_number = request.POST['section_id']
+    student_email = request.POST['student_email']
+    LOGGER.info(f'Adding Assignment to Section with section number: {section_number}')
+    try:
+        section = Section.objects.get(pk=section_number)
+        student = Student.objects.get(email=student_email)
+        assignment = Assignment(section_number=section, student_id=student, status='PENDING')
+        assignment.save()
+        section.num_graders_needed -= 1
+        section.save(update_fields=['num_graders_needed'])
+    except Student.DoesNotExist:
+        LOGGER.error(f'Student with email {student_email} does not exist.')
+        messages.error(request, 'Student with email does not exist.')
+
+def delete_assignment(request):
+    assignment_id = request.POST['assignment_id']
+    LOGGER.info(f'Deleting Assignment with id: {assignment_id}')
+    try:
+        assignment = Assignment.objects.get(id=assignment_id)
+        section = assignment.section_number
+        section.num_graders_needed += 1
+        section.save(update_fields=['num_graders_needed'])
+        assignment.delete()
+    except Assignment.DoesNotExist:
+        LOGGER.error(f'Assignment with id {assignment_id} does not exist.')
+        messages.error(assignment_id, 'Student with email does not exist.')
