@@ -546,8 +546,21 @@ def instructor_dashboard(request):
         LOGGER.error(f'Instructor associated with user {user.username} does not exist, redirecting home')
         return redirect("home")
     
+    # Get all unique semesters and sort them in descending order
+    semesters = Section.objects.values_list('semester', flat=True).distinct()
+
+    def sort_semesters(semester):
+        season_order = {'SP': 3, 'SU': 2, 'AU': 1}
+        season, year = semester[:2], int(semester[2:])
+        return (-year, season_order.get(season, 0))
+    
+    semesters = sorted(semesters, key=sort_semesters)
+    
     instructor = instructor[0]
     sections = Section.objects.filter(instructor=instructor)
+    selected_semester = request.GET.get('semester')
+    if selected_semester:
+        sections = sections.filter(semester=selected_semester)
     course_numbers = sections.values_list('course_number', flat=True).distinct()
     courses = Course.objects.filter(course_number__in=course_numbers)
 
@@ -567,8 +580,10 @@ def instructor_dashboard(request):
     context = {
         'courses': courses,
         'sections': sections,
+        'semesters': semesters,
        
         'sort_direction': sort_direction,
+        'selected_semester': selected_semester
     }
     
     return render(request, 'administrator.html', context)
@@ -588,14 +603,20 @@ def instructor_course_detail(request, course_number):
             add_assignment(request=request)
     course = Course.objects.get(course_number=course_number)
     sections = Section.objects.filter(course_number=course_number,instructor = instructor[0])
+    selected_semester = request.GET.get('semester')
+    if selected_semester:
+        sections = sections.filter(semester=selected_semester)
     assignments = Assignment.objects.filter(section_number__course_number=course_number)
+    if selected_semester:
+        assignments = assignments.filter(section_number__semester=selected_semester)
     students = Student.objects.filter(assignment__in=assignments)
     context = {
         'course': course,
         'sections': sections,
         'instructors': instructor,
         'assignments': assignments,
-        'students': students
+        'students': students,
+        'selected_semester': selected_semester
     }
     return render(request, 'course_detail.html', context)
 
