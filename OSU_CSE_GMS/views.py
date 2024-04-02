@@ -87,10 +87,21 @@ def administrator(request):
     # Query to get all courses that have at least one section that needs at least one grader
     courses_needing_graders = Course.objects.filter(section__num_graders_needed__gt=0).distinct()
 
+    # Get all unique semesters and sort them in descending order
+    semesters = Section.objects.values_list('semester', flat=True).distinct()
+
+    def sort_semesters(semester):
+        season_order = {'SP': 3, 'SU': 2, 'AU': 1}
+        season, year = semester[:2], int(semester[2:])
+        return (-year, season_order.get(season, 0))
+    
+    semesters = sorted(semesters, key=sort_semesters)
+
     context = {
         'course_form': course_form,
         'courses': courses,
         'sections': sections,
+        'semesters': semesters,
         'instructors': instructors,
         'courses_needing_graders': courses_needing_graders,
         'sort_direction': sort_direction,
