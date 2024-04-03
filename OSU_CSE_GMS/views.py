@@ -4,7 +4,7 @@ from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.views.defaults import server_error
-from .forms import CourseForm, SectionForm, SignUpFormAdmin, SignUpFormInstructor, SignUpFormStudent, ApplicationForm
+from .forms import CourseForm, SectionForm, SignUpFormAdmin, SignUpFormInstructor, SignUpFormStudent, MakeAssignmentsForm, ApplicationForm
 from .models import Course, Student, Assignment, Section, UnassignedStudent, Instructor, PreviousClassTaken, Administrator
 import logging
 from .algo.algo import massAssign
@@ -152,13 +152,14 @@ def course_detail(request, course_number):
     course = Course.objects.get(course_number=course_number)
     selected_semester = request.GET.get('semester')
     sections = Section.objects.filter(course_number=course_number)
-    if selected_semester:
-        sections = sections.filter(semester=selected_semester)
     instructors = Instructor.objects.all()
     assignments = Assignment.objects.filter(section_number__course_number=course_number)
-    if selected_semester:
-        assignments = assignments.filter(section_number__semester=selected_semester)
     students = Student.objects.filter(assignment__in=assignments)
+
+    if selected_semester:
+        sections = sections.filter(semester=selected_semester)
+        assignments = assignments.filter(section_number__semester=selected_semester)
+    
     context = {
         'section_form': section_form,
         'course': course,
@@ -265,7 +266,39 @@ def create_instructor(request):
 
 @login_required
 def make_assignments(request):
-    return redirect('administrator')
+    context = {}
+    form = MakeAssignmentsForm()
+
+    if request.method == 'POST':
+        form = MakeAssignmentsForm(request.POST)
+
+        # Check if form is valid and call massAssign function with semester
+        if form.is_valid():
+            LOGGER.info('Make Assignments Form Valid')
+            semester = form.cleaned_data.get('semester')
+            massAssign(semester)
+            messages.success(request, 'Assignments have successfully been made for semester: ' + semester)
+            LOGGER.info(f'Assignments have been made for semester: {semester}')
+        else:
+            messages.error(request, 'Error making assignments. Please try again.')
+            LOGGER.warning(f'Make Assignment Form not valid: {form.errors}')
+
+    # Get all unique semesters and sort them in descending order
+    semesters = Section.objects.values_list('semester', flat=True).distinct()
+
+    def sort_semesters(semester):
+        season_order = {'SP': 3, 'SU': 2, 'AU': 1}
+        season, year = semester[:2], int(semester[2:])
+        return (-year, season_order.get(season, 0))
+    
+    semesters = sorted(semesters, key=sort_semesters)
+
+    context = {
+        'form' : form,
+        'semesters' : semesters
+    }
+
+    return render(request, 'make_assignments.html', context)
 
 def sign_up(request):
     form = SignUpFormStudent()

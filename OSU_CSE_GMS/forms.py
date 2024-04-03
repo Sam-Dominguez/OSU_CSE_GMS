@@ -64,6 +64,9 @@ class SignUpFormInstructor(UserCreationForm):
     class Meta:
         model = User
         fields = ('first_name', 'last_name', 'username', 'email', 'password1', 'password2')
+
+class MakeAssignmentsForm(forms.Form):
+    semester = forms.CharField(max_length=6)
         
 class ApplicationForm(forms.Form):
     in_columbus = forms.IntegerField()
