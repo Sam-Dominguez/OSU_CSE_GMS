@@ -36,7 +36,7 @@ urlpatterns = [
 
     path('administrator/', RedirectView.as_view(url='/administrator/courses/'), name='administrator'),
     path('administrator/courses/', RedirectView.as_view(url='/administrator/dashboard/')),
-    path('administrator/dashboard/', administrator, name='administrator_dashboard'),
+    path('administrator/dashboard/', administrator_dashboard, name='administrator_dashboard'),
     path('administrator/courses/<str:course_number>/', course_detail, name='course_detail'),
     path('administrator/create_admin/', create_admin, name='create_admin'),
     path('administrator/create_instructor/', create_instructor, name='create_instructor'),
