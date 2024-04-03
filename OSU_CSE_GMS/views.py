@@ -4,7 +4,7 @@ from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.views.defaults import server_error
-from .forms import CourseForm, SectionForm, SignUpFormAdmin, SignUpFormStudent, ApplicationForm
+from .forms import CourseForm, SectionForm, SignUpFormAdmin, SignUpFormInstructor, SignUpFormStudent, ApplicationForm
 from .models import Course, Student, Assignment, Section, UnassignedStudent, Instructor, PreviousClassTaken, Administrator
 import logging
 from .algo.algo import massAssign
@@ -224,6 +224,48 @@ def create_admin(request):
 
     return render(request, 'registration/admin_create.html', context)
 
+@login_required
+def create_instructor(request):
+    userOfReq = request.user
+
+    if not is_administrator(userOfReq):
+        raise PermissionDenied
+
+    if not Administrator.objects.filter(user=userOfReq).exists():
+        return redirect("home")
+    form = SignUpFormInstructor()
+    if request.method == 'POST':
+        form = SignUpFormInstructor(request.POST)
+        if form.is_valid():
+            LOGGER.info('Create Instructor Form Valid')
+            form.save()
+
+            first_name = form.cleaned_data.get('first_name')
+            last_name = form.cleaned_data.get('last_name')
+            username = form.cleaned_data.get('username')
+            email = form.cleaned_data.get('email')
+
+            user = User.objects.get(username=username)
+            instructor = Instructor.objects.create(user=user, email=email, first_name = first_name, last_name = last_name)
+            instructor.save()
+            if instructor.pk:
+                LOGGER.info(f'Created Instructor with id: {instructor.pk} associated with auth_user with id: {user.pk}')
+            else:
+                LOGGER.error(f'Failed to create Instructor to associate with user id: {user.pk}')
+
+            return redirect('administrator')
+        else:
+            LOGGER.warning(f'Instructor create Form not valid: {form.errors}')
+        
+    context = {
+        'form' : form
+    }
+
+    return render(request, 'registration/instructor_create.html', context)
+
+@login_required
+def make_assignments(request):
+    return redirect('administrator')
 
 def sign_up(request):
     form = SignUpFormStudent()

@@ -20,6 +20,14 @@
                 <li class="nav-item active">
                     <a class="nav-link" href="{% url 'create_admin' %}">Create Admin</a>
                 </li>
+
+                <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'create_instructor' %}">Create Instructor</a>
+                </li>
+
+                <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'make_assignments' %}">Make Assignments</a>
+                </li>
             {% endif %}
 
             {% if user.is_authenticated and user|has_group:'instructors' %}
