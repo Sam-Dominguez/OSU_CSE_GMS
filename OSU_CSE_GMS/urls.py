@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.views.generic.base import TemplateView
-from .views import administrator, course_detail, student_dashboard, sign_up, student_intake, create_admin, create_instructor, make_assignments, dashboard, instructor_grader_request, instructor_dashboard,instructor_course_detail
+from .views import administrator_dashboard, course_detail, student_dashboard, sign_up, student_intake, create_admin, create_instructor, make_assignments, dashboard, instructor_grader_request, instructor_dashboard,instructor_course_detail
 from .algo.algo import algoTest
 from django.views.generic import RedirectView
 import logging

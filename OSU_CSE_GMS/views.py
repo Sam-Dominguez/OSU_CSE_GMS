@@ -181,6 +181,8 @@ def administrator_dashboard(request):
     if selected_semester:
         sections = sections.filter(semester=selected_semester)
 
+    LOGGER.info(f'Displaying {courses.count()} courses, {sections.count()} sections')
+
     context = {
         'course_form': course_form,
         'courses': courses,
@@ -233,12 +235,12 @@ def course_detail(request, course_number):
             delete_assignment(request=request)         
 
     course = Course.objects.get(course_number=course_number)
-    selected_semester = request.GET.get('semester')
     sections = Section.objects.filter(course_number=course_number)
     instructors = Instructor.objects.all()
     assignments = Assignment.objects.filter(section_number__course_number=course_number)
     students = Student.objects.filter(assignment__in=assignments)
 
+    selected_semester = request.GET.get('semester')
     if selected_semester:
         sections = sections.filter(semester=selected_semester)
         assignments = assignments.filter(section_number__semester=selected_semester)
@@ -622,9 +624,7 @@ def student_intake(request):
                 unassigned_student.save()
             else:
                 unassigned_student = UnassignedStudent(student_id=student, submission_time=datetime.now(timezone.utc))
-            
-            massAssign('SP2024') # TODO: REMOVE SO ALGO DOES NOT RUN ON EACH FORM SUBMISSION
-            
+                        
             return redirect('/thanks/')
         else:
             LOGGER.warn(f'Form is invalid: {form.errors}')
