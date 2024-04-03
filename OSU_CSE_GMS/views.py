@@ -8,6 +8,7 @@ from django.views.defaults import server_error
 from .forms import CourseForm, SectionForm, SignUpFormAdmin, SignUpFormInstructor, SignUpFormStudent, MakeAssignmentsForm, ApplicationForm
 from .models import Course, Student, Assignment, Section, UnassignedStudent, Instructor, PreviousClassTaken, Administrator
 from .services import permissions
+from .algo.algo import massAssign
 import logging
 
 LOGGER = logging.getLogger('django')
