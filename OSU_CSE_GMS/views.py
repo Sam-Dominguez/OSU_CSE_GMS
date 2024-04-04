@@ -571,6 +571,9 @@ def student_intake(request):
             else:
                 LOGGER.error('Student does not exist in the database.')
 
+            # Clear student's records in case of editing
+            PreviousClassTaken.objects.filter(student_id=student).delete()
+
             # Add student course preferences to database
             student = Student.objects.filter(user_id=request.user.id)
             if student.exists():
