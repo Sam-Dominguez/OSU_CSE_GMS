@@ -340,6 +340,11 @@ def create_instructor(request):
 
 @login_required
 def make_assignments(request):
+    userOfReq = request.user
+
+    if not is_administrator(userOfReq):
+        raise PermissionDenied
+    
     context = {}
     form = MakeAssignmentsForm()
 

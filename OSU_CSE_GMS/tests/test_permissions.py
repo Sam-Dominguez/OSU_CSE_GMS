@@ -6,7 +6,9 @@ from ..services import permissions
 APPLICATION_FORM_URL = '/student/application/'
 STUDENT_DASH_URL = '/student/dashboard/'
 ADMINISTRATOR_DASH_URL = '/administrator/dashboard/'
-ADMINISTRATOR_CREATE_URL = '/administrator/create/'
+ADMINISTRATOR_CREATE_ADMIN_URL = '/administrator/create_admin/'
+ADMINISTRATOR_CREATE_INSTRUCTOR_URL = '/administrator/create_instructor/'
+ADMINISTRATOR_MAKE_ASSIGNMENTS_URL = '/administrator/make_assignments/'
 INSTRUCTOR_DASH_URL = '/instructor/dashboard/'
 INSTRUCTOR_GRADER_REQUEST_URL = '/instructor/grader_request/'
 OKAY_RESPONSE_CODE = 200
@@ -73,7 +75,7 @@ class PermissionTests(TestCase):
         self.assertNotEqual(self.client.get(APPLICATION_FORM_URL).status_code, FORBIDDEN_RESPONSE_CODE)
         self.assertNotEqual(self.client.get(STUDENT_DASH_URL).status_code, FORBIDDEN_RESPONSE_CODE)
         self.assertNotEqual(self.client.get(ADMINISTRATOR_DASH_URL).status_code, FORBIDDEN_RESPONSE_CODE)
-        self.assertNotEqual(self.client.get(ADMINISTRATOR_CREATE_URL).status_code, FORBIDDEN_RESPONSE_CODE)
+        self.assertNotEqual(self.client.get(ADMINISTRATOR_CREATE_ADMIN_URL).status_code, FORBIDDEN_RESPONSE_CODE)
         self.assertNotEqual(self.client.get(INSTRUCTOR_GRADER_REQUEST_URL).status_code, FORBIDDEN_RESPONSE_CODE) 
 
     # Application
@@ -182,7 +184,7 @@ class PermissionTests(TestCase):
         self.client.login(username='testAdmin', password='12345')
 
         # Try to view application page
-        response = self.client.get(ADMINISTRATOR_CREATE_URL)
+        response = self.client.get(ADMINISTRATOR_CREATE_ADMIN_URL)
 
         # Assert 200 status code
         self.assertEqual(response.status_code, OKAY_RESPONSE_CODE)
@@ -192,7 +194,7 @@ class PermissionTests(TestCase):
         self.client.login(username='testStudent', password='12345')
 
         # Try to view application page
-        response = self.client.get(ADMINISTRATOR_CREATE_URL)
+        response = self.client.get(ADMINISTRATOR_CREATE_ADMIN_URL)
 
         # Assert 200 status code
         self.assertEqual(response.status_code, FORBIDDEN_RESPONSE_CODE)
@@ -202,7 +204,73 @@ class PermissionTests(TestCase):
         self.client.login(username='testInstructor', password='12345')
 
         # Try to view application page
-        response = self.client.get(ADMINISTRATOR_CREATE_URL)
+        response = self.client.get(ADMINISTRATOR_CREATE_ADMIN_URL)
+
+        # Assert 200 status code
+        self.assertEqual(response.status_code, FORBIDDEN_RESPONSE_CODE)
+
+
+    # Create Instructor
+
+    def test_administrator_can_view_create_instructor(self):
+        # Login as an admin
+        self.client.login(username='testAdmin', password='12345')
+
+        # Try to view application page
+        response = self.client.get(ADMINISTRATOR_CREATE_INSTRUCTOR_URL)
+
+        # Assert 200 status code
+        self.assertEqual(response.status_code, OKAY_RESPONSE_CODE)
+        
+    def test_student_cannot_view_create_instructor(self):
+        # Login as a student
+        self.client.login(username='testStudent', password='12345')
+
+        # Try to view application page
+        response = self.client.get(ADMINISTRATOR_CREATE_INSTRUCTOR_URL)
+
+        # Assert 200 status code
+        self.assertEqual(response.status_code, FORBIDDEN_RESPONSE_CODE)
+
+    def test_instructor_cannot_view_create_instructor(self):
+        # Login as an instructor
+        self.client.login(username='testInstructor', password='12345')
+
+        # Try to view application page
+        response = self.client.get(ADMINISTRATOR_CREATE_INSTRUCTOR_URL)
+
+        # Assert 200 status code
+        self.assertEqual(response.status_code, FORBIDDEN_RESPONSE_CODE)
+
+
+    # Make Assignments
+
+    def test_administrator_can_view_make_assignments(self):
+        # Login as an admin
+        self.client.login(username='testAdmin', password='12345')
+
+        # Try to view application page
+        response = self.client.get(ADMINISTRATOR_MAKE_ASSIGNMENTS_URL)
+
+        # Assert 200 status code
+        self.assertEqual(response.status_code, OKAY_RESPONSE_CODE)
+    
+    def test_student_cannot_view_make_assignments(self):
+        # Login as a student
+        self.client.login(username='testStudent', password='12345')
+
+        # Try to view application page
+        response = self.client.get(ADMINISTRATOR_MAKE_ASSIGNMENTS_URL)
+
+        # Assert 200 status code
+        self.assertEqual(response.status_code, FORBIDDEN_RESPONSE_CODE)
+
+    def test_instructor_cannot_view_make_assignments(self):
+        # Login as an instructor
+        self.client.login(username='testInstructor', password='12345')
+
+        # Try to view application page
+        response = self.client.get(ADMINISTRATOR_MAKE_ASSIGNMENTS_URL)
 
         # Assert 200 status code
         self.assertEqual(response.status_code, FORBIDDEN_RESPONSE_CODE)
