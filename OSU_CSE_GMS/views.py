@@ -61,7 +61,8 @@ def add_assignment(request):
     and email of the student to create an assignment.
     '''
     section_number = request.POST['section_id']
-    student_email = request.POST['student_email']
+    name_num = request.POST['student_email']
+    student_email = f'{name_num}@buckeyemail.osu.edu'
     LOGGER.info(f'Adding Assignment to Section with section number: {section_number}')
     try:
         section = Section.objects.get(pk=section_number)
@@ -670,28 +671,34 @@ def instructor_grader_request(request):
     
     instructor = instructor[0]
 
-    sections = Section.objects.filter(instructor=instructor)
+    sections = Section.objects.filter(instructor=instructor).exclude(num_graders_needed=0)
     LOGGER.info(f'Sections for this instructor: {sections}')
     
     if(request.method == 'POST'):
-            section = Section.objects.filter(section_number = request.POST['section_number'], instructor=instructor)
+            section_number = request.POST['section_id']
+            section = Section.objects.filter(pk=section_number, instructor=instructor)
             if section.exists():
                 LOGGER.info('Section Found.')
                 section = section[0]
                 status = 'PENDING'
-                email = request.POST['student_email']
+                name_num = request.POST['student_email']
+                email = f'{name_num}@buckeyemail.osu.edu'
                 student = Student.objects.filter(email=email)
                 if student.exists():
                     LOGGER.info('Student Found.')
                     student = student[0]
                     assignment = Assignment(section_number=section, status=status, student_id=student)
                     assignment.save()
+                    section.num_graders_needed -= 1
+                    section.save(update_fields=['num_graders_needed'])
                     LOGGER.info(f'Assignment for{assignment.section_number.course_number}section {assignment.section_number.section_number} has been saved.')
                     return redirect('/thanks/')
                 else:
                     LOGGER.error('Student Not Found.') 
             else:
                 LOGGER.error('Section Not Found.')
+            # add_assignment(request=request)
+            # return redirect('/thanks/')
 
 
     context = {

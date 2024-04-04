@@ -149,10 +149,10 @@ class AdministratorTests(TestCase):
         )
 
         # Add Student to the database
-        student_user = User.objects.create_user(username='student', email='teststudent@example.com', password='testpassword')
+        student_user = User.objects.create_user(username='student', email='teststudent@buckeyemail.osu.edu', password='testpassword')
         student = Student.objects.create(
             user=student_user,
-            email = 'teststudent@example.com',
+            email = 'teststudent@buckeyemail.osu.edu',
             first_name='Test',
             last_name='Student',
             in_columbus='1',
@@ -163,7 +163,7 @@ class AdministratorTests(TestCase):
         assignment_data = {
             'add_assignment' : ['add_assignment'],
             'section_id' : str(section.id),
-            'student_email' : student.email,
+            'student_email' : 'teststudent',
         }
 
         url = ADMIN_FORM_URL.format('2431')
@@ -196,10 +196,10 @@ class AdministratorTests(TestCase):
         )
 
         # Add Student to the database
-        student_user = User.objects.create_user(username='student', email='test@example.com', password='testpassword')
+        student_user = User.objects.create_user(username='student', email='teststudent@buckeyemail.osu.edu', password='testpassword')
         student = Student.objects.create(
             user=student_user,
-            email = 'teststudent@example.com',
+            email = 'teststudent@buckeyemail.osu.edu',
             first_name='Test',
             last_name='Student',
             in_columbus='1',
