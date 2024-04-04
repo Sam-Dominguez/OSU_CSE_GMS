@@ -16,6 +16,7 @@ class ApplicationTests(TestCase):
 
         student = Student(first_name='Test', last_name='Student', email='testStudent.500@buckeyemail.osu.edu', user_id=user_student.id)
         student.save()
+        self.student = student
 
         Course.objects.create(course_number='2221', name='Software 1: Software Components')
         Course.objects.create(course_number='3901', name='Project: Design, Development, and Documentation of Web Applications')
@@ -212,3 +213,69 @@ class ApplicationTests(TestCase):
         self.assertEquals(student.in_columbus, 0)
         self.assertEquals(student.previous_grader, 0)
         self.assertEquals(student.graded_last_term, '1110')
+
+    def test_edit_submission_reordered_preferences(self):
+        previous_application_data = {
+            'in_columbus' : [1],
+            'previous_grader' : [0],
+            'preferred_class_1' : ['2221'],
+            'preferred_class_2' : ['3901'],
+            'preferred_class_3' : ['1222'],
+        }
+        edited_application_data = {
+            'in_columbus' : [1],
+            'previous_grader' : [0],
+            'preferred_class_1' : ['3901'],
+            'preferred_class_2' : ['1222'],
+            'preferred_class_3' : ['2221'],
+        }
+
+        # Login to access page
+        self.client.login(username='testStudent', password='12345')
+        
+        # Save previous application
+        self.client.post(APPLICATION_FORM_URL, data=previous_application_data, follow=True)
+
+        # Validate record is created as intended
+        previousClass1 = PreviousClassTaken.objects.get(course_number='2221')
+        previousClass2 = PreviousClassTaken.objects.get(course_number='3901')
+        previousClass3 = PreviousClassTaken.objects.get(course_number='1222')
+        
+        # Validate pref number
+        self.assertEquals(previousClass1.pref_num, 1)
+        self.assertEquals(previousClass2.pref_num, 2)
+        self.assertEquals(previousClass3.pref_num, 3)
+
+        # Validate student
+        self.assertEquals(previousClass1.student_id, self.student)
+        self.assertEquals(previousClass2.student_id, self.student)
+        self.assertEquals(previousClass3.student_id, self.student)
+        
+        # Login to access page
+        self.client.login(username='testStudent', password='12345')
+        
+        # Make POST to edit student data
+        self.client.post(APPLICATION_FORM_URL, data=edited_application_data, follow=True)
+        
+        # Validate record is created as intended
+        previousClass1 = PreviousClassTaken.objects.get(course_number='3901')
+        previousClass2 = PreviousClassTaken.objects.get(course_number='1222')
+        previousClass3 = PreviousClassTaken.objects.get(course_number='2221')
+        
+        # Validate pref number
+        self.assertEquals(previousClass1.pref_num, 1)
+        self.assertEquals(previousClass2.pref_num, 2)
+        self.assertEquals(previousClass3.pref_num, 3)
+
+        # Validate student
+        self.assertEquals(previousClass1.student_id, self.student)
+        self.assertEquals(previousClass2.student_id, self.student)
+        self.assertEquals(previousClass3.student_id, self.student)
+
+        # Get student object from DB
+        student = Student.objects.get(email='testStudent.500@buckeyemail.osu.edu')
+        
+        # Validate student data was updated
+        self.assertEquals(student.in_columbus, 1)
+        self.assertEquals(student.previous_grader, 0)
+        self.assertEquals(student.graded_last_term, '')
