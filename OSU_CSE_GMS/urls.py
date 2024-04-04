@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.views.generic.base import TemplateView
-from .views import administrator_dashboard, course_detail, student_dashboard, sign_up, student_intake, create_admin, dashboard, instructor_grader_request, instructor_dashboard,instructor_course_detail
+from .views import administrator_dashboard, course_detail, student_dashboard, sign_up, student_intake, create_admin, create_instructor, make_assignments, dashboard, instructor_grader_request, instructor_dashboard,instructor_course_detail
 from .algo.algo import algoTest
 from django.views.generic import RedirectView
 import logging
@@ -38,7 +38,9 @@ urlpatterns = [
     path('administrator/courses/', RedirectView.as_view(url='/administrator/dashboard/')),
     path('administrator/dashboard/', administrator_dashboard, name='administrator_dashboard'),
     path('administrator/courses/<str:course_number>/', course_detail, name='course_detail'),
-    path('administrator/create/', create_admin, name='create_admin'),
+    path('administrator/create_admin/', create_admin, name='create_admin'),
+    path('administrator/create_instructor/', create_instructor, name='create_instructor'),
+    path('administrator/make_assignments/', make_assignments, name='make_assignments'),
 
     path('student/', RedirectView.as_view(url='/student/dashboard/'), name='student'),
     path('student/dashboard/', student_dashboard, name="student_dashboard"),

@@ -1,9 +1,10 @@
 from django.test import TestCase
-from OSU_CSE_GMS.models import Student, Administrator
+from OSU_CSE_GMS.models import Student, Administrator, Instructor
 from django.contrib.auth.models import User 
 
 SIGNUP_FORM_URL = '/sign_up/'
-CREATE_ADMIN_FORM_URL = '/administrator/create/'
+CREATE_ADMIN_FORM_URL = '/administrator/create_admin/'
+CREATE_INSTRUCTOR_FORM_URL = '/administrator/create_instructor/'
 REDIRECT_URL = '/accounts/login/?next=/student/dashboard/'
 
 FIELD_REQUIRED_ERROR = 'This field is required.'
@@ -200,3 +201,41 @@ class SignUpTests(TestCase):
         self.assertEqual(admin.email, user.email)
         self.assertEqual(admin.first_name, user.first_name)
         self.assertEqual(admin.last_name, user.last_name)
+
+
+#### Testing creating instructor by admin ####
+    def test_valid_form_creates_objects_instructor(self):
+        # log in does nothing now, future proofing so only admin logged in can create another admin
+        user = User.objects.create_user(username='testuser', email='test@example.com', password='testpassword')
+        admin = Administrator.objects.create(user=user, email ='test@example.com' )
+        self.client.login(username='testuser', password='testpassword')
+
+        form_data = {'first_name' : 'Test FName', 'last_name' : 'Test LName', 'username' : 'MyUsername', 'email' : 'buckeye.2024@osu.edu', 'password1' : 'samplepassword', 'password2' : 'samplepassword'}
+
+        num_users_before = User.objects.all().count()
+        num_instructor_before = Instructor.objects.all().count()
+
+        response = self.client.post(CREATE_INSTRUCTOR_FORM_URL, data=form_data, follow=True)
+
+        num_users_after = User.objects.all().count()
+        num_instructor_after = Instructor.objects.all().count()
+
+        self.assertEqual(num_users_after, num_users_before + 1)
+        self.assertEqual(num_instructor_after, num_instructor_before + 1)
+
+    def test_valid_form_creates_instructor_and_user(self):
+        # log in does nothing now, future proofing so only admin logged in can create another admin
+        user = User.objects.create_user(username='testuser', email='test@example.com', password='testpassword')
+        admin = Administrator.objects.create(user=user, email ='test@example.com' )
+        self.client.login(username='testuser', password='testpassword')
+        form_data = {'first_name' : 'Test FName', 'last_name' : 'Test LName', 'username' : 'MyUsername', 'email' : 'buckeye.2024@osu.edu', 'password1' : 'samplepassword', 'password2' : 'samplepassword'}
+        response = self.client.post(CREATE_INSTRUCTOR_FORM_URL, data=form_data, follow=True)
+
+
+        instructor = Instructor.objects.get(email='buckeye.2024@osu.edu')
+        user = instructor.user
+
+        self.assertNotEqual(user, None)
+        self.assertEqual(instructor.email, user.email)
+        self.assertEqual(instructor.first_name, user.first_name)
+        self.assertEqual(instructor.last_name, user.last_name)

@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Make Assignments{% endblock %}
+
+{% block content %}
+<h2>Make Assignments </h2>
+<hr/>
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}success{% endif %} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<p>To run the algorithm and make assignments in mass, select a semester from the dropdown and press the button below.</p>
+<form method="post">
+    {% csrf_token %}
+    <div class="dropdown">
+        <button id="semester-select-btn" class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="margin-right: 5px;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-calendar-week" viewBox="0 0 16 16">
+                <path d="M11 6.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm-3 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm-5 3a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5z"/>
+                <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4z"/>
+            </svg>
+            <span id="selected-semester">Semester</span>
+        </button>
+        <ul class="dropdown-menu">
+            {% for semester in semesters %}
+                <li><a class="dropdown-item semester">{{ semester }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+    <input type="hidden" name="semester" id="selected-semester-input">
+    <button type="submit" class="btn btn-dark" style="background-color: #BB0000 !important; margin-top: 10px;">Make Assignments</button>
+</form>
+
+<!-- Script for selecting semester -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.dropdown-item.semester').forEach(function(item) {
+            item.addEventListener('click', function() {
+                var selectedSemester = item.textContent;
+                document.getElementById('selected-semester').textContent = selectedSemester;
+                document.getElementById('selected-semester-input').value = selectedSemester;
+            });
+        });
+    });
+</script>
+{% endblock %}

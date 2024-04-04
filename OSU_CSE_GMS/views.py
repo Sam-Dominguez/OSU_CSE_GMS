@@ -5,10 +5,10 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.shortcuts import redirect, render
 from django.views.defaults import server_error
-from .algo.algo import massAssign
-from .forms import CourseForm, SectionForm, SignUpFormAdmin, SignUpFormStudent, ApplicationForm
+from .forms import CourseForm, SectionForm, SignUpFormAdmin, SignUpFormInstructor, SignUpFormStudent, MakeAssignmentsForm, ApplicationForm
 from .models import Course, Student, Assignment, Section, UnassignedStudent, Instructor, PreviousClassTaken, Administrator
 from .services import permissions
+from .algo.algo import massAssign
 import logging
 
 LOGGER = logging.getLogger('django')
@@ -168,13 +168,31 @@ def administrator_dashboard(request):
     # Query to get all courses that have at least one section that needs at least one grader
     courses_needing_graders = Course.objects.filter(section__num_graders_needed__gt=0).distinct()
 
+    # Get all unique semesters and sort them in descending order
+    semesters = Section.objects.values_list('semester', flat=True).distinct()
+
+    def sort_semesters(semester):
+        season_order = {'SP': 3, 'SU': 2, 'AU': 1}
+        season, year = semester[:2], int(semester[2:])
+        return (-year, season_order.get(season, 0))
+    
+    semesters = sorted(semesters, key=sort_semesters)
+
+    selected_semester = request.GET.get('semester')
+    if selected_semester:
+        sections = sections.filter(semester=selected_semester)
+
+    LOGGER.info(f'Displaying {courses.count()} courses, {sections.count()} sections')
+
     context = {
         'course_form': course_form,
         'courses': courses,
         'sections': sections,
+        'semesters': semesters,
         'instructors': instructors,
         'courses_needing_graders': courses_needing_graders,
         'sort_direction': sort_direction,
+        'selected_semester': selected_semester
     }
     
     return render(request, 'administrator.html', context)
@@ -222,6 +240,12 @@ def course_detail(request, course_number):
     instructors = Instructor.objects.all()
     assignments = Assignment.objects.filter(section_number__course_number=course_number)
     students = Student.objects.filter(assignment__in=assignments)
+
+    selected_semester = request.GET.get('semester')
+    if selected_semester:
+        sections = sections.filter(semester=selected_semester)
+        assignments = assignments.filter(section_number__semester=selected_semester)
+    
     context = {
         'section_form': section_form,
         'course': course,
@@ -275,6 +299,85 @@ def create_admin(request):
 
     return render(request, 'registration/admin_create.html', context)
 
+@login_required
+def create_instructor(request):
+    userOfReq = request.user
+
+    if not is_administrator(userOfReq):
+        raise PermissionDenied
+
+    if not Administrator.objects.filter(user=userOfReq).exists():
+        return redirect("home")
+    form = SignUpFormInstructor()
+    if request.method == 'POST':
+        form = SignUpFormInstructor(request.POST)
+        if form.is_valid():
+            LOGGER.info('Create Instructor Form Valid')
+            form.save()
+
+            first_name = form.cleaned_data.get('first_name')
+            last_name = form.cleaned_data.get('last_name')
+            username = form.cleaned_data.get('username')
+            email = form.cleaned_data.get('email')
+
+            user = User.objects.get(username=username)
+            instructor = Instructor.objects.create(user=user, email=email, first_name = first_name, last_name = last_name)
+            instructor.save()
+            if instructor.pk:
+                LOGGER.info(f'Created Instructor with id: {instructor.pk} associated with auth_user with id: {user.pk}')
+            else:
+                LOGGER.error(f'Failed to create Instructor to associate with user id: {user.pk}')
+
+            return redirect('administrator')
+        else:
+            LOGGER.warning(f'Instructor create Form not valid: {form.errors}')
+        
+    context = {
+        'form' : form
+    }
+
+    return render(request, 'registration/instructor_create.html', context)
+
+@login_required
+def make_assignments(request):
+    userOfReq = request.user
+
+    if not is_administrator(userOfReq):
+        raise PermissionDenied
+    
+    context = {}
+    form = MakeAssignmentsForm()
+
+    if request.method == 'POST':
+        form = MakeAssignmentsForm(request.POST)
+
+        # Check if form is valid and call massAssign function with semester
+        if form.is_valid():
+            LOGGER.info('Make Assignments Form Valid')
+            semester = form.cleaned_data.get('semester')
+            massAssign(semester)
+            messages.success(request, 'Assignments have successfully been made for semester: ' + semester)
+            LOGGER.info(f'Assignments have been made for semester: {semester}')
+        else:
+            messages.error(request, 'Error making assignments. Please try again.')
+            LOGGER.warning(f'Make Assignment Form not valid: {form.errors}')
+
+    # Get all unique semesters and sort them in descending order
+    semesters = Section.objects.values_list('semester', flat=True).distinct()
+
+    def sort_semesters(semester):
+        season_order = {'SP': 3, 'SU': 2, 'AU': 1}
+        season, year = semester[:2], int(semester[2:])
+        return (-year, season_order.get(season, 0))
+    
+    semesters = sorted(semesters, key=sort_semesters)
+
+    context = {
+        'form' : form,
+        'semesters' : semesters
+    }
+
+    return render(request, 'make_assignments.html', context)
 
 def sign_up(request):
     '''
@@ -527,9 +630,7 @@ def student_intake(request):
                 unassigned_student.save()
             else:
                 unassigned_student = UnassignedStudent(student_id=student, submission_time=datetime.now(timezone.utc))
-            
-            massAssign('SP2024') # TODO: REMOVE SO ALGO DOES NOT RUN ON EACH FORM SUBMISSION
-            
+                        
             return redirect('/thanks/')
         else:
             LOGGER.warn(f'Form is invalid: {form.errors}')
@@ -613,8 +714,21 @@ def instructor_dashboard(request):
         LOGGER.error(f'Instructor associated with user {user.username} does not exist, redirecting home')
         return redirect("home")
     
+    # Get all unique semesters and sort them in descending order
+    semesters = Section.objects.values_list('semester', flat=True).distinct()
+
+    def sort_semesters(semester):
+        season_order = {'SP': 3, 'SU': 2, 'AU': 1}
+        season, year = semester[:2], int(semester[2:])
+        return (-year, season_order.get(season, 0))
+    
+    semesters = sorted(semesters, key=sort_semesters)
+    
     instructor = instructor[0]
     sections = Section.objects.filter(instructor=instructor)
+    selected_semester = request.GET.get('semester')
+    if selected_semester:
+        sections = sections.filter(semester=selected_semester)
     course_numbers = sections.values_list('course_number', flat=True).distinct()
     courses = Course.objects.filter(course_number__in=course_numbers)
 
@@ -634,8 +748,10 @@ def instructor_dashboard(request):
     context = {
         'courses': courses,
         'sections': sections,
+        'semesters': semesters,
        
         'sort_direction': sort_direction,
+        'selected_semester': selected_semester
     }
     
     return render(request, 'administrator.html', context)
@@ -658,13 +774,19 @@ def instructor_course_detail(request, course_number):
             add_assignment(request=request)
     course = Course.objects.get(course_number=course_number)
     sections = Section.objects.filter(course_number=course_number,instructor = instructor[0])
+    selected_semester = request.GET.get('semester')
+    if selected_semester:
+        sections = sections.filter(semester=selected_semester)
     assignments = Assignment.objects.filter(section_number__course_number=course_number)
+    if selected_semester:
+        assignments = assignments.filter(section_number__semester=selected_semester)
     students = Student.objects.filter(assignment__in=assignments)
     context = {
         'course': course,
         'sections': sections,
         'instructors': instructor,
         'assignments': assignments,
-        'students': students
+        'students': students,
+        'selected_semester': selected_semester
     }
     return render(request, 'course_detail.html', context)
