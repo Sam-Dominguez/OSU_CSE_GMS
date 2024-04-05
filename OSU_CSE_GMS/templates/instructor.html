@@ -21,7 +21,7 @@
         </div>
     </div>
 </header></br>
-<form action="{% url 'instructor' %}" method="POST" enctype="mutipart/form-data">
+<form method="POST" action="" enctype="mutipart/form-data">
     {% csrf_token %}
     {% comment %} <div class="form-group"> {% endcomment %}
         {% comment %} <label for="instr_name">Instructor Name</label>
@@ -40,20 +40,20 @@
         {% endfor %}
     </select> {% endcomment %}
     <div class="container">
-        <label for="section_number">Course</label>
-        <select class="dropdown" id="section_number" name="section_number">
+        <label for="section-id">Course</label>
+        <select class="dropdown" id="section-id" name="section_id">
             <option value="" selected>Select Section</option>
             {% for section in sections %}
-                <option class="dropdown-item" value="{{ section.section_number }}">{{ section.section_number }} - {{ section.course_number }}</option>
+                <option class="dropdown-item" value="{{ section.id }}">{{ section.section_number }} - {{ section.course_number }}</option>
             {% endfor %}
         </select>
     </div></br>
     <div class="container">
         <label for="student_email">Student</label>
-        <input id="student_email" type="email" name="student_email" placeholder="Student Email">
+        <input id="student_email" type="text" name="student_email" placeholder="Student Name.#" required>
     </div></br>
     <div class="container">
-        <button class="btn btn-primary btn-lg" style="background-color: #BB0000 !important;">Submit Grader Assignment</button>
+        <button type="submit" class="btn btn-primary btn-lg" style="background-color: #BB0000 !important;">Submit Grader Assignment</button>
     </div>
     
 </form>

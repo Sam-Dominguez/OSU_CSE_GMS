@@ -20,15 +20,15 @@ class InstructorTests(TestCase):
         Course.objects.create(course_number='2221', name='Software 1: Software Components')
 
         section = Section(section_number='10021', instruction_mode='SYNCHRONOUS', semester='AU24', time='11:30-12:25', 
-                days_of_week='MWF', classroom='Dreese Lab 300', course_number_id='2221', instructor_id=instructor.id)
+                days_of_week='MWF', classroom='Dreese Lab 300', course_number_id='2221', instructor_id=instructor.id, num_graders_needed=2)
         section.save()
         
         # Assignment.objects.create(section_number_id=section.id, student_id_id=student.id)
         
     def test_submission_creates_assignment(self):
         teacher_input_data = {
-            'section_number' : ['10021'],
-            'student_email' : ['testStudent.500@buckeyemail.osu.edu'],
+            'section_id' : ['1'],
+            'student_email' : ['testStudent.500'],
         }
         
         #Login to access page
@@ -55,12 +55,13 @@ class InstructorTests(TestCase):
         self.assertEqual(assignment.section_number, section)
         self.assertEqual(assignment.student_id, student)
         self.assertEqual(assignment.section_number.course_number, course)
+        self.assertEqual(section.num_graders_needed, 1)
         self.assertRedirects(response, THANKS_PAGE_URL)
         
     def test_nonexistent_section_does_not_create_assignment(self):
         teacher_input_data = {
-            'section_number' : [''],
-            'student_email' : ['testStudent.500@buckeyemail.osu.edu'],
+            'section_id' : ['45'],
+            'student_email' : ['testStudent.500'],
         }
         
         #Login to access page
@@ -77,8 +78,8 @@ class InstructorTests(TestCase):
         
     def test_nonexistent_student_does_not_create_assignment(self):
         teacher_input_data = {
-            'section_number' : ['10021'],
-            'student_email' : [''],
+            'section_id' : ['1'],
+            'student_email' : ['wrongStudent.500'],
         }
         
         #Login to access page
