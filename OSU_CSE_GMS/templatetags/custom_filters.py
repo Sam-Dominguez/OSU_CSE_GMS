@@ -17,4 +17,7 @@ def has_group(user, group_name):
 
 @register.filter
 def add_form_control(field):
-    return field.as_widget(attrs={'class': 'form-control'})
+    widget_attrs = {'class': 'form-control'}
+    if 'autofocus' in field.field.widget.attrs:
+        del field.field.widget.attrs['autofocus']
+    return field.as_widget(attrs=widget_attrs)
