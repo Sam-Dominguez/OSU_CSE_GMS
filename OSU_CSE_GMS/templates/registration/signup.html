@@ -3,13 +3,65 @@
 {% block title %}Sign Up{% endblock %}
 
 {% block content %}
-<h2>Sign up</h2>
-<hr/>
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <div></div>
-  <button type="submit" class="btn btn-dark" style="background-color: #BB0000 !important;">Sign Up</button>
-</form>
-<p>Already have an account? <a href="{% url 'login' %}">Log In</a></p>
+<header class="bg-light p-3">
+  <div class="container">
+      <div class="d-flex justify-content-between align-items-center">
+          <h1 class="m-0">Sign Up</h1>
+      </div>
+      <br>
+      <!-- Display error message here if sign up fails -->
+      {% if messages %}
+          {% for message in messages %}
+              <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                  {{ message }}
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+          {% endfor %}
+      {% endif %}
+      <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+          <label for="id_first_name">First Name</label>
+          <br>
+          {{ form.first_name|add_form_control }}
+        </div>
+        <br>
+        <div class="form-group">
+          <label for="id_last_name">Last Name</label>
+          <br>
+          {{ form.last_name|add_form_control }}
+        </div>
+        <br>
+        <div class="form-group">
+          <label for="id_username">Username</label>
+          <br>
+          {{ form.username|add_form_control }}
+        </div>
+        <br>
+        <div class="form-group">
+          <label for="id_email">Email Address</label>
+          <br>
+          {{ form.email|add_form_control }}
+          <small id="emailHelp" class="form-text text-muted">name.#@buckeyemail.osu.edu</small><br>
+          <i><small id="emailHelp" class="form-text text-muted">Ex. buckeye.1@buckeyemail.osu.edu</small></i>
+        </div>
+        <br>
+        <div class="form-group">
+          <label for="id_password1">Password</label>
+          <br>
+          {{ form.password1|add_form_control }}
+        </div>
+        <br>
+        <div class="form-group">
+          <label for="id_password2">Confirm Password</label>
+          <br>
+          {{ form.password2|add_form_control }}
+        </div>
+        <br>
+        <button type="submit" class="btn btn-dark" style="background-color: #BB0000 !important;">Sign Up</button>
+      </form>
+      <br>
+      <p>Already have an account? <a href="{% url 'login' %}">Log In</a></p>
+  </div>
+</header>
 {% endblock %}

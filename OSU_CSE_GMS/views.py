@@ -408,6 +408,9 @@ def sign_up(request):
             return redirect('student')
         else:
             LOGGER.warning(f'Form not valid: {form.errors}')
+            # Add error message to messages
+            error_messages = [error[0] for field, error in form.errors.items()]
+            messages.error(request, 'Error creating account. ' + ', '.join(error_messages))
         
     context = {
         'form' : form

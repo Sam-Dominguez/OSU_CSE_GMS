@@ -14,3 +14,7 @@ def get_total_graders_needed(course_number, semester):
 @register.filter(name='has_group') 
 def has_group(user, group_name):
     return permissions.has_group(user, group_name)
+
+@register.filter
+def add_form_control(field):
+    return field.as_widget(attrs={'class': 'form-control'})
