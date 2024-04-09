@@ -5921,26 +5921,6 @@
 },
 {
     "model": "auth.user",
-    "pk": 297,
-    "fields": {
-        "password": "pbkdf2_sha256$600000$CBnjKuPtISWNhDsSKWWL9g$3gOygr7t/5+T3h4m8tjOpByhqIOneFlf1Efj8Xwhd9k=",
-        "last_login": "2024-03-26T14:27:23.766Z",
-        "is_superuser": false,
-        "username": "SamD",
-        "first_name": "Sam",
-        "last_name": "Dominguez",
-        "email": "dominguez.101@buckeyemail.osu.edu",
-        "is_staff": false,
-        "is_active": true,
-        "date_joined": "2024-03-26T14:24:58.851Z",
-        "groups": [
-            2
-        ],
-        "user_permissions": []
-    }
-},
-{
-    "model": "auth.user",
     "pk": 298,
     "fields": {
         "password": "pbkdf2_sha256$600000$SMk2KvguiQj0n3qzjtNEvF$zDDXqcSXSPQLcxvZiggCXeanRLF9unmleWAqkYxHrak=",
@@ -9484,19 +9464,6 @@
         "last_name": "Zh",
         "in_columbus": 1,
         "previous_grader": 0,
-        "graded_last_term": ""
-    }
-},
-{
-    "model": "OSU_CSE_GMS.student",
-    "pk": 269,
-    "fields": {
-        "user": 297,
-        "email": "dominguez.101@buckeyemail.osu.edu",
-        "first_name": "Sam",
-        "last_name": "Dominguez",
-        "in_columbus": null,
-        "previous_grader": null,
         "graded_last_term": ""
     }
 },
