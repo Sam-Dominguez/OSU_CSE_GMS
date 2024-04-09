@@ -1,8 +1,17 @@
 {% extends "base.html" %}
-
+{% load custom_filters %}
 {% block title %}{{ block.super }} | Sign Up{% endblock %}
 
 {% block content %}
+<style>
+  .login-link {
+      color: #BB0000;
+  }
+  .login-link:hover {
+      color: inherit;
+  }
+</style>
+
 <header class="bg-light p-3">
   <div class="container">
       <div class="d-flex justify-content-between align-items-center">
@@ -61,7 +70,7 @@
         <button type="submit" class="btn btn-dark" style="background-color: #BB0000 !important;">Sign Up</button>
       </form>
       <br>
-      <p>Already have an account? <a href="{% url 'login' %}">Log In</a></p>
+      <p>Already have an account? <a href="{% url 'login' %}" class="login-link">Log In</a></p>
   </div>
 </header>
 {% endblock %}
