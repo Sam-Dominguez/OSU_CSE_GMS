@@ -73,13 +73,13 @@ class ApplicationTests(TestCase):
         
         # Track number of application courses in DB after POST and ensure one was created
         courses_after = PreviousClassTaken.objects.all().count()
-        self.assertEquals(courses_after, courses_before + 1)
+        self.assertEqual(courses_after, courses_before + 1)
         
         # Validate record is created as intended
         previousClass = PreviousClassTaken.objects.get(course_number='2221')
         
         # Validate no instructor
-        self.assertEquals(previousClass.instructor, '')
+        self.assertEqual(previousClass.instructor, '')
 
     def test_submission_adds_course_with_instructor(self):
         application_data = {
@@ -101,13 +101,13 @@ class ApplicationTests(TestCase):
         
         # Track number of application courses in DB after POST and ensure one was created
         courses_after = PreviousClassTaken.objects.all().count()
-        self.assertEquals(courses_after, courses_before + 1)
+        self.assertEqual(courses_after, courses_before + 1)
         
         # Validate record is created as intended
         previousClass = PreviousClassTaken.objects.get(course_number='2221')
         
         # Validate instructor
-        self.assertEquals(previousClass.instructor, 'Jones.1')
+        self.assertEqual(previousClass.instructor, 'Jones.1')
         
     def test_submission_no_course_added_incorrect_course_info(self):
         application_data = {
@@ -129,7 +129,7 @@ class ApplicationTests(TestCase):
         
         # Track number of application courses in DB after POST and ensure none were created
         courses_after = PreviousClassTaken.objects.all().count()
-        self.assertEquals(courses_after, courses_before)
+        self.assertEqual(courses_after, courses_before)
         
     def test_submission_adds__all_courses(self):
         application_data = {
@@ -154,7 +154,7 @@ class ApplicationTests(TestCase):
         
         # Track number of application courses in DB after POST and ensure they were created
         courses_after = PreviousClassTaken.objects.all().count()
-        self.assertEquals(courses_after, courses_before + 3)
+        self.assertEqual(courses_after, courses_before + 3)
         
         # Validate record is created as intended
         previousClass1 = PreviousClassTaken.objects.get(course_number='2221')
@@ -162,9 +162,9 @@ class ApplicationTests(TestCase):
         previousClass3 = PreviousClassTaken.objects.get(course_number='1222')
         
         # Validate instructors
-        self.assertEquals(previousClass1.instructor, 'Jones.1')
-        self.assertEquals(previousClass2.instructor, 'Smith.201')
-        self.assertEquals(previousClass3.instructor, '')
+        self.assertEqual(previousClass1.instructor, 'Jones.1')
+        self.assertEqual(previousClass2.instructor, 'Smith.201')
+        self.assertEqual(previousClass3.instructor, '')
         
     def test_edit_submission(self):
         previous_application_data = {
@@ -203,16 +203,16 @@ class ApplicationTests(TestCase):
         previousClass2 = PreviousClassTaken.objects.get(course_number='3902')
         
         # Validate instructors
-        self.assertEquals(previousClass1.instructor, 'Jackson.2')
-        self.assertEquals(previousClass2.instructor, '')
+        self.assertEqual(previousClass1.instructor, 'Jackson.2')
+        self.assertEqual(previousClass2.instructor, '')
 
         # Get student object from DB
         student = Student.objects.get(email='testStudent.500@buckeyemail.osu.edu')
         
         # Validate student data was updated
-        self.assertEquals(student.in_columbus, 0)
-        self.assertEquals(student.previous_grader, 0)
-        self.assertEquals(student.graded_last_term, '1110')
+        self.assertEqual(student.in_columbus, 0)
+        self.assertEqual(student.previous_grader, 0)
+        self.assertEqual(student.graded_last_term, '1110')
 
     def test_edit_submission_reordered_preferences(self):
         previous_application_data = {
@@ -242,14 +242,14 @@ class ApplicationTests(TestCase):
         previousClass3 = PreviousClassTaken.objects.get(course_number='1222')
         
         # Validate pref number
-        self.assertEquals(previousClass1.pref_num, 1)
-        self.assertEquals(previousClass2.pref_num, 2)
-        self.assertEquals(previousClass3.pref_num, 3)
+        self.assertEqual(previousClass1.pref_num, 1)
+        self.assertEqual(previousClass2.pref_num, 2)
+        self.assertEqual(previousClass3.pref_num, 3)
 
         # Validate student
-        self.assertEquals(previousClass1.student_id, self.student)
-        self.assertEquals(previousClass2.student_id, self.student)
-        self.assertEquals(previousClass3.student_id, self.student)
+        self.assertEqual(previousClass1.student_id, self.student)
+        self.assertEqual(previousClass2.student_id, self.student)
+        self.assertEqual(previousClass3.student_id, self.student)
         
         # Login to access page
         self.client.login(username='testStudent', password='12345')
@@ -263,19 +263,19 @@ class ApplicationTests(TestCase):
         previousClass3 = PreviousClassTaken.objects.get(course_number='2221')
         
         # Validate pref number
-        self.assertEquals(previousClass1.pref_num, 1)
-        self.assertEquals(previousClass2.pref_num, 2)
-        self.assertEquals(previousClass3.pref_num, 3)
+        self.assertEqual(previousClass1.pref_num, 1)
+        self.assertEqual(previousClass2.pref_num, 2)
+        self.assertEqual(previousClass3.pref_num, 3)
 
         # Validate student
-        self.assertEquals(previousClass1.student_id, self.student)
-        self.assertEquals(previousClass2.student_id, self.student)
-        self.assertEquals(previousClass3.student_id, self.student)
+        self.assertEqual(previousClass1.student_id, self.student)
+        self.assertEqual(previousClass2.student_id, self.student)
+        self.assertEqual(previousClass3.student_id, self.student)
 
         # Get student object from DB
         student = Student.objects.get(email='testStudent.500@buckeyemail.osu.edu')
         
         # Validate student data was updated
-        self.assertEquals(student.in_columbus, 1)
-        self.assertEquals(student.previous_grader, 0)
-        self.assertEquals(student.graded_last_term, '')
+        self.assertEqual(student.in_columbus, 1)
+        self.assertEqual(student.previous_grader, 0)
+        self.assertEqual(student.graded_last_term, '')

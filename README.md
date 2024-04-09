@@ -1,5 +1,7 @@
 # Set Up Steps
 
+Python Version 3.8 is the lowest version of Python tested. Recommend using Python Version >= 3.8
+
 1. Create Virtual Envrionment
 
     a. Windows: `py -m venv OSU_CSE_GMS`
