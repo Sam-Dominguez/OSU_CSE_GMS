@@ -3,11 +3,63 @@
 {% block title %}Create a new Administrator{% endblock %}
 
 {% block content %}
-<h2>Create New Administrator </h2>
-<hr/>
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit" class="btn btn-dark" style="background-color: #BB0000 !important;">Create Administrator</button>
-</form>
+<header class="bg-light p-3">
+  <div class="container">
+      <div class="d-flex justify-content-between align-items-center">
+          <h1 class="m-0">Create New Administrator</h1>
+      </div>
+      <br>
+      <!-- Display error message here if Create New Administrator fails -->
+      {% if messages %}
+          {% for message in messages %}
+              <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                  {{ message }}
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+          {% endfor %}
+      {% endif %}
+      <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+          <label for="id_first_name">First Name</label>
+          <br>
+          {{ form.first_name|add_form_control }}
+        </div>
+        <br>
+        <div class="form-group">
+          <label for="id_last_name">Last Name</label>
+          <br>
+          {{ form.last_name|add_form_control }}
+        </div>
+        <br>
+        <div class="form-group">
+          <label for="id_username">Username</label>
+          <br>
+          {{ form.username|add_form_control }}
+        </div>
+        <br>
+        <div class="form-group">
+          <label for="id_email">Email Address</label>
+          <br>
+          {{ form.email|add_form_control }}
+          <small id="emailHelp" class="form-text text-muted">name.#@osu.edu</small><br>
+          <i><small id="emailHelp" class="form-text text-muted">Ex. buckeye.1@osu.edu</small></i>
+        </div>
+        <br>
+        <div class="form-group">
+          <label for="id_password1">Password</label>
+          <br>
+          {{ form.password1|add_form_control }}
+        </div>
+        <br>
+        <div class="form-group">
+          <label for="id_password2">Confirm Password</label>
+          <br>
+          {{ form.password2|add_form_control }}
+        </div>
+        <br>
+        <button type="submit" class="btn btn-dark" style="background-color: #BB0000 !important;">Create Administrator</button>
+      </form>
+  </div>
+</header>
 {% endblock %}
