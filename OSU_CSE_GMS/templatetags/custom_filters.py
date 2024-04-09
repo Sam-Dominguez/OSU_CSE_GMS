@@ -14,3 +14,10 @@ def get_total_graders_needed(course_number, semester):
 @register.filter(name='has_group') 
 def has_group(user, group_name):
     return permissions.has_group(user, group_name)
+
+@register.filter
+def add_form_control(field):
+    widget_attrs = {'class': 'form-control'}
+    if 'autofocus' in field.field.widget.attrs:
+        del field.field.widget.attrs['autofocus']
+    return field.as_widget(attrs=widget_attrs)

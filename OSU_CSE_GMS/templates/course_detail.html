@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Course Detail{% endblock %}
+{% block title %}{{ block.super }} | {{ course }}{% endblock %}
 {% block content %}
 <style>
     .email-link {
